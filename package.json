@@ -1,7 +1,16 @@
 {
-  "name": "goku.static",
+  "name": "app-lib",
+  "version": "1.0.0",
+  "author": "Talha Ansari <github@teejay.me>",
+  "description": "Typescript util functions and React components that can be accessed by all ongoku apps.",
+  "repository": {
+    "url": "https://github.com/build-ongoku/app-lib",
+    "type": "git"
+  },
+  "main": "index.ts",
   "packageManager": "yarn@4.4.1",
   "devDependencies": {
     "@types/node": "^22.4.1"
-  }
+  },
+  "license": "MIT"
 }
