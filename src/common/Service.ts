@@ -1,59 +1,55 @@
-import { EntityInfo, EntityInfoCommon, EntityMinimal } from '@/common/Entity'
+import { EntityInfo, EntityMinimal } from '@/common/Entity'
 import { EnumInfo } from '@/common/Enum'
 import { TypeInfo, TypeMinimal } from '@/common/Type'
 
-export interface ServiceInfoCommon {
+export interface IServiceInfo {
     name: string
     defaultIcon?: React.ElementType
     getEntityInfo<E extends EntityMinimal>(name: string): EntityInfo<E>
-    entityInfos: EntityInfoCommon[]
+    entityInfos: EntityInfo<any>[]
     getTypeInfo<T extends TypeMinimal>(name: string): TypeInfo<T>
-    getEnumInfo<EnumType = any>(name: string): EnumInfo | undefined
+    getEnumInfo<EN>(name: string): EnumInfo<EN> | undefined
 }
 
-export type ServiceInfoT<E extends EntityMinimal, T extends TypeMinimal> = ServiceInfo<E, T>
-export type EntityInfoT<E> = E extends EntityMinimal ? EntityInfo<E> : never
-export type TypeInfoT<T> = T extends TypeMinimal ? TypeInfo<T> : never
-
-interface ServiceInfoInputProps<E extends EntityMinimal, T extends TypeMinimal> {
+export interface NewServiceInfoReq {
     name: string
-    entityInfos: EntityInfoT<E>[]
-    typeInfos: TypeInfoT<T>[]
+    entityInfos: EntityInfo<any>[]
+    typeInfos: TypeInfo<any>[]
     defaultIcon?: React.ElementType
 }
 
 // U is a union type of all Entities
-export class ServiceInfo<E extends EntityMinimal = any, T extends TypeMinimal = any> implements ServiceInfoCommon {
+export class ServiceInfo implements IServiceInfo {
     name: string
-    entityInfos: EntityInfoT<E>[] // Distributive conditional type, that should become []EntityInfo < entA | entB etc. >
-    typeInfosMap: Record<string, TypeInfoT<T>> = {} // local service types
+    entityInfos: EntityInfo<any>[] // Distributive conditional type, that should become []EntityInfo < entA | entB etc. >
+    typeInfosMap: Record<string, TypeInfo<any>> = {} // local service types
 
-    enumInfos: Record<string, EnumInfo> = {}
+    enumInfos: Record<string, EnumInfo<any>> = {}
 
     defaultIcon?: React.ElementType
 
-    constructor(props: ServiceInfoInputProps<E, T>) {
+    constructor(props: NewServiceInfoReq) {
         this.name = props.name
         this.entityInfos = props.entityInfos
         // Type Infos
-        props.typeInfos.forEach((typInfo: TypeInfoT<T>) => {
+        props.typeInfos.forEach((typInfo: TypeInfo<any>) => {
             this.typeInfosMap[typInfo.name] = typInfo
         })
         this.defaultIcon = props.defaultIcon
     }
 
-    getEntityInfo<E extends EntityMinimal>(name: string) {
+    getEntityInfo<E extends EntityMinimal>(name: string): EntityInfo<E> {
         var entityInfo = this.entityInfos.find((elem) => elem.getEntityName() === name) as unknown
-        return entityInfo as EntityInfoT<E>
+        return entityInfo as EntityInfo<E>
     }
 
     // T should be a type, one that is at the service level
     getTypeInfo<T extends TypeMinimal>(name: string) {
         var typeInfo = this.typeInfosMap[name] as unknown
-        return typeInfo as TypeInfoT<T>
+        return typeInfo as TypeInfo<T>
     }
 
-    getEnumInfo<EnumType = any>(name: string): EnumInfo | undefined {
-        return this.enumInfos[name] as unknown as EnumInfo<EnumType>
+    getEnumInfo<EN>(name: string): EnumInfo<EN> | undefined {
+        return this.enumInfos[name] as unknown as EnumInfo<EN>
     }
 }

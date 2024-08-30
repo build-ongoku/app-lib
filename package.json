@@ -9,15 +9,17 @@
   },
   "main": "index.ts",
   "packageManager": "yarn@4.4.1",
-  "devDependencies": {
-    "@types/axios": "^0.14.0",
-    "@types/node": "^22.4.1",
-    "@types/react": "^18"
-  },
   "license": "MIT",
   "dependencies": {
+    "@microlink/react-json-view": "^1.23.1",
     "axios": "^1.7.5",
     "change-case": "^5.4.4",
     "react": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/axios": "^0.14.0",
+    "@types/node": "^22.4.1",
+    "@types/react": "^18",
+    "typescript": "^5.5.4"
   }
 }

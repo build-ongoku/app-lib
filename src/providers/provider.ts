@@ -1,8 +1,7 @@
 import axios, { AxiosError, AxiosRequestConfig } from 'axios'
-import { EntityInfo, EntityInfoCommon, EntityMinimal } from '@/common/Entity'
+import { EntityInfo, EntityMinimal } from '@/common/Entity'
 import { UUID } from '@/common/Primitives'
 import { useEffect, useState } from 'react'
-
 import { getSessionCookie } from '../common/AuthContext'
 import { EnumFieldFor, FilterTypeFor } from '@/linker'
 
@@ -29,7 +28,7 @@ const getUrl = (path: string): string => {
     return getBaseURL() + path
 }
 
-export const getEntityPath = (props: { entityInfo: EntityInfoCommon; entityId?: string; version?: number }): string => {
+export const getEntityPath = <E extends EntityMinimal>(props: { entityInfo: EntityInfo<E>; entityId?: string; version?: number }): string => {
     const { entityInfo, entityId } = props
     let path = entityInfo.serviceName + '/' + entityInfo.name
     if (entityId) {

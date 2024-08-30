@@ -1,12 +1,10 @@
-'use client'
-
-import { TextInput, NumberInput as MantineNumberInput, Switch, Select, SelectProps, SwitchProps, NumberInputProps, TextInputProps, Loader, Fieldset, JsonInput, JsonInputProps } from '@mantine/core'
-import { DateInputProps, DateTimePicker, DateTimePickerProps, DateInput as MantineDateInput } from '@mantine/dates'
-import { UseFormReturnType } from '@mantine/form'
-import { capitalCase } from 'change-case'
 import { AppInfoContext } from '@/common/AppContext'
 import { BooleanKind, DateKind, EnumKind, FieldInfo, getValueForField, NestedKind, NumberKind, StringKind, TimestampKind } from '@/common/Field'
 import { TypeInfo, TypeMinimal } from '@/common/Type'
+import { Fieldset, JsonInput, JsonInputProps, Loader, NumberInput as MantineNumberInput, NumberInputProps, Select, SelectProps, Switch, SwitchProps, TextInput, TextInputProps } from '@mantine/core'
+import { DateInputProps, DateTimePicker, DateTimePickerProps, DateInput as MantineDateInput } from '@mantine/dates'
+import { UseFormReturnType } from '@mantine/form'
+import { capitalCase } from 'change-case'
 import React, { useContext } from 'react'
 
 export const TypeAddForm = <T extends TypeMinimal = any>(props: {

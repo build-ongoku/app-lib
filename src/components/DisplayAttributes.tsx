@@ -1,19 +1,11 @@
-'use client'
-
 import { AppInfoContext } from '@/common/AppContext'
 import { EntityInfo, EntityMinimal } from '@/common/Entity'
-import { TypeInfo, TypeMinimal } from '@/common/Type'
-import { FieldInfo } from '@/common/Field'
+import { FieldInfo, getValueForField } from '@/common/Field'
 import { UUID } from '@/common/Primitives'
-
+import { TypeMinimal } from '@/common/Type'
 import { EntityLinkFromID } from '@/components/antd/EntityLink'
-
-// import { Descriptions, List } from 'antd'
-import { PersonName, PhoneNumber } from 'goku.generated/types/types.generated'
-import React, { useContext, useState } from 'react'
-
 import ReactJson from '@microlink/react-json-view'
-import { getValueForField } from '@/common/Field'
+import React, { useContext, useState } from 'react'
 
 export interface FieldDisplayProps<T extends TypeMinimal> {
     fieldInfo: FieldInfo
@@ -75,26 +67,26 @@ export const RepeatedDisplay = <FT extends any>(props: { value: FT[]; DisplayCom
     )
 }
 
-export const PersonNameDisplay = <T extends PersonName>(props: DisplayProps<T>) => {
-    const { value } = props
-    let text = ''
-    text += value?.first_name
-    if (value?.middle_initial) {
-        text += ' ' + value.middle_initial
-    }
-    text += ' ' + value?.last_name
-    return <DefaultDisplay value={text} />
-}
+// export const PersonNameDisplay = <T extends PersonName>(props: DisplayProps<T>) => {
+//     const { value } = props
+//     let text = ''
+//     text += value?.first_name
+//     if (value?.middle_initial) {
+//         text += ' ' + value.middle_initial
+//     }
+//     text += ' ' + value?.last_name
+//     return <DefaultDisplay value={text} />
+// }
 
-export const PhoneNumberDisplay = <T extends PhoneNumber>(props: DisplayProps<T>) => {
-    const { value } = props
-    let text = ''
-    text += `+${value?.country_code} ${value?.number}`
-    if (value?.extension) {
-        text += ` x${value?.extension}`
-    }
-    return <DefaultDisplay value={text} />
-}
+// export const PhoneNumberDisplay = <T extends PhoneNumber>(props: DisplayProps<T>) => {
+//     const { value } = props
+//     let text = ''
+//     text += `+${value?.country_code} ${value?.number}`
+//     if (value?.extension) {
+//         text += ` x${value?.extension}`
+//     }
+//     return <DefaultDisplay value={text} />
+// }
 
 export interface ForeignEntityFieldDisplayProps {
     fieldInfo: FieldInfo

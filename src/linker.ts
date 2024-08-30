@@ -1,10 +1,19 @@
 
 // Define these types here but allow the caller to override them
 
+import { AppInfo } from "./common/App"
 import { EntityMinimal } from "./common/Entity"
 
-export type EntityName = string
-export type ServiceName = string
+export interface EnumFieldFor<E extends EntityMinimal> {}
+export interface FilterTypeFor<E extends EntityMinimal> {}
 
-export type EnumFieldFor<E extends EntityMinimal> = never
-export type FilterTypeFor<E extends EntityMinimal> = never
+export interface AuthenticateResponse {
+    token: string
+}
+export interface AuthenticateTokenRequest {
+    token: string
+}
+
+// Function that returns the app info:
+//  set to: import { newAppInfo } from 'goku.generated/types/types.generated'
+// export let newAppInfo = () => new AppInfo({serviceInfos: [], typeInfos: []});

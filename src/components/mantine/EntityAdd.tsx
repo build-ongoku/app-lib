@@ -1,10 +1,8 @@
-'use client'
-
-import { useForm } from '@mantine/form'
 import { EntityInfo, EntityMinimal } from '@/common/Entity'
 import { Form } from '@/components/mantine/Form'
 import { TypeAddForm } from '@/components/mantine/FormAdd'
 import { getEntityPath } from '@/providers/provider'
+import { useForm } from '@mantine/form'
 import { useRouter } from 'next/navigation'
 import React from 'react'
 
@@ -19,6 +17,7 @@ export const EntityAddForm = <E extends EntityMinimal = any>(props: EntityAddFor
 
     const initialData = props.initialData || ({} as E)
 
+    // Todo: remove dependency on next/navigation
     const router = useRouter()
     const form = useForm<E>({
         mode: 'uncontrolled',

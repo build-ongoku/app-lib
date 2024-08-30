@@ -1,5 +1,5 @@
 import React from 'react'
-import { ServiceInfoCommon } from '@/common/Service'
+import { ServiceInfo } from '@/common/Service'
 
-export const ServiceInfoContext = React.createContext<ServiceInfoCommon | null>(null)
+export const ServiceInfoContext = React.createContext<ServiceInfo | null>(null)
 ServiceInfoContext.displayName = 'ServiceInfoContext'

@@ -1,13 +1,15 @@
-import { EntityName, ServiceName } from 'goku.generated/types/types.generated'
 import { Namespace } from '@/common/Namespace'
-import { TypeMinimal, TypeProps, TypeInfoProps } from '@/common/Type'
+import { TypeMinimal, TypeInfo } from '@/common/Type'
 
 // FieldInfoProps require both FieldInfo and EntityInfo
-export interface FieldInfoProps<T extends TypeMinimal> extends TypeInfoProps<T> {
+export interface FieldInfoProps<T extends TypeMinimal> {
+    typeInfo: TypeInfo<T>
     fieldInfo: FieldInfo
 }
 
-export interface FieldProps<T extends TypeMinimal> extends TypeProps<T> {
+export interface FieldProps<T extends TypeMinimal> {
+    typeInfo: TypeInfo<T>
+    type: T
     fieldInfo: FieldInfo
 }
 
@@ -22,8 +24,8 @@ export interface FieldInfo {
 }
 
 interface ForeignEntityInfo {
-    serviceName?: ServiceName
-    entityName?: EntityName
+    serviceName?: string
+    entityName?: string
 }
 
 // getFieldValue takes an Entity and FieldInfo, and returns the value for the Field

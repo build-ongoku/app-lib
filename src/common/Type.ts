@@ -1,26 +1,22 @@
 import { FieldInfo } from '@/common/Field'
 import { EnumInfo } from '@/common/Enum'
 
-export interface TypeInfoProps<T extends TypeMinimal> {
-    typeInfo: TypeInfo<T>
-}
 
-export interface TypeProps<T extends TypeMinimal> {
-    obj: T
-    typeInfo: TypeInfo<T>
-}
 
-export interface TypeInfoCommon {
+export interface ITypeInfo extends ITypeInfoOverridable {
     name: string
     fieldInfos: FieldInfo[]
+}
+
+export interface ITypeInfoOverridable {
     getTypeName: () => string
 }
 
-export interface TypeInfoInputProps<T extends TypeMinimal = any> {
+export interface NewTypeInfoReq<T extends TypeMinimal> {
     name: string
     serviceName: string
     fieldInfos: FieldInfo[]
-    enumInfos?: EnumInfo[]
+    enumInfos?: EnumInfo<any>[]
     getEmptyInstance: () => T
 }
 
@@ -28,19 +24,19 @@ export interface TypeInfoInputProps<T extends TypeMinimal = any> {
 export interface TypeMinimal extends Object {}
 
 // EntityInfo holds all the information about how to render/manipulate a particular Entity type.
-export class TypeInfo<T extends TypeMinimal = any> implements TypeInfoCommon {
+export class TypeInfo<T extends TypeMinimal> implements ITypeInfo {
     readonly name: string
     readonly fieldInfos: FieldInfo[]
     readonly serviceName: string
-    enumInfos: Record<string, EnumInfo> = {}
+    enumInfos: Record<string, EnumInfo<any>> = {}
     getEmptyInstance: () => T
 
-    constructor(props: TypeInfoInputProps) {
+    constructor(props: NewTypeInfoReq<T>) {
         this.name = props.name
         this.serviceName = props.serviceName
         this.fieldInfos = props.fieldInfos
 
-        props.enumInfos?.forEach((enumInfo) => {
+        props.enumInfos?.forEach((enumInfo: EnumInfo<any>) => {
             this.enumInfos[enumInfo.name] = enumInfo
         })
 

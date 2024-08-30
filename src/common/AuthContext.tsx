@@ -1,6 +1,6 @@
 'use client'
 
-import { AuthenticateResponse, AuthenticateTokenRequest } from 'goku.generated/types/user/types.generated'
+import { AuthenticateResponse, AuthenticateTokenRequest } from '@/linker'
 import React, { useEffect, useState, useContext } from 'react'
 
 import { makeRequest } from '@/providers/provider'

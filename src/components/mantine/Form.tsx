@@ -1,10 +1,8 @@
-'use client'
-
-import { Box, Paper, Alert, Button, Stack } from '@mantine/core'
-import { UseFormReturnType } from '@mantine/form'
 import { useMakeRequest } from '@/providers/provider'
+import { Alert, Box, Button, Paper, Stack } from '@mantine/core'
+import { UseFormReturnType } from '@mantine/form'
 import { useRouter } from 'next/navigation'
-import { use, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { FiAlertCircle } from 'react-icons/fi'
 
 export const Form = <FormT extends Record<string, any>, ResponseT = any>(props: {
@@ -17,8 +15,8 @@ export const Form = <FormT extends Record<string, any>, ResponseT = any>(props: 
     onSuccess?: (data: ResponseT) => void
     onError?: (error: string) => void
 }) => {
+    // Todo: remove dependency on next/navigation
     const router = useRouter()
-    // const [error, setError] = useState<string | null>(null)
 
     const [submitted, setSubmitted] = useState(false)
 

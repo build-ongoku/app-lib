@@ -1,8 +1,6 @@
-import { EntityInfo, EntityInfoCommon } from '@/common/Entity'
-import { EntityInfoCommonV2, EntityMinimal, EntityProps } from '@/common/Entity'
-import { TypeInfoCommon } from '@/common/Type'
-import React from 'react'
+import { EntityInfo, EntityMinimal } from '@/common/Entity'
 import { capitalCase } from 'change-case'
+import React from 'react'
 
 interface EntityLinkProps<E extends EntityMinimal> {
     entity: E
@@ -19,13 +17,13 @@ export const EntityLink = <E extends EntityMinimal>(props: EntityLinkProps<E>): 
     return <Link to={getEntityDetailPath({ entityInfo, entity })}>{text ? text : entityInfo.getHumanName(entity)}</Link>
 }
 
-export const EntityListLink = (props: { entityInfo: EntityInfoCommon; text?: string }) => {
+export const EntityListLink= <E extends EntityMinimal> (props: { entityInfo: EntityInfo<E>; text?: string }) => {
     const { entityInfo, text } = props
     return <Link to={getEntityListPath(entityInfo)}>{text ? text : capitalCase(entityInfo.name)}</Link>
 }
 
 interface EntityAddLinkProps<E extends EntityMinimal> {
-    entityInfo: EntityInfoCommonV2<E>
+    entityInfo: EntityInfo<E>
     children: React.ReactElement
 }
 
@@ -33,14 +31,15 @@ export const EntityAddLink = <E extends EntityMinimal>(props: EntityAddLinkProps
     return <Link to={getEntityAddPath(props.entityInfo)}>{props.children}</Link>
 }
 
-export const getEntityDetailPath = <E extends EntityMinimal, UTI extends TypeInfoCommon>({ entityInfo, entity }: EntityProps<E, UTI>): string => {
+export const getEntityDetailPath = <E extends EntityMinimal>(props: { entityInfo: EntityInfo<E>, entity: E }): string => {
+    const { entityInfo, entity } = props
     return '/' + entityInfo.serviceName + '/' + entityInfo.name + '/' + entity.id
 }
 
-export const getEntityListPath = (entityInfo: EntityInfoCommon): string => {
+export const getEntityListPath = <E extends EntityMinimal> (entityInfo: EntityInfo<E>): string => {
     return '/' + entityInfo.serviceName + '/' + entityInfo.name + '/list'
 }
 
-export const getEntityAddPath = (entityInfo: EntityInfoCommon): string => {
+export const getEntityAddPath = <E extends EntityMinimal>(entityInfo: EntityInfo<E>): string => {
     return '/' + entityInfo.serviceName + '/' + entityInfo.name + '/add'
 }

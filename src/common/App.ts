@@ -1,29 +1,29 @@
-import { EntityInfoCommon, EntityMinimal } from '@/common/Entity'
+import { EntityInfo, EntityMinimal, IEntityInfo } from '@/common/Entity'
 import { EnumInfo } from '@/common/Enum'
-import { ServiceInfoCommon } from '@/common/Service'
+import { ServiceInfo } from '@/common/Service'
 import { PrimaryNamespace, Namespace } from '@/common/Namespace'
-import { TypeInfo, TypeMinimal, TypeInfoCommon } from '@/common/Type'
+import { TypeInfo, TypeMinimal } from '@/common/Type'
 
 import { snakeCase } from 'change-case'
-import { EntityName, ServiceName } from '@/linker'
 
-export interface AppInfoInputProps<ServiceInfoTypes extends ServiceInfoCommon> {
-    serviceInfos: ServiceInfoTypes[]
-    typeInfos: TypeInfoCommon[]
+export interface NewAppInfoReq {
+    serviceInfos: ServiceInfo[]
+    typeInfos: TypeInfo<any>[]
+    enumInfos: EnumInfo<any>[]
 }
 /* U is the union type of all entities in the App, T is the union type of all types in the app.
  * UTI is the union of all possible nested types
  */
-export class AppInfo<ServiceInfoTypes extends ServiceInfoCommon> {
-    serviceInfosMap: Record<string, ServiceInfoTypes> = {}
-
+export class AppInfo {
+    // serviceInfosMap is a collection of Services
+    serviceInfosMap: Record<string, ServiceInfo> = {}
     // typeInfosMap is a collection of Types stored at the global level
-    typeInfosMap: Record<string, TypeInfoCommon> = {}
-
-    enumInfos: Record<string, EnumInfo> = {}
+    typeInfosMap: Record<string, TypeInfo<any>> = {}
+    // enumInfos is a collection of Enums stored at the global level
+    enumInfos: Record<string, EnumInfo<any>> = {}
 
     // Constructor shouldn't need to do anything
-    constructor(props: AppInfoInputProps<ServiceInfoTypes>) {
+    constructor(props: NewAppInfoReq) {
         console.log('AppInfo constructor called')
         // Service Infos
         props.serviceInfos.forEach((svcInfo) => {
@@ -36,7 +36,20 @@ export class AppInfo<ServiceInfoTypes extends ServiceInfoCommon> {
         return
     }
 
-    getEntityInfo<E extends EntityMinimal>(serviceName: ServiceName, entityName: EntityName) {
+    getServiceInfos() {
+        return Object.values(this.serviceInfosMap)
+    }
+
+    getServiceInfo(name: string) {
+        return this.serviceInfosMap[name]
+    }
+
+
+
+    getEntityInfo<E extends EntityMinimal>(
+        serviceName: string,
+        entityName: string
+    ): EntityInfo<E>{
         const serviceInfo = this.getServiceInfo(serviceName)
 
         const entityInfo = serviceInfo.getEntityInfo<E>(entityName)
@@ -44,29 +57,7 @@ export class AppInfo<ServiceInfoTypes extends ServiceInfoCommon> {
         return entityInfo
     }
 
-    updateEntityInfo(ei: EntityInfoCommon) {
-        const serviceInfo = this.getServiceInfo(ei.serviceName)
-        serviceInfo.entityInfos.forEach((v, index) => {
-            if (ei.name === v.name) {
-                serviceInfo.entityInfos[index] = ei
-                return
-            }
-        })
-    }
-
-    getServiceInfo(name: string) {
-        return this.serviceInfosMap[name]
-    }
-
-    getServiceInfos() {
-        return Object.values(this.serviceInfosMap)
-    }
-
-    getTypeInfo<T extends TypeMinimal>(name: string) {
-        return this.typeInfosMap[name] as TypeInfo<T>
-    }
-
-    getEntityInfoByNamespace<E extends EntityMinimal = any>(ns: Required<PrimaryNamespace>) {
+    getEntityInfoByNamespace<E extends EntityMinimal>(ns: Required<PrimaryNamespace>) {
         const serviceName = snakeCase(ns.service)
         const entityName = snakeCase(ns.entity)
 
@@ -82,6 +73,23 @@ export class AppInfo<ServiceInfoTypes extends ServiceInfoCommon> {
         }
         return entityInfo
     }
+
+    updateEntityInfo(ei: EntityInfo<any>) {
+        const serviceInfo = this.getServiceInfo(ei.serviceName)
+        serviceInfo.entityInfos.forEach((v: EntityInfo<any>, index: number) => {
+            if (ei.name === v.name) {
+                serviceInfo.entityInfos[index] = ei
+                return
+            }
+        })
+    }
+
+
+
+    getTypeInfo<T extends TypeMinimal>(name: string) : TypeInfo<T> {
+        return this.typeInfosMap[name] as TypeInfo<T>
+    }
+
 
     getTypeInfoByNamespace<T extends TypeMinimal>(ns: Namespace) {
         if (!ns.type) {
@@ -130,11 +138,11 @@ export class AppInfo<ServiceInfoTypes extends ServiceInfoCommon> {
         return typeInfo
     }
 
-    getEnumInfo<EnumType = any>(name: string): EnumInfo | undefined {
-        return this.enumInfos[name] as unknown as EnumInfo<EnumType>
+    getEnumInfo<EN>(name: string): EnumInfo<EN> {
+        return this.enumInfos[name] as unknown as EnumInfo<EN>
     }
 
-    getEnumInfoByNamespace<EnumType = any>(ns: Namespace): EnumInfo<EnumType> | undefined {
+    getEnumInfoByNamespace<EN>(ns: Namespace): EnumInfo<EN> | undefined {
         if (!ns.enum) {
             throw new Error('getTypeInfoByNamespace() called with empty enum name')
         }
@@ -143,7 +151,7 @@ export class AppInfo<ServiceInfoTypes extends ServiceInfoCommon> {
 
         // App Level
         if (!ns.service && !ns.entity) {
-            return this.getEnumInfo<EnumType>(enumName)
+            return this.getEnumInfo<EN>(enumName)
         }
 
         const svcInfo = this.getServiceInfo(ns.service!)
@@ -153,12 +161,12 @@ export class AppInfo<ServiceInfoTypes extends ServiceInfoCommon> {
 
         // Service Level
         if (!ns.entity) {
-            return svcInfo.getEnumInfo<EnumType>(enumName)
+            return svcInfo.getEnumInfo<EN>(enumName)
         }
 
         // Entity Level
         const entInfo = svcInfo.getEntityInfo(ns.entity)
 
-        return entInfo.getEnumInfo<EnumType>(enumName)
+        return entInfo.getEnumInfo<EN>(enumName)
     }
 }

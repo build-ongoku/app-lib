@@ -1,12 +1,12 @@
-import 'mantine-react-table/styles.css' //make sure MRT styles were imported in your app root (once)
-import { useMemo } from 'react'
+import { EntityInfo, EntityMinimal } from '@/common/Entity'
+import { ServerResponseWrapper } from '@/components/mantine/ServerResponseWrapper'
+import { ListEntityResponse, useListEntity } from '@/providers/provider'
+import { Title } from '@mantine/core'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import { MantineReactTable, useMantineReactTable, type MRT_ColumnDef } from 'mantine-react-table'
-import { Title } from '@mantine/core'
-import { EntityInfo, EntityMinimal } from '@/common/Entity'
-import { ListEntityResponse, useListEntity } from '@/providers/provider'
-import { ServerResponseWrapper } from '@/components/mantine/ServerResponseWrapper'
+import 'mantine-react-table/styles.css'; //make sure MRT styles were imported in your app root (once)
+import { useMemo } from 'react'
 
 dayjs.extend(relativeTime)
 

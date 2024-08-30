@@ -1,6 +1,4 @@
-'use client'
-
-import { EntityInfo } from '@/common/Entity'
+import { EntityInfo, EntityMinimal } from '@/common/Entity'
 import { FieldInfo } from '@/common/Field'
 import ReactJson from '@microlink/react-json-view'
 import React from 'react'
@@ -16,7 +14,7 @@ export interface FieldKindUI {
 
     getLabel: (props: FieldInfo) => JSX.Element
     getLabelString: (props: FieldInfo) => string
-    getDisplayComponent: (fieldInfo: FieldInfo, entityInfo?: EntityInfo) => React.ComponentType<DisplayProps>
+    getDisplayComponent: <E extends EntityMinimal>(fieldInfo: FieldInfo, entityInfo?: EntityInfo<E>) => React.ComponentType<DisplayProps>
     getDisplayRepeatedComponent: (fieldInfo: FieldInfo) => React.ComponentType<DisplayProps>
     getInputComponent: () => React.ComponentType<FieldFormProps>
     getInputRepeatedComponent: () => React.ComponentType<FieldFormProps>
