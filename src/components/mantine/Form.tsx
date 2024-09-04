@@ -1,4 +1,4 @@
-import { useMakeRequest } from '@/providers/provider'
+import { useMakeRequest } from '../../providers/provider'
 import { Alert, Box, Button, Paper, Stack } from '@mantine/core'
 import { UseFormReturnType } from '@mantine/form'
 import { useRouter } from 'next/navigation'

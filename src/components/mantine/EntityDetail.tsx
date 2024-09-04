@@ -1,7 +1,7 @@
-import { useGetEntity } from '@/providers/provider'
-import { EntityInfo, EntityMinimal } from '@/common/Entity'
+import { useGetEntity } from '../../providers/provider'
+import { EntityInfo, EntityMinimal } from '../../common/Entity'
 import { Title } from '@mantine/core'
-import { ServerResponseWrapper } from '@/components/mantine/ServerResponseWrapper'
+import { ServerResponseWrapper } from '../../components/mantine/ServerResponseWrapper'
 
 export const EntityDetail = <E extends EntityMinimal = any>(props: { entityInfo: EntityInfo<E>; identifier: string }) => {
     const { entityInfo, identifier } = props

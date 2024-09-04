@@ -1,8 +1,7 @@
 'use client'
 
-import { AppInfo } from '@/common/App'
+import { AppInfo, NewAppInfoReq } from '@ongoku/app-lib/src/common/App'
 import React from 'react'
-import { ServiceInfo } from '@/common/Service'
 
 interface AppInfoContectValue {
     appInfo: AppInfo | null
@@ -12,13 +11,13 @@ interface AppInfoContectValue {
 export const AppInfoContext = React.createContext<AppInfoContectValue>({ appInfo: null, loading: true })
 AppInfoContext.displayName = 'AppInfoContext'
 
-export const AppInfoProvider = (props: { newAppInfo: () => AppInfo; children?: React.ReactNode }) => {
+export const AppInfoProvider = (props: { newAppInfoReq: NewAppInfoReq; children?: React.ReactNode }) => {
     const [appInfo, setAppInfo] = React.useState<AppInfo | null>(null)
     const [loading, setLoading] = React.useState(true)
 
     React.useEffect(() => {
         console.log('Setting AppInfo')
-        const _appInfo = props.newAppInfo()
+        const _appInfo = new AppInfo(props.newAppInfoReq)
         setAppInfo(_appInfo)
         console.log('AppInfo:', _appInfo)
         setLoading(false)

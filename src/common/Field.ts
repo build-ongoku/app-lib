@@ -1,5 +1,5 @@
-import { Namespace } from '@/common/Namespace'
-import { TypeMinimal, TypeInfo } from '@/common/Type'
+import { Namespace } from '@ongoku/app-lib/src/common/Namespace'
+import { TypeMinimal, TypeInfo } from '@ongoku/app-lib/src/common/Type'
 
 // FieldInfoProps require both FieldInfo and EntityInfo
 export interface FieldInfoProps<T extends TypeMinimal> {

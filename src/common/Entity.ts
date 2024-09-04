@@ -1,7 +1,7 @@
-import { ITypeInfo, NewTypeInfoReq, TypeInfo, TypeMinimal } from '@/common/Type'
-import { EnumInfo } from '@/common/Enum'
-import { FieldInfo } from '@/common/Field'
-import { UUID } from '@/common/Primitives'
+import { ITypeInfo, NewTypeInfoReq, TypeInfo, TypeMinimal } from '@ongoku/app-lib/src/common/Type'
+import { EnumInfo } from '@ongoku/app-lib/src/common/Enum'
+import { FieldInfo } from '@ongoku/app-lib/src/common/Field'
+import { UUID } from '@ongoku/app-lib/src/common/Primitives'
 
 import { capitalCase } from 'change-case'
 
@@ -134,10 +134,10 @@ export class EntityInfo<E extends EntityMinimal> extends TypeInfo<E> implements 
         return r.id
     }
 
-    getTypeInfo<T extends TypeMinimal = any>(name: string): TypeInfo<E> | TypeInfo<T> | undefined {
+    getTypeInfo<T extends TypeMinimal = E>(name: string): TypeInfo<T> | undefined {
         // if name is same as entity, return the entity typeInfo
         if (name == this.name) {
-            return this.typeInfo as unknown as TypeInfo<E>
+            return this.typeInfo as unknown as TypeInfo<T>
         }
         return this.typeInfos[name as string] as unknown as TypeInfo<T>
     }

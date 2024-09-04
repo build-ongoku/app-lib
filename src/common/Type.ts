@@ -1,5 +1,5 @@
-import { FieldInfo } from '@/common/Field'
-import { EnumInfo } from '@/common/Enum'
+import { FieldInfo } from '@ongoku/app-lib/src/common/Field'
+import { EnumInfo } from '@ongoku/app-lib/src/common/Enum'
 
 
 

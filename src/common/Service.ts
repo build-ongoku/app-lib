@@ -1,6 +1,6 @@
-import { EntityInfo, EntityMinimal } from '@/common/Entity'
-import { EnumInfo } from '@/common/Enum'
-import { TypeInfo, TypeMinimal } from '@/common/Type'
+import { EntityInfo, EntityMinimal } from '@ongoku/app-lib/src/common/Entity'
+import { EnumInfo } from '@ongoku/app-lib/src/common/Enum'
+import { TypeInfo, TypeMinimal } from '@ongoku/app-lib/src/common/Type'
 
 export interface IServiceInfo {
     name: string

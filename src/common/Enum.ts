@@ -33,7 +33,7 @@ export class EnumInfo<EN> {
 
 console.log('EnumInfo loaded')
 
-export class EnumValueInfo<EN = any> {
+export class EnumValueInfo<EN = string> {
     readonly id: number
     readonly value: EN
     readonly displayValue?: string
@@ -43,7 +43,7 @@ export class EnumValueInfo<EN = any> {
         this.value = props.value
         this.displayValue = props.displayValue
     }
-    getDisplayValue() {
-        return this.displayValue ?? this.value
+    getDisplayValue(): string {
+        return this.displayValue ?? this.value as string
     }
 }

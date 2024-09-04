@@ -1,9 +1,8 @@
-import { EntityInfo, EntityMinimal, IEntityInfo } from '@/common/Entity'
-import { EnumInfo } from '@/common/Enum'
-import { ServiceInfo } from '@/common/Service'
-import { PrimaryNamespace, Namespace } from '@/common/Namespace'
-import { TypeInfo, TypeMinimal } from '@/common/Type'
-
+import { EntityInfo, EntityMinimal, IEntityInfo } from '@ongoku/app-lib/src/common/Entity'
+import { EnumInfo } from '@ongoku/app-lib/src/common/Enum'
+import { ServiceInfo } from '@ongoku/app-lib/src/common/Service'
+import { PrimaryNamespace, Namespace } from '@ongoku/app-lib/src/common/Namespace'
+import { TypeInfo, TypeMinimal } from '@ongoku/app-lib/src/common/Type'
 import { snakeCase } from 'change-case'
 
 export interface NewAppInfoReq {
@@ -91,7 +90,7 @@ export class AppInfo {
     }
 
 
-    getTypeInfoByNamespace<T extends TypeMinimal>(ns: Namespace) {
+    getTypeInfoByNamespace<T extends TypeMinimal>(ns: Namespace): TypeInfo<T> {
         if (!ns.type) {
             throw new Error('getTypeInfoByNamespace() called with empty type name')
         }

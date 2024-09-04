@@ -2,10 +2,18 @@
 
 import { Anchor, Container, PasswordInput, TextInput } from '@mantine/core'
 import { isEmail, useForm } from '@mantine/form'
-import { AuthenticateResponse, LoginRequest } from 'goku.generated/types/user/types.generated'
-import { useAuth } from '@/common/AuthContext'
-import { Form } from '@/components/mantine/Form'
+import { useAuth } from '../../../common/AuthContext'
+import { Form } from '../Form'
 import { useRouter } from 'next/navigation'
+
+export interface LoginRequest {
+    email: string
+    password: string
+}
+
+export interface AuthenticateResponse {
+    token: string
+}
 
 export const LoginForm = () => {
     const router = useRouter()

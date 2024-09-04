@@ -3,7 +3,7 @@
 import { AuthenticateResponse, AuthenticateTokenRequest } from '@/linker'
 import React, { useEffect, useState, useContext } from 'react'
 
-import { makeRequest } from '@/providers/provider'
+import { makeRequest } from '@ongoku/app-lib/src/providers/provider'
 
 export interface Session {
     token: string

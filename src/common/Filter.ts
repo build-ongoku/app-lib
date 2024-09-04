@@ -1,4 +1,4 @@
-import { Email, UUID } from '@/common/Primitives'
+import { Email, UUID } from '@ongoku/app-lib/src/common/Primitives'
 
 export enum Operator {
     EQUAL,

@@ -1,7 +1,7 @@
-import { AppInfoContext } from '@/common/AppContext'
-import { BooleanKind, DateKind, EnumKind, FieldInfo, getValueForField, NestedKind, NumberKind, StringKind, TimestampKind } from '@/common/Field'
+import { AppInfoContext } from '../../common/AppContext'
+import { BooleanKind, DateKind, EnumKind, FieldInfo, getValueForField, NestedKind, NumberKind, StringKind, TimestampKind } from '../../common/Field'
 import { TypeInfo, TypeMinimal } from '@/common/Type'
-import { Fieldset, JsonInput, JsonInputProps, Loader, NumberInput as MantineNumberInput, NumberInputProps, Select, SelectProps, Switch, SwitchProps, TextInput, TextInputProps } from '@mantine/core'
+import { Fieldset, JsonInput, JsonInputProps, Loader, NumberInput as MantineNumberInput, NumberInputProps, Select, SelectProps, Switch, SwitchProps, TextInput, TextInputProps, ComboboxData, ComboboxItem } from '@mantine/core'
 import { DateInputProps, DateTimePicker, DateTimePickerProps, DateInput as MantineDateInput } from '@mantine/dates'
 import { UseFormReturnType } from '@mantine/form'
 import { capitalCase } from 'change-case'
@@ -74,10 +74,10 @@ const GenericInput = <T extends TypeMinimal = any>(props: {
                 throw new Error('Enum field does not have a reference namespace')
             }
             const enumInfo = appInfo.getEnumInfoByNamespace(fieldInfo?.referenceNamespace!)
-            const options = enumInfo?.valuesInfo.map((enumValueInfo) => {
-                return { value: enumValueInfo.value, label: enumValueInfo.getDisplayValue() }
+            const options: ComboboxData | undefined= enumInfo?.valuesInfo.map((enumValueInfo): ComboboxItem => {
+                return { value: enumValueInfo.value as string, label: enumValueInfo.getDisplayValue() }
             })
-            return <SelectInput label={label} placeholder={defaultPlaceholder} identifier={identifier} form={props.form} internalProps={{ data: options }} />
+            return <SelectInput label={label} placeholder={defaultPlaceholder} identifier={identifier} form={props.form} internalProps={{data: options}} />
 
         case NestedKind:
             if (!fieldInfo.referenceNamespace) {
