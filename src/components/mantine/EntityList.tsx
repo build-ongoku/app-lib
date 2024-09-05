@@ -5,7 +5,7 @@ import { Title } from '@mantine/core'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import { MantineReactTable, useMantineReactTable, type MRT_ColumnDef } from 'mantine-react-table'
-import 'mantine-react-table/styles.css'; //make sure MRT styles were imported in your app root (once)
+import 'mantine-react-table/styles.css' //make sure MRT styles were imported in your app root (once)
 import { useMemo } from 'react'
 
 dayjs.extend(relativeTime)
@@ -16,12 +16,12 @@ const getDefaultEntityColumns = <E extends EntityMinimal>(entityInfo: EntityInfo
         accessorFn: (row: E) => {
             return entityInfo.getHumanName(row)
         },
-        header: 'Name',
+        header: 'Identifier',
         Cell: ({ cell, row }) => {
             const entity = row.original
             const name = entityInfo.getHumanName(entity)
             const id = entity.id
-            return <a href={'/user/team/' + id}>{name}</a>
+            return <a href={`/${entityInfo.serviceName}/${entityInfo.name}/${id}`}>{name}</a>
         },
     },
     {

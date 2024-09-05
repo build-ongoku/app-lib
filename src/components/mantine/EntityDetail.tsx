@@ -22,7 +22,7 @@ export const EntityDetail = <E extends EntityMinimal = any>(props: { entityInfo:
                 {resp.data && (
                     <>
                         <Title order={1}>{entityInfo.getHumanName(resp.data)}</Title>
-                        <span>{JSON.stringify(resp.data)}</span>
+                        <pre>{JSON.stringify(resp.data, null, 2)}</pre>
                     </>
                 )}
             </ServerResponseWrapper>

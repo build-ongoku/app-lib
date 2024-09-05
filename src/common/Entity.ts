@@ -129,7 +129,14 @@ export class EntityInfo<E extends EntityMinimal> extends TypeInfo<E> implements 
     getHumanNameFunc = function (r: E, info: EntityInfo<E>): string {
         const _r: any = r
         if (_r.name) {
-            return capitalCase(_r.name)
+            // Simple string name
+            if (typeof _r.name === 'string') {
+                return capitalCase(_r.name)
+            }
+            // Person Name (First + Last)
+            if (_r.name.first_name && _r.name.last_name) {
+                return `${capitalCase(_r.name.first_name)} ${capitalCase(_r.name.last_name)}`
+            }
         }
         return r.id
     }

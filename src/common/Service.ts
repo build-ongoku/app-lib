@@ -21,7 +21,7 @@ export interface NewServiceInfoReq {
 // U is a union type of all Entities
 export class ServiceInfo implements IServiceInfo {
     name: string
-    entityInfos: EntityInfo<any>[] // Distributive conditional type, that should become []EntityInfo < entA | entB etc. >
+    entityInfos: EntityInfo<EntityMinimal>[] // Distributive conditional type, that should become []EntityInfo < entA | entB etc. >
     typeInfosMap: Record<string, TypeInfo<any>> = {} // local service types
 
     enumInfos: Record<string, EnumInfo<any>> = {}

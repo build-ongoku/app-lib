@@ -43,12 +43,14 @@ export class AppInfo {
         return this.serviceInfosMap[name]
     }
 
+    // Returns a list of all EntityInfos in the App
+    listEntityInfos() {
+        return Object.values(this.serviceInfosMap)
+            .map((svc) => svc.entityInfos)
+            .flat()
+    }
 
-
-    getEntityInfo<E extends EntityMinimal>(
-        serviceName: string,
-        entityName: string
-    ): EntityInfo<E>{
+    getEntityInfo<E extends EntityMinimal>(serviceName: string, entityName: string): EntityInfo<E> {
         const serviceInfo = this.getServiceInfo(serviceName)
 
         const entityInfo = serviceInfo.getEntityInfo<E>(entityName)
@@ -83,12 +85,9 @@ export class AppInfo {
         })
     }
 
-
-
-    getTypeInfo<T extends TypeMinimal>(name: string) : TypeInfo<T> {
+    getTypeInfo<T extends TypeMinimal>(name: string): TypeInfo<T> {
         return this.typeInfosMap[name] as TypeInfo<T>
     }
-
 
     getTypeInfoByNamespace<T extends TypeMinimal>(ns: Namespace): TypeInfo<T> {
         if (!ns.type) {
