@@ -1,30 +1,26 @@
 'use client'
 
+import { TypeInfo, TypeMinimal } from '@ongoku/app-lib/src/common/Type'
 import { Anchor, Container, PasswordInput, TextInput } from '@mantine/core'
 import { isEmail, useForm } from '@mantine/form'
-import { RegisterUserRequest } from 'goku.generated/types/user/types.generated'
-import { useAuth } from '@/common/AuthContext'
-import { Form } from '@/components/mantine/Form'
+import { useAuth } from '@ongoku/app-lib/src/common/AuthContext'
+import { Form } from '@ongoku/app-lib/src/components/mantine/Form'
 import { useRouter } from 'next/navigation'
 
-export const RegisterForm = () => {
+type BareMinimumRegisterForm = TypeMinimal & {
+    email: string
+}
+
+export const RegisterForm = <RequestT extends BareMinimumRegisterForm>(props: { typeInfo: TypeInfo<RequestT> }) => {
     const router = useRouter()
     const { authenticate } = useAuth()
 
-    const form = useForm<RegisterUserRequest>({
+    const form = useForm({
         mode: 'uncontrolled',
-        initialValues: {
-            email: '',
-            password: '',
-            name: {
-                first_name: '',
-                middle_initial: null,
-                last_name: '',
-            },
-        },
+        // initialValues: props.typeInfo.getEmptyInstance(),
         validate: {
             // Commented out for DEV purposes
-            email: isEmail('Please enter a valid email'),
+            email: (value: string) => (/^\S+@\S+$/.test(value) ? null : ('Invalid email' as React.ReactNode)),
         },
     })
 

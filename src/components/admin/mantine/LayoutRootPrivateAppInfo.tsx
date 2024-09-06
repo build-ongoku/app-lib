@@ -50,21 +50,27 @@ const AppLayout = (props: { children: React.ReactNode }) => {
             padding="md"
         >
             <AppShell.Header>
-                <Group h="100%" px="md" className="flex">
-                    <Burger className="flex-none" opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" />
-                    <Anchor href="/home" underline="never" className="">
-                        <Image className="flex-none" src="/logo_1.png" alt="OnGoku Logo" w="auto" fit="contain" height={50} />
-                    </Anchor>
-                    <Anchor href="/home" underline="never" className="">
-                        <Title className="flex-none" order={2}>
-                            {' '}
-                            <span className="font-normal">on</span>
-                            goku{' '}
-                        </Title>
-                    </Anchor>
+                {/* Group is a flex container by default */}
+                <Group h="100%" px="md">
+                    <Burger className="" opened={opened} onClick={toggle} hiddenFrom="sm" size="sm" />
+                    <div className="">
+                        <Anchor href="/home" underline="never" className="">
+                            <Image className="" src="/logo_1.png" alt="OnGoku Logo" w="auto" fit="contain" height={50} />
+                        </Anchor>
+                    </div>
+                    <div className="">
+                        <Anchor href="/home" underline="never" className="">
+                            <Title className="" order={2}>
+                                {' '}
+                                <span className="font-normal">on</span>
+                                goku{' '}
+                            </Title>
+                        </Anchor>
+                    </div>
+
                     <div className="flex-grow" />
                     <Button
-                        className="flex-none"
+                        className="w-100"
                         variant="outline"
                         size="sm"
                         onClick={() => {
