@@ -9,6 +9,7 @@ import { useDisclosure } from '@mantine/hooks'
 import { useAuth } from '@ongoku/app-lib/src/common/AuthContext'
 import { useRouter } from 'next/navigation'
 import { Suspense } from 'react'
+import { LogoutButton } from '@ongoku/app-lib/src/components/mantine/module_user/LogoutButton'
 
 export const LayoutRootPrivateAppInfo = (props: { appInfoReq: NewAppInfoReq; children: React.ReactNode }) => {
     return (
@@ -69,16 +70,7 @@ const AppLayout = (props: { children: React.ReactNode }) => {
                     </div>
 
                     <div className="flex-grow" />
-                    <Button
-                        className="w-100"
-                        variant="outline"
-                        size="sm"
-                        onClick={() => {
-                            endSession()
-                        }}
-                    >
-                        Logout
-                    </Button>
+                    <LogoutButton />
                 </Group>
             </AppShell.Header>
             <AppShell.Navbar>

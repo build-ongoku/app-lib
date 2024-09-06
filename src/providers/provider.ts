@@ -179,9 +179,11 @@ export const useListEntityByTextQuery = <E extends EntityMinimal = any>(
 // HTTPRequestCustomConfig are params that are open to the caller component to set, when they call our helpers like useGetEntity etc.
 
 interface HTTPResponse<T = any> {
-    loading?: boolean
+    statusCode?: number
     error?: string
     data?: T
+    loading: boolean
+    finished: boolean
 }
 
 interface GokuHTTPResponse<T = any> {
@@ -257,22 +259,37 @@ export const useMakeRequest = <T = any, D = any>(props: HTTPRequest<D>): readonl
     const [data, setData] = useState<T>() // response body
     const [error, setError] = useState<string>()
     const [loading, setLoading] = useState<boolean>(false)
+    const [statusCode, setStatusCode] = useState<number>()
+    const [finished, setFinished] = useState<boolean>(false)
 
     const fetch = async (fetchProps: HTTPFetchRequest<D>) => {
-        // Overwrite the props with any new values in the config
-        const finalConfig = { ...props, ...fetchProps }
-
+        // Whenever we fetch, we want to reset some values
+        if (data) {
+            setData(undefined)
+        }
+        if (error) {
+            setError(undefined)
+        }
+        if (statusCode) {
+            setStatusCode(undefined)
+        }
         if (!loading) {
             setLoading(true)
         }
+        if (finished) {
+            setFinished(false)
+        }
+
+        // Overwrite the props with any new values in the config
+        const finalConfig = { ...props, ...fetchProps }
 
         const resp = await makeRequest<T, D>(finalConfig)
         setData(resp.data)
-        if (resp.error) {
-            setError(resp.error)
-        }
+        setError(resp.error)
+        setStatusCode(resp.status_code)
         setLoading(false)
+        setFinished(true)
     }
 
-    return [{ data, error, loading }, fetch] as const
+    return [{ statusCode, data, error, loading, finished }, fetch] as const
 }

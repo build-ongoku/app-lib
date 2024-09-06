@@ -18,41 +18,53 @@ export const Form = <FormT extends Record<string, any>, ResponseT = any>(props: 
     // Todo: remove dependency on next/navigation
     const router = useRouter()
 
-    const [submitted, setSubmitted] = useState(false)
+    const [processing, setProcessing] = useState(false)
+    const [errMessage, setErrMessage] = useState<string>()
 
-    const [{ loading, error, data }, fetch] = useMakeRequest<ResponseT, FormT>({
+    const [resp, fetch] = useMakeRequest<ResponseT, FormT>({
         method: 'POST',
         path: props.postEndpoint,
     })
 
-    console.log('Form:', loading, error, data)
-
-    useEffect(() => {
-        if (!submitted) {
-            return
-        }
-        // Error
-        if (error) {
-            if (props.onError) {
-                props.onError(error)
-            }
-        }
-        // Successful
-        if (!error && !loading && data) {
-            if (props.onSuccess) {
-                props.onSuccess(data)
-            }
-            if (props.redirectPath) {
-                router.push(props.redirectPath)
-            }
-        }
-    }, [submitted, error, data])
+    console.log('Form:', resp)
 
     const handleSubmit = (values: FormT) => {
         console.log('Form Values:', values)
+        setProcessing(true)
         fetch({ data: values })
-        setSubmitted(true)
     }
+
+    // Handle the fetch response
+    useEffect(() => {
+        // if haven't finished fetching,
+        if (!resp.finished || resp.loading) {
+            return
+        }
+
+        if (!processing) {
+            setProcessing(true)
+        }
+
+        // Error
+        if (resp.error) {
+            console.error('Error:', resp.error)
+            if (props.onError) {
+                props.onError(resp.error)
+            }
+            setErrMessage(resp.error)
+            setProcessing(false)
+        } else if (!resp.error && !resp.loading && resp.data) {
+            // Successful
+            if (props.onSuccess) {
+                props.onSuccess(resp.data)
+            }
+            if (props.redirectPath) {
+                router.push(props.redirectPath)
+            } else {
+                setProcessing(false)
+            }
+        }
+    }, [resp])
 
     return (
         <Box>
@@ -60,10 +72,10 @@ export const Form = <FormT extends Record<string, any>, ResponseT = any>(props: 
                 <form onSubmit={props.form.onSubmit(handleSubmit)}>
                     <Stack gap="lg">
                         {/* Error Message */}
-                        {error && <Alert icon={<FiAlertCircle />}>{`Our apologies. We could not complete the request. We're looking into it.`}</Alert>}
+                        {resp.error && <Alert icon={<FiAlertCircle />}>{errMessage ?? `Our apologies. We could not complete the request. We're looking into it.`}</Alert>}
                         {/* Actual Form Fields: Passed on as children */}
                         {props.children}
-                        <Button type="submit" loading={loading}>
+                        <Button type="submit" loading={resp.loading || processing}>
                             {props.submitButtonText ?? 'Submit'}
                         </Button>
                         {props.bottomExtra}

@@ -33,9 +33,9 @@ const EnterButton = (props: EnterScreenProps) => {
     const router = useRouter()
     const [loading, setLoading] = useState(false)
 
-    const { session } = useAuth()
+    const { session, loading: loadingSession } = useAuth()
 
-    const redirectPath = !session ? props.authenticatedUserRedirectPath : props.unauthenticatedUserRedirectPath
+    const redirectPath = loadingSession || !session ? props.unauthenticatedUserRedirectPath : props.authenticatedUserRedirectPath
 
     return (
         <>
