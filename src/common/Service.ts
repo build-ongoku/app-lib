@@ -39,7 +39,7 @@ export class ServiceInfo implements IServiceInfo {
     }
 
     getEntityInfo<E extends EntityMinimal>(name: string): EntityInfo<E> {
-        var entityInfo = this.entityInfos.find((elem) => elem.getEntityName() === name) as unknown
+        var entityInfo = this.entityInfos.find((elem) => elem.name === name) as unknown
         return entityInfo as EntityInfo<E>
     }
 

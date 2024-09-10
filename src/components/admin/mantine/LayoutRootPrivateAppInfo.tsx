@@ -85,19 +85,10 @@ const AppLayout = (props: { children: React.ReactNode }) => {
                                     router.push(`/${entityInfo.serviceName}/${entityInfo.name}/list`)
                                 }}
                             >
-                                {entityInfo.getEntityNameFormatted()}
+                                {entityInfo.getNameFormatted()}
                             </Button>
                         )
                     })}
-                    <Button
-                        className="mx-5 text-2xl"
-                        variant="light"
-                        onClick={() => {
-                            router.push('/project')
-                        }}
-                    >
-                        Projects
-                    </Button>
                 </Stack>
             </AppShell.Navbar>
             <AppShell.Main>

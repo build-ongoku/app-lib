@@ -14,12 +14,12 @@ const getDefaultEntityColumns = <E extends EntityMinimal>(entityInfo: EntityInfo
     {
         id: 'identifier',
         accessorFn: (row: E) => {
-            return entityInfo.getHumanName(row)
+            return entityInfo.getEntityHumanName(row)
         },
         header: 'Identifier',
         Cell: ({ cell, row }) => {
             const entity = row.original
-            const name = entityInfo.getHumanName(entity)
+            const name = entityInfo.getEntityHumanName(entity)
             const id = entity.id
             return <a href={`/${entityInfo.serviceName}/${entityInfo.name}/${id}`}>{name}</a>
         },
@@ -57,7 +57,7 @@ export const EntityListTable = <E extends EntityMinimal>(props: { entityInfo: En
     return (
         <div>
             <ServerResponseWrapper error={resp.error} loading={resp.loading}>
-                <Title order={2}>Your {entityInfo.getEntityNameFormatted()}</Title>
+                <Title order={2}>Your {entityInfo.getNameFormatted()}</Title>
                 {resp.data && <EntityListTableInner entityInfo={entityInfo} data={resp.data} />}
             </ServerResponseWrapper>
         </div>
@@ -71,7 +71,7 @@ export const EntityListTableInner = <E extends EntityMinimal>(props: { entityInf
 
     const table = useMantineReactTable<E>({
         columns: colsMemo,
-        data: props.data.items,
+        data: props.data.items ?? [],
     })
 
     return <MantineReactTable table={table} />

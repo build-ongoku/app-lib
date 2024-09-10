@@ -1,12 +1,13 @@
-import React, { Suspense } from 'react'
-import { Alert, Loader } from '@mantine/core'
+import React from 'react'
+import { Alert } from '@mantine/core'
+import { ScreenLoader } from '../admin/mantine/Loader'
 
 export const ServerResponseWrapper = (props: { error?: string; loading?: boolean; children: React.ReactNode }) => {
     if (props.loading) {
-        return <Loader type="bars" size="lg" />
+        return <ScreenLoader />
     }
     if (props.error) {
         return <Alert variant="error">{props.error}</Alert>
     }
-    return <Suspense fallback={<Loader type="bars" size="lg" />}>{props.children}</Suspense>
+    return <>{props.children}</>
 }

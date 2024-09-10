@@ -1,8 +1,6 @@
 import { FieldInfo } from '@ongoku/app-lib/src/common/Field'
 import { EnumInfo } from '@ongoku/app-lib/src/common/Enum'
 
-
-
 export interface ITypeInfo extends ITypeInfoOverridable {
     name: string
     fieldInfos: FieldInfo[]
@@ -25,9 +23,9 @@ export interface TypeMinimal extends Object {}
 
 // EntityInfo holds all the information about how to render/manipulate a particular Entity type.
 export class TypeInfo<T extends TypeMinimal> implements ITypeInfo {
-    readonly name: string
-    readonly fieldInfos: FieldInfo[]
-    readonly serviceName: string
+    name: string
+    fieldInfos: FieldInfo[]
+    serviceName: string
     enumInfos: Record<string, EnumInfo<any>> = {}
     getEmptyInstance: () => T
 

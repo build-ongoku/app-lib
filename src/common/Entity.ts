@@ -27,10 +27,10 @@ export interface EntityMinimal extends TypeMinimal {
 
 export interface IEntityInfo<E extends EntityMinimal> extends ITypeInfo {
     serviceName: string
-    getEntityName(): string
-    getEntityNameFormatted(): string
-    getName(e: E): string
-    getHumanName(e: E): string
+    getName(): string
+    getNameFormatted(): string
+    getEntityName(e: E): string
+    getEntityHumanName(e: E): string
     columnsFieldsForListView: (keyof E)[]
     getFieldInfo(fieldName: keyof E): FieldInfo | undefined
 }
@@ -95,38 +95,38 @@ export class EntityInfo<E extends EntityMinimal> extends TypeInfo<E> implements 
     // 3. Default props/methods, which could be overridden later (or not)
 
     // Name of the Entity Type
-    getEntityName(): string {
-        return this.getEntityNameFunc(this)
+    getName(): string {
+        return this.nameFunc(this)
     }
-    // overridable
-    getEntityNameFunc = function (info: EntityInfo<E>): string {
+    // default function, overridable
+    nameFunc = function (info: EntityInfo<E>): string {
         return info.name
     }
 
     // Human readable Name of the Entity Type
-    getEntityNameFormatted(): string {
-        return this.getEntityNameFormattedFunc(this)
+    getNameFormatted(): string {
+        return this.nameFormattedFunc(this)
     }
-    // overridable
-    getEntityNameFormattedFunc = function (info: EntityInfo<E>): string {
-        return capitalCase(info.name)
+    // default function, overridable
+    nameFormattedFunc = function (info: EntityInfo<E>): string {
+        return capitalCase(info.getName())
     }
 
     // Name of an Entity instance
-    getName(r: E): string {
-        return this.getNameFunc(r, this)
+    getEntityName(r: E): string {
+        return this.entityNameFunc(r, this)
     }
-    // overridable
-    getNameFunc = function (r: E, info: EntityInfo<E>): string {
+    // default function, overridable
+    entityNameFunc = function (r: E, info: EntityInfo<E>): string {
         return r.id
     }
 
     // Human Friendly name for an instance of an entity
-    getHumanName(r: E): string {
-        return this.getHumanNameFunc(r, this)
+    getEntityHumanName(r: E): string {
+        return this.entityHumanNameFunc(r, this)
     }
     // overridable
-    getHumanNameFunc = function (r: E, info: EntityInfo<E>): string {
+    entityHumanNameFunc = function (r: E, info: EntityInfo<E>): string {
         const _r: any = r
         if (_r.name) {
             // Simple string name
