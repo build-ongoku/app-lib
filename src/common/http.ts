@@ -41,7 +41,7 @@ export enum HTTPStatus {
     INTERNAL_SERVER_ERROR = 500,
 }
 
-export const handleResponse = <T,>(resp: ActionResponseBody<T>): CustomNextResponse<T> => {
+export const handleResponse = <T>(resp: ActionResponseBody<T>): CustomNextResponse<T> => {
     if (resp.error) {
         return CustomNextResponse.json({ ...resp, status: HTTPStatus.BAD_REQUEST })
     }

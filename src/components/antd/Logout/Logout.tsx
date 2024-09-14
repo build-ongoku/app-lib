@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 
-import { useAuth } from '@/common/AuthContext'
+import { useAuth } from '@ongoku/app-lib/src/common/AuthContext'
 import { Link } from 'react-router-dom'
 import { Spin } from 'antd'
 

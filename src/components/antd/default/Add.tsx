@@ -1,12 +1,12 @@
 import { Button, Form, Layout, Spin, Typography, notification } from 'antd'
-import { EntityInfo, EntityMinimal } from '@/common/Entity'
+import { EntityInfo, EntityMinimal } from '@ongoku/app-lib/src/common/Entity'
 import React, { CSSProperties, useState } from 'react'
-import { getEntityDetailPath } from '@/components/EntityLink'
+import { getEntityDetailPath } from '@ongoku/app-lib/src/components/EntityLink'
 
 import { Link } from 'react-router-dom'
-import { TypeFormItems } from '@/components/Form'
+import { TypeFormItems } from '@ongoku/app-lib/src/components/Form'
 import { capitalCase } from 'change-case'
-import { useAddEntity } from '@/providers/provider'
+import { useAddEntity } from '@ongoku/app-lib/src/providers/provider'
 
 interface Props<E extends EntityMinimal> {
     entityInfo: EntityInfo<E>

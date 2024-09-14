@@ -1,4 +1,4 @@
-import { TypeMinimal, TypeInfo } from '@/common/Type'
+import { TypeMinimal, TypeInfo } from '@ongoku/app-lib/src/common/Type'
 import { FieldDisplay } from '../DisplayAttributes'
 import { getFieldForFieldKind } from './FieldAntd'
 

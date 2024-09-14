@@ -1,7 +1,7 @@
 import { Button, Card, Result, Spin } from 'antd'
-import { EntityInfo, EntityMinimal } from '@/common/Entity'
-import { EntityAddLink } from '@/components/EntityLink'
-import { useListEntity } from '@/providers/provider'
+import { EntityInfo, EntityMinimal } from '@ongoku/app-lib/src/common/Entity'
+import { EntityAddLink } from '@ongoku/app-lib/src/components/EntityLink'
+import { useListEntity } from '@ongoku/app-lib/src/providers/provider'
 import React from 'react'
 import Table, { ColumnProps } from 'antd/lib/table/'
 

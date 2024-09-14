@@ -50,11 +50,6 @@ const DefaultFieldKind = {
     name: 'default',
 }
 
-export const UUIDKind: FieldKind = {
-    ...DefaultFieldKind,
-    name: 'uuid',
-}
-
 export const StringKind: FieldKind = {
     ...DefaultFieldKind,
     name: 'string',
@@ -75,9 +70,19 @@ export const DateKind: FieldKind = {
     name: 'date',
 }
 
-export const TimestampKind: FieldKind = {
+export const TimeKind: FieldKind = {
     ...DefaultFieldKind,
-    name: 'datetime',
+    name: 'time',
+}
+
+export const IDKind: FieldKind = {
+    ...StringKind,
+    name: 'id',
+}
+
+export const EmailKind: FieldKind = {
+    ...StringKind,
+    name: 'email',
 }
 
 export const EnumKind: FieldKind = {

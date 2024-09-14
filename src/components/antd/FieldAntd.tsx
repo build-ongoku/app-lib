@@ -1,7 +1,7 @@
-import { AppInfoContext } from '@/common/AppContext'
-import { EntityInfo } from '@/common/Entity'
-import { FieldInfo, FieldKind } from '@/common/Field'
-import { TypeMinimal } from '@/common/Type'
+import { AppInfoContext } from '@ongoku/app-lib/src/common/AppContext'
+import { EntityInfo } from '@ongoku/app-lib/src/common/Entity'
+import { FieldInfo, FieldKind } from '@ongoku/app-lib/src/common/Field'
+import { TypeMinimal } from '@ongoku/app-lib/src/common/Type'
 import {
     BooleanInput,
     DateInput,
@@ -13,7 +13,7 @@ import {
     StringInput,
     TimestampInput,
     TypeFormItems,
-} from '@/components/antd/FormAntd'
+} from '@ongoku/app-lib/src/components/antd/FormAntd'
 import {
     BooleanDisplay,
     DateDisplay,
@@ -24,9 +24,9 @@ import {
     StringDisplay,
     TimestampDisplay,
     TypeDisplay,
-} from '@/components/DisplayAttributes/DisplayAttributes'
-import { EntityLinkFromID } from '@/components/EntityLink'
-import { FieldKindUI, FieldFormProps } from '@/components/Field'
+} from '@ongoku/app-lib/src/components/DisplayAttributes/DisplayAttributes'
+import { EntityLinkFromID } from '@ongoku/app-lib/src/components/EntityLink'
+import { FieldKindUI, FieldFormProps } from '@ongoku/app-lib/src/components/Field'
 import { Card, Form, Select, Spin } from 'antd'
 import { capitalCase } from 'change-case'
 import { UUID } from 'crypto'

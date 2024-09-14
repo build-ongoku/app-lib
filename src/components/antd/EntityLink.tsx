@@ -1,7 +1,7 @@
-import { EntityInfo, EntityMinimal } from '@/common/Entity'
-import { useGetEntity } from '@/providers/provider'
+import { EntityInfo, EntityMinimal } from '@ongoku/app-lib/src/common/Entity'
+import { useGetEntity } from '@ongoku/app-lib/src/providers/provider'
 import { EntityLink } from '../EntityLink'
-import { UUID } from '@/common/Primitives'
+import { UUID } from '@ongoku/app-lib/src/common/Primitives'
 import { Spin, Alert } from 'antd'
 
 interface EntityLinkFromIDProps<E extends EntityMinimal> {

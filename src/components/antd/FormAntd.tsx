@@ -1,6 +1,6 @@
-import { AppInfoContext } from '@/common/AppContext'
-import { EntityMinimal } from '@/common/Entity'
-import { TypeInfo, TypeMinimal } from '@/common/Type'
+import { AppInfoContext } from '@ongoku/app-lib/src/common/AppContext'
+import { EntityMinimal } from '@ongoku/app-lib/src/common/Entity'
+import { TypeInfo, TypeMinimal } from '@ongoku/app-lib/src/common/Type'
 
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons'
 import { Button, Card, DatePicker, Form, FormItemProps, Input, InputNumber, InputNumberProps, InputProps, Select, Spin, Switch, SwitchProps } from 'antd'
@@ -9,9 +9,9 @@ import React, { useContext, useState } from 'react'
 
 import { SizeType } from 'antd/lib/config-provider/SizeContext'
 import { capitalCase } from 'change-case'
-import { getFieldForFieldKind } from '@/components/antd/FieldAntd'
-import { FieldFormProps } from '@/components/Field'
-import { useListEntityByTextQuery } from '@/providers/provider'
+import { getFieldForFieldKind } from '@ongoku/app-lib/src/components/antd/FieldAntd'
+import { FieldFormProps } from '@ongoku/app-lib/src/components/Field'
+import { useListEntityByTextQuery } from '@ongoku/app-lib/src/providers/provider'
 
 export const combineFormItemName = (parentName: NamePath | undefined, currentName: string | number): NamePath => {
     if (parentName !== undefined) {

@@ -1,6 +1,6 @@
 import axios, { AxiosError, AxiosRequestConfig } from 'axios'
-import { EntityInfo, EntityMinimal } from '@/common/Entity'
-import { UUID } from '@/common/Primitives'
+import { EntityInfo, EntityMinimal } from '@ongoku/app-lib/src/common/Entity'
+import { UUID } from '@ongoku/app-lib/src/common/Primitives'
 import { useEffect, useState } from 'react'
 import { getSessionCookie } from '../common/AuthContext'
 import { EnumFieldFor, FilterTypeFor } from '@/linker'

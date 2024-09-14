@@ -1,5 +1,5 @@
-import { EntityInfo, EntityMinimal } from '@/common/Entity'
-import { FieldInfo } from '@/common/Field'
+import { EntityInfo, EntityMinimal } from '@ongoku/app-lib/src/common/Entity'
+import { FieldInfo } from '@ongoku/app-lib/src/common/Field'
 import ReactJson from '@microlink/react-json-view'
 import React from 'react'
 

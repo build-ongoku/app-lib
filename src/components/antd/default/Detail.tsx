@@ -1,11 +1,11 @@
 import { Card, Result, Spin } from 'antd'
-import { EntityInfo, EntityMinimal } from '@/common/Entity'
-import { UUID } from '@/common/Primitives'
+import { EntityInfo, EntityMinimal } from '@ongoku/app-lib/src/common/Entity'
+import { UUID } from '@ongoku/app-lib/src/common/Primitives'
 
 import React from 'react'
 
-import { TypeDisplay } from '@/components/DisplayAttributes/DisplayAttributes'
-import { useGetEntity } from '@/providers/provider'
+import { TypeDisplay } from '@ongoku/app-lib/src/components/DisplayAttributes/DisplayAttributes'
+import { useGetEntity } from '@ongoku/app-lib/src/providers/provider'
 
 interface Props<E extends EntityMinimal = any> {
     entityInfo: EntityInfo<E>
@@ -31,7 +31,7 @@ export const DefaultDetailView = <E extends EntityMinimal = any>(props: Props<E>
 
     // Otherwise return a Table view
     return (
-        <Card title={entityInfo.getEntityNameFormatted() + ': ' + entityInfo.getHumanName(entity)}>
+        <Card title={entityInfo.getNameFormatted() + ': ' + entityInfo.getHumanName(entity)}>
             <TypeDisplay typeInfo={entityInfo} objectValue={entity} />
         </Card>
     )

@@ -4,8 +4,8 @@ import { Navigate } from 'react-router-dom'
 import { LockOutlined, UserOutlined } from '@ant-design/icons'
 import React, { useEffect, useState } from 'react'
 
-import { useAuth } from '@/common/AuthContext'
-import { useMakeRequest } from '@/providers/provider'
+import { useAuth } from '@ongoku/app-lib/src/common/AuthContext'
+import { useMakeRequest } from '@ongoku/app-lib/src/providers/provider'
 
 // interface AuthenticateRequest {
 //     email: string

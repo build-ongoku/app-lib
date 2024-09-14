@@ -1,4 +1,4 @@
-import { EntityInfo, EntityMinimal } from '@/common/Entity'
+import { EntityInfo, EntityMinimal } from '@ongoku/app-lib/src/common/Entity'
 import { capitalCase } from 'change-case'
 import React from 'react'
 
@@ -17,7 +17,7 @@ export const EntityLink = <E extends EntityMinimal>(props: EntityLinkProps<E>): 
     return <Link to={getEntityDetailPath({ entityInfo, entity })}>{text ? text : entityInfo.getHumanName(entity)}</Link>
 }
 
-export const EntityListLink= <E extends EntityMinimal> (props: { entityInfo: EntityInfo<E>; text?: string }) => {
+export const EntityListLink = <E extends EntityMinimal>(props: { entityInfo: EntityInfo<E>; text?: string }) => {
     const { entityInfo, text } = props
     return <Link to={getEntityListPath(entityInfo)}>{text ? text : capitalCase(entityInfo.name)}</Link>
 }
@@ -31,12 +31,12 @@ export const EntityAddLink = <E extends EntityMinimal>(props: EntityAddLinkProps
     return <Link to={getEntityAddPath(props.entityInfo)}>{props.children}</Link>
 }
 
-export const getEntityDetailPath = <E extends EntityMinimal>(props: { entityInfo: EntityInfo<E>, entity: E }): string => {
+export const getEntityDetailPath = <E extends EntityMinimal>(props: { entityInfo: EntityInfo<E>; entity: E }): string => {
     const { entityInfo, entity } = props
     return '/' + entityInfo.serviceName + '/' + entityInfo.name + '/' + entity.id
 }
 
-export const getEntityListPath = <E extends EntityMinimal> (entityInfo: EntityInfo<E>): string => {
+export const getEntityListPath = <E extends EntityMinimal>(entityInfo: EntityInfo<E>): string => {
     return '/' + entityInfo.serviceName + '/' + entityInfo.name + '/list'
 }
 

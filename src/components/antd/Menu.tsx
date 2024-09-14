@@ -1,5 +1,5 @@
-import { AppInfoContext } from '@/common/AppContext'
-import { EntityListLink } from '@/components/EntityLink'
+import { AppInfoContext } from '@ongoku/app-lib/src/common/AppContext'
+import { EntityListLink } from '@ongoku/app-lib/src/components/EntityLink'
 import { Menu, Spin } from 'antd'
 import React, { useContext } from 'react'
 

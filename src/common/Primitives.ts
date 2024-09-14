@@ -1,2 +1,2 @@
-export type UUID = string
+export type ID = string
 export type Email = string

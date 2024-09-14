@@ -3,10 +3,10 @@ import { LockOutlined, MailOutlined, PhoneOutlined, UserOutlined } from '@ant-de
 import { PersonName, PhoneNumber } from 'goku.generated/types/types.generated'
 import React, { useEffect } from 'react'
 
-import { useAuth } from '@/common/AuthContext'
-import { Email } from '@/common/Primitives'
+import { useAuth } from '@ongoku/app-lib/src/common/AuthContext'
+import { Email } from '@ongoku/app-lib/src/common/Primitives'
 import { Link } from 'react-router-dom'
-import { useMakeRequest } from '@/providers/provider'
+import { useMakeRequest } from '@ongoku/app-lib/src/providers/provider'
 
 interface RegisterUserRequest {
     name: PersonName
