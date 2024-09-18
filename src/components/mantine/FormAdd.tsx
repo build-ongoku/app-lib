@@ -1,5 +1,6 @@
-import { AppInfoContext } from '../../common/AppContext'
-import { BooleanKind, DateKind, EnumKind, FieldInfo, getValueForField, NestedKind, NumberKind, StringKind, TimestampKind } from '../../common/Field'
+import { AppInfoContext } from '@ongoku/app-lib/src/common/AppContext'
+import * as field from '@ongoku/app-lib/src/common/Field'
+import { FieldInfo, getValueForField } from '@ongoku/app-lib/src/common/Field'
 import { TypeInfo, TypeMinimal } from '@ongoku/app-lib/src/common/Type'
 import {
     Fieldset,
@@ -16,11 +17,13 @@ import {
     TextInputProps,
     ComboboxData,
     ComboboxItem,
+    FileInput as MantineFileInput,
 } from '@mantine/core'
 import { DateInputProps, DateTimePicker, DateTimePickerProps, DateInput as MantineDateInput } from '@mantine/dates'
 import { UseFormReturnType } from '@mantine/form'
 import { capitalCase } from 'change-case'
-import React, { useContext } from 'react'
+import React, { useContext, useState } from 'react'
+import { uploadFile } from '@ongoku/app-lib/src/providers/provider'
 
 export const TypeAddForm = <T extends TypeMinimal = any>(props: {
     typeInfo: TypeInfo<T>
@@ -72,18 +75,18 @@ const GenericInput = <T extends TypeMinimal = any>(props: {
     console.log('GenericInput', fieldInfo)
 
     switch (fieldInfo.kind) {
-        case StringKind:
+        case field.StringKind:
             return <StringInput label={label} placeholder={defaultPlaceholder} identifier={identifier} form={props.form} />
-        case NumberKind:
+        case field.NumberKind:
             return <NumberInput label={label} placeholder={defaultPlaceholder} identifier={identifier} form={props.form} />
-        case BooleanKind:
+        case field.BooleanKind:
             return <BooleanInput label={label} placeholder={defaultPlaceholder} identifier={identifier} form={props.form} />
-        case DateKind:
+        case field.DateKind:
             return <DateInput label={label} placeholder={defaultPlaceholder} identifier={identifier} form={props.form} />
-        case TimestampKind:
+        case field.TimestampKind:
             return <TimestampInput label={label} placeholder={defaultPlaceholder} identifier={identifier} form={props.form} />
 
-        case EnumKind:
+        case field.EnumKind:
             // Get enum values from fieldInfo
             if (!fieldInfo.referenceNamespace) {
                 throw new Error('Enum field does not have a reference namespace')
@@ -94,7 +97,7 @@ const GenericInput = <T extends TypeMinimal = any>(props: {
             })
             return <SelectInput label={label} placeholder={defaultPlaceholder} identifier={identifier} form={props.form} internalProps={{ data: options }} />
 
-        case NestedKind:
+        case field.NestedKind:
             if (!fieldInfo.referenceNamespace) {
                 throw new Error('Nested field does not have a reference namespace')
             }
@@ -108,6 +111,8 @@ const GenericInput = <T extends TypeMinimal = any>(props: {
                     <TypeAddForm identifier={identifier} typeInfo={fieldTypeInfo} form={props.form} />
                 </Fieldset>
             )
+        case field.FileKind:
+            return <FileInput identifier={identifier} form={props.form} label={label} placeholder={defaultPlaceholder} />
 
         default:
             return <DefaultInput label={label} placeholder="..." identifier={identifier} form={props.form} />
@@ -184,6 +189,43 @@ export const JSONInput = (props: InputProps<JsonInputProps>) => {
             minRows={4}
             key={props.identifier}
             {...form.getInputProps(props.identifier)}
+        />
+    )
+}
+
+export const FileInput = (props: InputProps<never>) => {
+    const { form } = props
+    const [file, setFile] = useState<File | null>(null)
+
+    // If the label has suffix ID, Id, id etc. then remove it
+    const label = props.label.replace(/(id)$/i, '')
+
+    const onChange = async (val: File | null) => {
+        console.log('File Change', val)
+        setFile(val)
+        if (!val) {
+            return
+        }
+        // Make the request to upload the file
+        uploadFile(val, (progress) => {
+            console.log('Progress', progress)
+        })
+            .then((response) => {
+                console.log('File Uploaded', response)
+            })
+            .catch((error) => {
+                console.error('File Upload Error', error)
+            })
+    }
+    return (
+        <MantineFileInput
+            {...form.getInputProps(props.identifier)}
+            value={file}
+            onChange={onChange}
+            label={label}
+            placeholder={props.placeholder}
+            description={props.description}
+            key={props.identifier}
         />
     )
 }

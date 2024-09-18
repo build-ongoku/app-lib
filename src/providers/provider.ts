@@ -1,6 +1,6 @@
 import axios, { AxiosError, AxiosRequestConfig } from 'axios'
 import { EntityInfo, EntityMinimal } from '@ongoku/app-lib/src/common/Entity'
-import { UUID } from '@ongoku/app-lib/src/common/Primitives'
+import * as scalars from '@ongoku/app-lib/src/common/scalars'
 import { useEffect, useState } from 'react'
 import { getSessionCookie } from '../common/AuthContext'
 import { EnumFieldFor, FilterTypeFor } from '@/linker'
@@ -20,7 +20,7 @@ const getBaseURL = (): string => {
     return `http://${host}:${port}/api/`
 }
 
-const getUrl = (path: string): string => {
+const getFullUrl = (path: string): string => {
     // remove any leading slash from the path
     if (path.startsWith('/')) {
         path = path.slice(1)
@@ -28,11 +28,19 @@ const getUrl = (path: string): string => {
     return getBaseURL() + path
 }
 
-export const getEntityPath = <E extends EntityMinimal>(props: { entityInfo: EntityInfo<E>; entityId?: string; version?: number }): string => {
-    const { entityInfo, entityId } = props
-    let path = entityInfo.serviceName + '/' + entityInfo.name
-    if (entityId) {
-        path = path + '/' + entityId
+const getUrlPartForEntity = (service: string, entity: string): string => {
+    return service + '/' + entity
+}
+
+const getUrlPartForEntityinfo = (service: string, entity: string): string => {
+    return service + '/' + entity
+}
+
+export const getEntityPath = <E extends EntityMinimal>(props: { serviceName: string; entityName: string; suffix?: string; version?: number }): string => {
+    const { suffix } = props
+    let path = getUrlPartForEntity(props.serviceName, props.entityName)
+    if (suffix) {
+        path = path + '/' + suffix
     }
     path = 'v' + (props.version ?? 1) + '/' + path
     return path
@@ -65,7 +73,7 @@ export const useAddEntity = <E extends EntityMinimal = any>(props: EntityHttpReq
     const [resp, fetch] = useMakeRequest<E, E>({
         ...props,
         method: 'POST',
-        path: getEntityPath({ entityInfo: entityInfo }),
+        path: getEntityPath({ serviceName: entityInfo.serviceName, entityName: entityInfo.name }),
         data: props.data?.entity,
     })
 
@@ -92,8 +100,9 @@ export const useUpdateEntity = <E extends EntityMinimal>(props: EntityHttpReques
     const [resp, fetch] = useMakeRequest<E, UpdateEntityRequest<E>>({
         method: 'PUT',
         path: getEntityPath({
-            entityInfo: entityInfo,
-            entityId: props.data?.object.id,
+            serviceName: entityInfo.serviceName,
+            entityName: entityInfo.name,
+            suffix: props.data?.object.id,
         }),
         data: props.data,
     })
@@ -106,7 +115,7 @@ export const useUpdateEntity = <E extends EntityMinimal>(props: EntityHttpReques
 }
 
 export interface GetEntityRequest {
-    id: UUID
+    id: scalars.ID
 }
 
 export const useGetEntity = <E extends EntityMinimal = any>(props: EntityHttpRequest<E, GetEntityRequest>): readonly [HTTPResponse<E>] => {
@@ -117,7 +126,7 @@ export const useGetEntity = <E extends EntityMinimal = any>(props: EntityHttpReq
     // fetch data from a url endpoint
     const [resp, fetch] = useMakeRequest<E>({
         method: 'GET',
-        path: getEntityPath({ entityInfo: entityInfo }),
+        path: getEntityPath({ serviceName: entityInfo.serviceName, entityName: entityInfo.name }),
         params: { req: data },
     })
 
@@ -146,7 +155,7 @@ export const useListEntity = <E extends EntityMinimal>(props: EntityHttpRequest<
     // fetch data from a url endpoint
     const [resp, fetch] = useMakeRequest<ListEntityResponse<E>>({
         method: 'GET',
-        path: getEntityPath({ entityInfo: entityInfo }) + `/list`,
+        path: getEntityPath({ serviceName: entityInfo.serviceName, entityName: entityInfo.name }) + `/list`,
         params: props.params, // can include any filters here
     })
 
@@ -171,7 +180,7 @@ export const useListEntityByTextQuery = <E extends EntityMinimal = any>(
     // fetch data from a url endpoint
     return useMakeRequest({
         method: 'GET',
-        path: getEntityPath({ entityInfo: entityInfo }) + `/query_by_text`,
+        path: getEntityPath({ serviceName: entityInfo.serviceName, entityName: entityInfo.name }) + `/query_by_text`,
         params: props.params,
     })
 }
@@ -210,7 +219,7 @@ export const makeRequest = async <T = any, D = any>(props: HTTPRequest<D>): Prom
     }
 
     console.log('useAxios: Making an HTTP call with config', config)
-    const url = getUrl(path)
+    const url = getFullUrl(path)
     console.log('useAxios: URL:', url)
 
     try {
@@ -255,6 +264,7 @@ export const makeRequest = async <T = any, D = any>(props: HTTPRequest<D>): Prom
     }
 }
 
+// T is the response type and D is the request data type
 export const useMakeRequest = <T = any, D = any>(props: HTTPRequest<D>): readonly [HTTPResponse<T>, FetchFunc<D>] => {
     const [data, setData] = useState<T>() // response body
     const [error, setError] = useState<string>()
@@ -292,4 +302,39 @@ export const useMakeRequest = <T = any, D = any>(props: HTTPRequest<D>): readonl
     }
 
     return [{ statusCode, data, error, loading, finished }, fetch] as const
+}
+
+interface IDefaultFile {
+    id: scalars.ID
+    name: string
+    size: number
+}
+
+export const uploadFile = async <FileT = IDefaultFile>(file: File, onProgress: (progress: number) => void): Promise<GokuHTTPResponse<FileT>> => {
+    // Make a post request to the file entity upload endpoint
+    const relUrl = getEntityPath({ serviceName: 'core', entityName: 'file' })
+    const fullUrl = getFullUrl(relUrl + '/upload')
+
+    const session = getSessionCookie()
+    const headers = new Headers()
+    if (session?.token) {
+        headers.append('Authorization', 'Bearer ' + session.token)
+    }
+
+    // Don't set Content-Type, let the browser set it automatically
+    const formData = new FormData()
+    formData.append('file', file)
+
+    const response = await fetch(fullUrl, {
+        method: 'POST',
+        headers: headers, // No 'Content-Type' header here
+        body: formData,
+    })
+
+    if (!response.ok) {
+        return { error: 'Failed to upload file', status_code: response.status }
+    }
+
+    const data = await response.json()
+    return { data: data, status_code: response.status }
 }

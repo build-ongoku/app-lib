@@ -1,4 +1,4 @@
-import { Email, ID } from '@ongoku/app-lib/src/common/Primitives'
+import { Email, ID } from '@ongoku/app-lib/src/common/scalars'
 
 export enum Operator {
     EQUAL,

@@ -1,13 +1,13 @@
 import { ITypeInfo, NewTypeInfoReq, TypeInfo, TypeMinimal } from '@ongoku/app-lib/src/common/Type'
 import { EnumInfo } from '@ongoku/app-lib/src/common/Enum'
 import { FieldInfo } from '@ongoku/app-lib/src/common/Field'
-import { UUID } from '@ongoku/app-lib/src/common/Primitives'
+import { ID } from '@ongoku/app-lib/src/common/scalars'
 
 import { capitalCase } from 'change-case'
 
 // EntityMinimal represents fields that all Entities should have.
 export interface EntityMinimal extends TypeMinimal {
-    id: UUID
+    id: ID
     created_at: Date
     updated_at: Date
     deleted_at: Date | null

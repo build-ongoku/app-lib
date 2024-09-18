@@ -43,7 +43,7 @@ export const verifySessionCookie = async (): Promise<boolean> => {
 
 export const verifyToken = async (props: { token: string }): Promise<boolean> => {
     const response = await makeRequest<AuthenticateResponse, AuthenticateTokenRequest>({
-        path: 'v1/authenticate_token',
+        path: 'v1/auth/authenticate_token',
         method: 'POST',
         data: {
             token: props.token,

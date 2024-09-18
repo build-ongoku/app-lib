@@ -1,12 +1,14 @@
 import { EntityInfo, EntityMinimal } from '../../common/Entity'
 import { ServerResponseWrapper } from './ServerResponseWrapper'
-import { ListEntityResponse, useListEntity } from '../../providers/provider'
-import { Title } from '@mantine/core'
+import { getEntityPath, ListEntityResponse, useListEntity } from '../../providers/provider'
+import { Button, Title } from '@mantine/core'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import { MantineReactTable, useMantineReactTable, type MRT_ColumnDef } from 'mantine-react-table'
 import 'mantine-react-table/styles.css' //make sure MRT styles were imported in your app root (once)
 import { useMemo } from 'react'
+import { useRouter } from 'next/navigation'
+import { getEntityAddPath } from '../EntityLink'
 
 dayjs.extend(relativeTime)
 
@@ -47,6 +49,7 @@ const getDefaultEntityColumns = <E extends EntityMinimal>(entityInfo: EntityInfo
 // EntityListTable fetches the list of entities and renders the table
 export const EntityListTable = <E extends EntityMinimal>(props: { entityInfo: EntityInfo<E> }) => {
     const { entityInfo } = props
+    const router = useRouter()
 
     // Get the entity from the server
     const [resp] = useListEntity<E>({
@@ -57,7 +60,16 @@ export const EntityListTable = <E extends EntityMinimal>(props: { entityInfo: En
     return (
         <div>
             <ServerResponseWrapper error={resp.error} loading={resp.loading}>
-                <Title order={2}>Your {entityInfo.getNameFormatted()}</Title>
+                <div className="flex justify-between my-5">
+                    <Title order={2}>Your {entityInfo.getNameFormatted()}</Title>
+                    <Button
+                        onClick={() => {
+                            router.push(getEntityAddPath(entityInfo))
+                        }}
+                    >
+                        Add {entityInfo.getNameFormatted()}
+                    </Button>
+                </div>
                 {resp.data && <EntityListTableInner entityInfo={entityInfo} data={resp.data} />}
             </ServerResponseWrapper>
         </div>

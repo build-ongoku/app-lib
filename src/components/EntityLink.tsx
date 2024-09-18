@@ -14,7 +14,7 @@ export const Link = (props: { to: string; children: React.ReactNode }) => {
 
 export const EntityLink = <E extends EntityMinimal>(props: EntityLinkProps<E>): JSX.Element => {
     const { entity, entityInfo, text } = props
-    return <Link to={getEntityDetailPath({ entityInfo, entity })}>{text ? text : entityInfo.getHumanName(entity)}</Link>
+    return <Link to={getEntityDetailPath({ entityInfo, entity })}>{text ? text : entityInfo.getEntityHumanName(entity)}</Link>
 }
 
 export const EntityListLink = <E extends EntityMinimal>(props: { entityInfo: EntityInfo<E>; text?: string }) => {

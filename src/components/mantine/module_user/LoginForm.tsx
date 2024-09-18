@@ -41,7 +41,7 @@ export const LoginForm = () => {
                         Create an account.
                     </Anchor>
                 }
-                postEndpoint="/v1/login"
+                postEndpoint="/v1/auth/login"
                 onSuccess={(data) => {
                     if (data.token) {
                         authenticate(data.token)

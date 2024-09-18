@@ -1,5 +1,17 @@
-import { Namespace } from '@ongoku/app-lib/src/common/Namespace'
+import { PrimaryNamespace, Namespace } from '@ongoku/app-lib/src/common/Namespace'
 import { TypeMinimal, TypeInfo } from '@ongoku/app-lib/src/common/Type'
+import * as scalars from '@ongoku/app-lib/src/common/scalars'
+
+export interface MetaFields {
+    id: scalars.ID
+    created_at: Date
+    updated_at: Date
+    deleted_at: Date | null
+}
+
+export interface MetaFieldWithParentID extends MetaFields {
+    parent_id: scalars.ID
+}
 
 // FieldInfoProps require both FieldInfo and EntityInfo
 export interface FieldInfoProps<T extends TypeMinimal> {
@@ -17,15 +29,9 @@ export interface FieldInfo {
     name: string
     kind: FieldKind
     isRepeated?: boolean
-    referenceNamespace?: Namespace // required when field is a nested type
-
     isMetaField?: boolean
-    foreignEntityInfo?: ForeignEntityInfo
-}
-
-interface ForeignEntityInfo {
-    serviceName?: string
-    entityName?: string
+    referenceNamespace?: Namespace // required when field is a nested type
+    foreignEntityInfo?: PrimaryNamespace
 }
 
 // getFieldValue takes an Entity and FieldInfo, and returns the value for the Field
@@ -70,9 +76,9 @@ export const DateKind: FieldKind = {
     name: 'date',
 }
 
-export const TimeKind: FieldKind = {
+export const TimestampKind: FieldKind = {
     ...DefaultFieldKind,
-    name: 'time',
+    name: 'timestamp',
 }
 
 export const IDKind: FieldKind = {
@@ -94,4 +100,16 @@ export const EnumKind: FieldKind = {
 export const NestedKind: FieldKind = {
     ...DefaultFieldKind,
     name: 'nested',
+}
+
+// ForeignEntityKind refers to fields that reference another entity
+export const ForeignEntityKind: FieldKind = {
+    ...DefaultFieldKind,
+    name: 'foreign_entity',
+}
+
+// ForeignEntityKind refers to fields that reference another entity
+export const FileKind: FieldKind = {
+    ...ForeignEntityKind,
+    name: 'file',
 }

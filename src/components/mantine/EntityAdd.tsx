@@ -31,7 +31,7 @@ export const EntityAddForm = <E extends EntityMinimal = any>(props: EntityAddFor
         <Form<E, E>
             form={form}
             submitButtonText={`Add ${entityInfo.getNameFormatted()}`}
-            postEndpoint={getEntityPath({ entityInfo: entityInfo })}
+            postEndpoint={getEntityPath({ serviceName: entityInfo.serviceName, entityName: entityInfo.name })}
             onSuccess={(data: E) => {
                 console.log('EntityAddForm: onSuccess', data)
                 if (data.id) {
