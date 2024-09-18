@@ -1,7 +1,7 @@
 import { EntityInfo, EntityMinimal } from '@ongoku/app-lib/src/common/Entity'
 import { Form } from '@ongoku/app-lib/src/components/mantine/Form'
 import { TypeAddForm } from '@ongoku/app-lib/src/components/mantine/FormAdd'
-import { getEntityPath } from '@ongoku/app-lib/src/providers/provider'
+import { AddEntityRequest, getEntityPath } from '@ongoku/app-lib/src/providers/provider'
 import { useForm } from '@mantine/form'
 import { useRouter } from 'next/navigation'
 import React from 'react'
@@ -28,9 +28,14 @@ export const EntityAddForm = <E extends EntityMinimal = any>(props: EntityAddFor
     console.log('EntityAddForm', entityInfo)
 
     return (
-        <Form<E, E>
+        <Form<E, AddEntityRequest<E>, E>
             form={form}
             submitButtonText={`Add ${entityInfo.getNameFormatted()}`}
+            onSubmitTransformValues={(values: E): AddEntityRequest<E> => {
+                return {
+                    object: values,
+                }
+            }}
             postEndpoint={getEntityPath({ serviceName: entityInfo.serviceName, entityName: entityInfo.name })}
             onSuccess={(data: E) => {
                 console.log('EntityAddForm: onSuccess', data)

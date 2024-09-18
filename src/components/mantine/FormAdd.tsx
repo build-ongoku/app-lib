@@ -70,9 +70,6 @@ const GenericInput = <T extends TypeMinimal = any>(props: {
     }
 
     const defaultPlaceholder = ''
-    console.log('GenericInput: identifier', identifier)
-
-    console.log('GenericInput', fieldInfo)
 
     switch (fieldInfo.kind) {
         case field.StringKind:
@@ -137,7 +134,6 @@ export const DefaultInput = (props: InputProps<never>) => {
 
 export const StringInput = (props: InputProps<TextInputProps>) => {
     const { form } = props
-    console.log('StringInput', props)
     return <TextInput label={props.label} description={props.description} placeholder={props.placeholder} key={props.identifier} {...form.getInputProps(props.identifier)} />
 }
 
@@ -212,6 +208,15 @@ export const FileInput = (props: InputProps<never>) => {
         })
             .then((response) => {
                 console.log('File Uploaded', response)
+                if (response.error) {
+                    form.setFieldError(props.identifier, 'File upload failed: ' + response.error)
+                } else if (!response.data?.id) {
+                    console.log('File upload failed: No ID returned', response.data?.id)
+                    form.setFieldError(props.identifier, 'File upload failed: No ID returned')
+                } else {
+                    console.log('File upload: Setting field value', response.data?.id)
+                    form.setFieldValue(props.identifier, response.data?.id)
+                }
             })
             .catch((error) => {
                 console.error('File Upload Error', error)

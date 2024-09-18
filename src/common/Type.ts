@@ -1,5 +1,6 @@
-import { FieldInfo } from '@ongoku/app-lib/src/common/Field'
+import { FieldInfo, MetaFields } from '@ongoku/app-lib/src/common/Field'
 import { EnumInfo } from '@ongoku/app-lib/src/common/Enum'
+import { WithMetaFields } from './types'
 
 export interface ITypeInfo extends ITypeInfoOverridable {
     name: string
@@ -15,11 +16,12 @@ export interface NewTypeInfoReq<T extends TypeMinimal> {
     serviceName: string
     fieldInfos: FieldInfo[]
     enumInfos?: EnumInfo<any>[]
-    getEmptyInstance: () => T
+    getEmptyInstance: () => WithMetaFields<T>
 }
 
-// EntityMinimal represents fields that all Entities should have.
+// TypeMinimal represents fields that all Types should have.
 export interface TypeMinimal extends Object {}
+export interface TypeMinimalWithMeta extends TypeMinimal, MetaFields {}
 
 // EntityInfo holds all the information about how to render/manipulate a particular Entity type.
 export class TypeInfo<T extends TypeMinimal> implements ITypeInfo {
@@ -27,7 +29,7 @@ export class TypeInfo<T extends TypeMinimal> implements ITypeInfo {
     fieldInfos: FieldInfo[]
     serviceName: string
     enumInfos: Record<string, EnumInfo<any>> = {}
-    getEmptyInstance: () => T
+    getEmptyInstance: () => WithMetaFields<T>
 
     constructor(props: NewTypeInfoReq<T>) {
         this.name = props.name
@@ -38,7 +40,7 @@ export class TypeInfo<T extends TypeMinimal> implements ITypeInfo {
             this.enumInfos[enumInfo.name] = enumInfo
         })
 
-        this.getEmptyInstance = props.getEmptyInstance || (() => ({} as T))
+        this.getEmptyInstance = props.getEmptyInstance || (() => ({} as WithMetaFields<T>))
     }
 
     // Name of the Type

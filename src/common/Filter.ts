@@ -25,6 +25,6 @@ export interface NumberCondition extends GenericCondition<number> {}
 export interface FloatCondition extends GenericCondition<number> {}
 export interface BooleanCondition extends GenericCondition<boolean> {}
 export interface DateCondition extends GenericCondition<Date> {}
-export interface TimeCondition extends GenericCondition<Date> {}
+export interface TimestampCondition extends GenericCondition<Date> {}
 export interface IDCondition extends GenericCondition<ID> {}
 export interface EmailCondition extends GenericCondition<Email> {}

@@ -1,7 +1,38 @@
 // Generic Types
 
+import { TypeMinimal, TypeMinimalWithMeta } from './Type'
+
 export type Optional<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>
 
-export type MetaFields = 'id' | 'createdAt' | 'updatedAt' | 'createdByUserId' | 'updatedByUserId' | 'deletedAt' | 'createdByUser' | 'updatedByUser' | 'deletedByUser'
+export type RequiredFields<T, K extends keyof T> = T & Required<Pick<T, K>>
 
-export type NewEntity<E> = Omit<E, MetaFields>
+export type MetaFieldKeys = 'id' | 'createdAt' | 'updatedAt' | 'deletedAt'
+
+export interface MetaFields {
+    id: string
+    created_at: Date
+    updated_at: Date
+    deleted_at: Date | null
+}
+
+export type WithMetaFields<T = TypeMinimal> = T & MetaFields
+
+// TypeInputFromFull<T> is a type that takes a full type and removes the meta fields
+export type TypeInputFromFull<T> = Omit<T, MetaFieldKeys>
+
+export const convertFullTypeToInput = <T extends TypeMinimal>(fullType: WithMetaFields<T>): T => {
+    // remove the meta fields
+    // const { id, created_at, updated_at, deleted_at, ...rest } = fullType
+    return fullType as T
+}
+
+export const convertTypeToWithMeta = <T extends TypeMinimal>(fullType: T): WithMetaFields<T> => {
+    // add the meta fields
+    const metaFields = {
+        id: '',
+        created_at: new Date(),
+        updated_at: new Date(),
+        deleted_at: null,
+    }
+    return { ...fullType, ...metaFields }
+}

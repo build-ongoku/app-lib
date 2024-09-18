@@ -4,6 +4,7 @@ import * as scalars from '@ongoku/app-lib/src/common/scalars'
 import { useEffect, useState } from 'react'
 import { getSessionCookie } from '../common/AuthContext'
 import { EnumFieldFor, FilterTypeFor } from '@/linker'
+import { RequiredFields } from '@/common/types'
 
 const getBaseURL = (): string => {
     console.log(process.env)
@@ -46,7 +47,7 @@ export const getEntityPath = <E extends EntityMinimal>(props: { serviceName: str
     return path
 }
 
-export interface HTTPRequest<D = any> extends Omit<AxiosRequestConfig<D>, 'method' | 'url'> {
+export interface HTTPRequest<D> extends Omit<AxiosRequestConfig<D>, 'method' | 'url'> {
     method: 'GET' | 'POST' | 'PUT'
     path: string
     unauthenticated?: boolean
@@ -61,8 +62,8 @@ interface EntityHttpRequest<E extends EntityMinimal, ReqT> extends Omit<HTTPRequ
     entityInfo: EntityInfo<E>
 }
 
-export interface AddEntityRequest<E extends EntityMinimal = any> {
-    entity: E
+export interface AddEntityRequest<E extends EntityMinimal> {
+    object: E
 }
 
 export const useAddEntity = <E extends EntityMinimal = any>(props: EntityHttpRequest<E, AddEntityRequest<E>>): readonly [HTTPResponse<E>] => {
@@ -70,11 +71,11 @@ export const useAddEntity = <E extends EntityMinimal = any>(props: EntityHttpReq
 
     console.log('Add Entity: ' + entityInfo.name)
 
-    const [resp, fetch] = useMakeRequest<E, E>({
+    const [resp, fetch] = useMakeRequest<E, AddEntityRequest<E>>({
         ...props,
         method: 'POST',
         path: getEntityPath({ serviceName: entityInfo.serviceName, entityName: entityInfo.name }),
-        data: props.data?.entity,
+        data: props.data,
     })
 
     useEffect(() => {
@@ -201,6 +202,8 @@ interface GokuHTTPResponse<T = any> {
     status_code: number
 }
 
+interface MustGokuHTTPResponse<T = any> extends RequiredFields<GokuHTTPResponse<T>, 'data'> {}
+
 type FetchFunc<D = any> = (config: HTTPFetchRequest<D>) => void
 
 export const makeRequest = async <T = any, D = any>(props: HTTPRequest<D>): Promise<GokuHTTPResponse<T>> => {
@@ -306,7 +309,7 @@ export const useMakeRequest = <T = any, D = any>(props: HTTPRequest<D>): readonl
 
 interface IDefaultFile {
     id: scalars.ID
-    name: string
+    file_name: string
     size: number
 }
 
@@ -335,6 +338,6 @@ export const uploadFile = async <FileT = IDefaultFile>(file: File, onProgress: (
         return { error: 'Failed to upload file', status_code: response.status }
     }
 
-    const data = await response.json()
-    return { data: data, status_code: response.status }
+    const data = (await response.json()) as GokuHTTPResponse<FileT>
+    return data
 }

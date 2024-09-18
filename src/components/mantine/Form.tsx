@@ -5,11 +5,12 @@ import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { FiAlertCircle } from 'react-icons/fi'
 
-export const Form = <FormT extends Record<string, any>, ResponseT = any>(props: {
+export const Form = <FormT extends Record<string, any>, RequestT = FormT, ResponseT = any>(props: {
     form: UseFormReturnType<FormT>
     children: React.ReactNode
     submitButtonText?: string
     bottomExtra?: React.ReactNode
+    onSubmitTransformValues?: (values: FormT) => RequestT
     postEndpoint: string
     redirectPath?: string
     onSuccess?: (data: ResponseT) => void
@@ -21,17 +22,28 @@ export const Form = <FormT extends Record<string, any>, ResponseT = any>(props: 
     const [processing, setProcessing] = useState(false)
     const [errMessage, setErrMessage] = useState<string>()
 
-    const [resp, fetch] = useMakeRequest<ResponseT, FormT>({
+    const [resp, fetch] = useMakeRequest<ResponseT, RequestT>({
         method: 'POST',
         path: props.postEndpoint,
     })
 
     console.log('Form:', resp)
 
+    // Default transform function for type assertion
+    const dummyTransform = (values: FormT): RequestT => {
+        return values as unknown as RequestT
+    }
+
     const handleSubmit = (values: FormT) => {
         console.log('Form Values:', values)
         setProcessing(true)
-        fetch({ data: values })
+        let data: RequestT
+        if (props.onSubmitTransformValues) {
+            data = props.onSubmitTransformValues(values)
+        } else {
+            data = dummyTransform(values)
+        }
+        fetch({ data: data })
     }
 
     // Handle the fetch response
