@@ -5,22 +5,30 @@ import { useAuth } from '@ongoku/app-lib/src/common/AuthContext'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
+// LayoutRootPrivate handles the authentication logic for the private part of the app.
 export const LayoutRootPrivate = (props: { children: React.ReactNode }) => {
     const router = useRouter()
-    const [loading, setLoading] = useState(false)
+    const [processing, setProcessing] = useState(true)
     const { session, loading: loadingSession } = useAuth()
 
-    console.log('LayoutRootPrivate:', session, loadingSession)
+    console.log('[LayoutRootPrivate]')
+
     // Do not allow unauthenticated users to access this part of the app.
     useEffect(() => {
-        console.log('LayoutRootPrivate: useEffect')
-        if (loadingSession === false && !session) {
-            setLoading(true)
+        // Only run once session is loaded.
+        if (loadingSession) {
+            return
+        }
+        console.log('[LayoutRootPrivate] (useEffect): session loaded, checking...')
+        if (!session) {
+            setProcessing(false)
             router.push('/login')
+        } else {
+            setProcessing(false)
         }
     }, [session, loadingSession])
 
-    if (loadingSession || loading || !session) {
+    if (loadingSession || processing || !session) {
         return <ScreenLoader />
     }
     return <div>{props.children}</div>

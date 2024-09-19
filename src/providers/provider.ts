@@ -151,7 +151,7 @@ export interface ListEntityResponse<E extends EntityMinimal> {
 export const useListEntity = <E extends EntityMinimal>(props: EntityHttpRequest<E, ListEntityRequest<E>>): readonly [HTTPResponse<ListEntityResponse<E>>] => {
     const { entityInfo } = props
 
-    console.log('List Entity: ' + entityInfo.name)
+    console.log('(provider) (List Entity) ' + entityInfo.name)
 
     // fetch data from a url endpoint
     const [resp, fetch] = useMakeRequest<ListEntityResponse<E>>({
@@ -161,8 +161,9 @@ export const useListEntity = <E extends EntityMinimal>(props: EntityHttpRequest<
     })
 
     useEffect(() => {
+        console.log(`(provider) (List Entity) (${entityInfo.name}) Fetch`)
         fetch({})
-    }, [entityInfo])
+    }, [])
 
     return [resp]
 }
