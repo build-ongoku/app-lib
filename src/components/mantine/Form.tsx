@@ -27,7 +27,7 @@ export const Form = <FormT extends Record<string, any>, RequestT = FormT, Respon
         path: props.postEndpoint,
     })
 
-    console.log('Form:', resp)
+    console.log('[Form] Rendering...', 'response?', resp)
 
     // Default transform function for type assertion
     const dummyTransform = (values: FormT): RequestT => {
@@ -35,7 +35,7 @@ export const Form = <FormT extends Record<string, any>, RequestT = FormT, Respon
     }
 
     const handleSubmit = (values: FormT) => {
-        console.log('Form Values:', values)
+        console.log('[Form] [HandleSubmit]', 'values', values)
         setProcessing(true)
         let data: RequestT
         if (props.onSubmitTransformValues) {
@@ -59,6 +59,7 @@ export const Form = <FormT extends Record<string, any>, RequestT = FormT, Respon
 
         // Error
         if (resp.error) {
+            console.log('[Form] [useEffect] Form submission returned error', resp.error)
             console.error('Error:', resp.error)
             if (props.onError) {
                 props.onError(resp.error)

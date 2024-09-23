@@ -1,6 +1,5 @@
-import { EntityInfo, EntityMinimal } from '../../common/Entity'
 import { ServerResponseWrapper } from './ServerResponseWrapper'
-import { getEntityPath, ListEntityResponse, useListEntity } from '../../providers/provider'
+import { ListEntityResponse, useListEntity } from '../../providers/provider'
 import { Button, Title } from '@mantine/core'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
@@ -9,21 +8,22 @@ import 'mantine-react-table/styles.css' //make sure MRT styles were imported in 
 import { useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { getEntityAddPath } from '../EntityLink'
+import { EntityInfo, IEntityMinimal } from '@ongoku/app-lib/src/common/app_v3'
 
 dayjs.extend(relativeTime)
 
-const getDefaultEntityColumns = <E extends EntityMinimal>(entityInfo: EntityInfo<E>): MRT_ColumnDef<E>[] => [
+const getDefaultEntityColumns = <E extends IEntityMinimal>(entityInfo: EntityInfo<E>): MRT_ColumnDef<E>[] => [
     {
         id: 'identifier',
         accessorFn: (row: E) => {
-            return entityInfo.getEntityHumanName(row)
+            return entityInfo.getEntityNameFriendly(row)
         },
         header: 'Identifier',
         Cell: ({ cell, row }) => {
             const entity = row.original
-            const name = entityInfo.getEntityHumanName(entity)
+            const name = entityInfo.getEntityNameFriendly(entity)
             const id = entity.id
-            return <a href={`/${entityInfo.serviceName}/${entityInfo.name}/${id}`}>{name}</a>
+            return <a href={`${entityInfo.namespace.toURLPath()}/${id}`}>{name}</a>
         },
     },
     {
@@ -47,7 +47,7 @@ const getDefaultEntityColumns = <E extends EntityMinimal>(entityInfo: EntityInfo
 ]
 
 // EntityListTable fetches the list of entities and renders the table
-export const EntityListTable = <E extends EntityMinimal>(props: { entityInfo: EntityInfo<E> }) => {
+export const EntityListTable = <E extends IEntityMinimal>(props: { entityInfo: EntityInfo<E> }) => {
     const { entityInfo } = props
     const router = useRouter()
 
@@ -61,13 +61,13 @@ export const EntityListTable = <E extends EntityMinimal>(props: { entityInfo: En
         <div>
             <ServerResponseWrapper error={resp.error} loading={resp.loading}>
                 <div className="flex justify-between my-5">
-                    <Title order={2}>Your {entityInfo.getNameFormatted()}</Title>
+                    <Title order={2}>Your {entityInfo.getNameFriendly()}</Title>
                     <Button
                         onClick={() => {
                             router.push(getEntityAddPath(entityInfo))
                         }}
                     >
-                        Add {entityInfo.getNameFormatted()}
+                        Add {entityInfo.getNameFriendly()}
                     </Button>
                 </div>
                 {resp.data && <EntityListTableInner entityInfo={entityInfo} data={resp.data} />}
@@ -77,7 +77,7 @@ export const EntityListTable = <E extends EntityMinimal>(props: { entityInfo: En
 }
 
 // EntityListTableInner takes the list response and renders the table
-export const EntityListTableInner = <E extends EntityMinimal>(props: { entityInfo: EntityInfo<E>; data: ListEntityResponse<E> }) => {
+export const EntityListTableInner = <E extends IEntityMinimal>(props: { entityInfo: EntityInfo<E>; data: ListEntityResponse<E> }) => {
     const cols = getDefaultEntityColumns<E>(props.entityInfo)
     const colsMemo = useMemo<MRT_ColumnDef<E>[]>(() => cols, [])
 

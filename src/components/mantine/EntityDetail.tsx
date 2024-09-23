@@ -1,9 +1,9 @@
-import { useGetEntity } from '../../providers/provider'
-import { EntityInfo, EntityMinimal } from '../../common/Entity'
+import { useGetEntity } from '@ongoku/app-lib/src/providers/provider'
 import { Title } from '@mantine/core'
-import { ServerResponseWrapper } from '../../components/mantine/ServerResponseWrapper'
+import { ServerResponseWrapper } from '@ongoku/app-lib/src/components/mantine/ServerResponseWrapper'
+import { EntityInfo, IEntityMinimal } from '@ongoku/app-lib/src/common/app_v3'
 
-export const EntityDetail = <E extends EntityMinimal = any>(props: { entityInfo: EntityInfo<E>; identifier: string }) => {
+export const EntityDetail = <E extends IEntityMinimal = any>(props: { entityInfo: EntityInfo<E>; identifier: string }) => {
     const { entityInfo, identifier } = props
 
     // Todo: Assume that the identifier is the id for now but this could include any other human readable identifier
@@ -21,7 +21,7 @@ export const EntityDetail = <E extends EntityMinimal = any>(props: { entityInfo:
             <ServerResponseWrapper error={resp.error} loading={resp.loading}>
                 {resp.data && (
                     <>
-                        <Title order={1}>{entityInfo.getEntityHumanName(resp.data)}</Title>
+                        <Title order={1}>{entityInfo.getEntityNameFriendly(resp.data)}</Title>
                         <pre>{JSON.stringify(resp.data, null, 2)}</pre>
                     </>
                 )}

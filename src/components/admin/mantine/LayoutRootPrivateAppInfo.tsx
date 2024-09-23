@@ -1,7 +1,5 @@
 'use client'
 
-import { AppInfoContext, AppInfoProvider } from '@ongoku/app-lib/src/common/AppContext'
-import { NewAppInfoReq } from '@ongoku/app-lib/src/common/App'
 import { useContext } from 'react'
 import { Loader } from '@mantine/core'
 import { Anchor, AppShell, Burger, Group, Stack, Image, Title, Button } from '@mantine/core'
@@ -10,35 +8,40 @@ import { useAuth } from '@ongoku/app-lib/src/common/AuthContext'
 import { useRouter } from 'next/navigation'
 import { Suspense } from 'react'
 import { LogoutButton } from '@ongoku/app-lib/src/components/mantine/module_user/LogoutButton'
+import { AppContext, AppProvider } from '@ongoku/app-lib/src/common/AppContextV3'
+import { App, AppReq } from '@ongoku/app-lib/src/common/app_v3'
 
-export const LayoutRootPrivateAppInfo = (props: { appInfoReq: NewAppInfoReq; children: React.ReactNode }) => {
+export const LayoutRootPrivateAppInfo = (props: { appReq: AppReq; applyOverrides?: (appInfo: App) => Promise<App>; children: React.ReactNode }) => {
     return (
-        <AppInfoProvider newAppInfoReq={props.appInfoReq}>
-            <LoadingAppContext>{props.children}</LoadingAppContext>
-        </AppInfoProvider>
+        <AppProvider appReq={props.appReq} applyOverrides={props.applyOverrides}>
+            <AppLayout>{props.children}</AppLayout>
+        </AppProvider>
     )
 }
 
-// LoadingAppContext allows to show a loader while appInfo context is being setup
-const LoadingAppContext = (props: { children: React.ReactNode }) => {
-    const { loading } = useContext(AppInfoContext)
+// // LoadingAppContext allows to show a loader while appInfo context is being setup
+// const LoadingAppContext = (props: { children: React.ReactNode }) => {
+//     const { appInfo } = useContext(AppContext)
 
-    if (loading) {
-        return <Loader size="xl" type="bars" />
-    }
+//     if (!appInfo) {
+//         return <Loader size="xl" type="bars" />
+//     }
 
-    return <AppLayout>{props.children}</AppLayout>
-}
+//     console.log('[LoadingAppContext] AppInfo loaded', appInfo)
+
+//     return <AppLayout>{props.children}</AppLayout>
+// }
 
 const AppLayout = (props: { children: React.ReactNode }) => {
     const router = useRouter()
     const [opened, { toggle }] = useDisclosure()
-    const { endSession } = useAuth()
 
-    const { appInfo } = useContext(AppInfoContext)
+    const { appInfo } = useContext(AppContext)
     if (!appInfo) {
         throw new Error('Unexpected: AppInfo not found')
     }
+
+    console.log('[AppLayout] AppInfo fetched', 'appInfo', appInfo)
 
     return (
         <AppShell
@@ -75,17 +78,17 @@ const AppLayout = (props: { children: React.ReactNode }) => {
             </AppShell.Header>
             <AppShell.Navbar>
                 <Stack className="pt-10" align="flex-start" justify="flex-start" gap="xl">
-                    {appInfo.listEntityInfos().map((entityInfo) => {
+                    {appInfo.entityInfos.map((entityInfo) => {
                         return (
                             <Button
-                                key={entityInfo.name}
+                                key={entityInfo.getName()}
                                 className="mx-5 text-2xl"
                                 variant="light"
                                 onClick={() => {
-                                    router.push(`/${entityInfo.serviceName}/${entityInfo.name}/list`)
+                                    router.push(`${entityInfo.namespace.toURLPath()}/list`)
                                 }}
                             >
-                                {entityInfo.getNameFormatted()}
+                                {entityInfo.getNameFriendly()}
                             </Button>
                         )
                     })}

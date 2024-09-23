@@ -1,8 +1,9 @@
 import { EntityInfo, EntityMinimal } from '@ongoku/app-lib/src/common/Entity'
 import { EnumInfo } from '@ongoku/app-lib/src/common/Enum'
 import { TypeInfo, TypeMinimal } from '@ongoku/app-lib/src/common/Type'
+import { IWithMethods, Method, MethodReq, WithMethods, WithMethodsReq } from './method'
 
-export interface IServiceInfo {
+export interface IServiceInfo extends IWithMethods {
     name: string
     defaultIcon?: React.ElementType
     getEntityInfo<E extends EntityMinimal>(name: string): EntityInfo<E>
@@ -16,6 +17,9 @@ export interface NewServiceInfoReq {
     entityInfos: EntityInfo<any>[]
     typeInfos: TypeInfo<any>[]
     defaultIcon?: React.ElementType
+
+    // Inherited class requests
+    withMethodsReq: WithMethodsReq
 }
 
 // U is a union type of all Entities
@@ -23,10 +27,11 @@ export class ServiceInfo implements IServiceInfo {
     name: string
     entityInfos: EntityInfo<EntityMinimal>[] // Distributive conditional type, that should become []EntityInfo < entA | entB etc. >
     typeInfosMap: Record<string, TypeInfo<any>> = {} // local service types
-
     enumInfos: Record<string, EnumInfo<any>> = {}
-
     defaultIcon?: React.ElementType
+
+    // Inherited classes
+    withMethods: WithMethods
 
     constructor(props: NewServiceInfoReq) {
         this.name = props.name
@@ -36,6 +41,8 @@ export class ServiceInfo implements IServiceInfo {
             this.typeInfosMap[typInfo.name] = typInfo
         })
         this.defaultIcon = props.defaultIcon
+
+        this.withMethods = new WithMethods(props.withMethodsReq)
     }
 
     getEntityInfo<E extends EntityMinimal>(name: string): EntityInfo<E> {
@@ -51,5 +58,10 @@ export class ServiceInfo implements IServiceInfo {
 
     getEnumInfo<EN>(name: string): EnumInfo<EN> | undefined {
         return this.enumInfos[name] as unknown as EnumInfo<EN>
+    }
+
+    // Inherited methods (forwarding)
+    getMethod<reqT, respT>(name: string): Method<reqT, respT> {
+        return this.withMethods.getMethod(name)
     }
 }

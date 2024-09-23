@@ -1,27 +1,32 @@
-import axios, { AxiosError, AxiosRequestConfig } from 'axios'
-import { EntityInfo, EntityMinimal } from '@ongoku/app-lib/src/common/Entity'
+import { getSessionCookie } from '@ongoku/app-lib/src/common/AuthContext'
 import * as scalars from '@ongoku/app-lib/src/common/scalars'
+import axios, { AxiosError, AxiosRequestConfig } from 'axios'
 import { useEffect, useState } from 'react'
-import { getSessionCookie } from '../common/AuthContext'
-import { EnumFieldFor, FilterTypeFor } from '@/linker'
-import { RequiredFields } from '@/common/types'
+import { EntityInfo, IEntityMinimal } from '@ongoku/app-lib/src/common/app_v3'
+import { Namespace } from '@ongoku/app-lib/src/common/namespacev2'
+import { MetaFieldKeys, RequiredFields } from '@ongoku/app-lib/src/common/types'
+import { EnumFieldFor, FilterTypeFor } from '@ongoku/app-lib/src/linker'
 
+// getBaseURL returns the base URL for the backend API
+// It does not add the version number.
+// e.g. for DEV, it may return http://localhost:80/api/
 const getBaseURL = (): string => {
-    console.log(process.env)
+    console.log('[Provider] [getBaseURL]', 'envVariables', process.env)
     let host = process.env.NEXT_PUBLIC_GOKU_BACKEND_HOST
     let port = process.env.NEXT_PUBLIC_GOKU_BACKEND_PORT
     if (!host) {
-        console.error('Host not set. Defaulting to localhost')
+        console.error('[Provider] [getBaseURL] Host not set. Defaulting to localhost')
         host = 'localhost'
     }
     if (!port) {
-        console.error('Port not set. Defaulting to 80')
+        console.error('[Provider] [getBaseURL] Port not set. Defaulting to 80')
         port = '80'
     }
     return `http://${host}:${port}/api/`
 }
 
-const getFullUrl = (path: string): string => {
+// addBaseURL adds the base URL to the path
+const addBaseURL = (path: string): string => {
     // remove any leading slash from the path
     if (path.startsWith('/')) {
         path = path.slice(1)
@@ -29,22 +34,11 @@ const getFullUrl = (path: string): string => {
     return getBaseURL() + path
 }
 
-const getUrlPartForEntity = (service: string, entity: string): string => {
-    return service + '/' + entity
-}
-
-const getUrlPartForEntityinfo = (service: string, entity: string): string => {
-    return service + '/' + entity
-}
-
-export const getEntityPath = <E extends EntityMinimal>(props: { serviceName: string; entityName: string; suffix?: string; version?: number }): string => {
-    const { suffix } = props
-    let path = getUrlPartForEntity(props.serviceName, props.entityName)
-    if (suffix) {
-        path = path + '/' + suffix
-    }
-    path = 'v' + (props.version ?? 1) + '/' + path
-    return path
+// joinURL takes a list of strings and joins them with a slash
+export const joinURL = (...parts: string[]): string => {
+    // Remove any leading or trailing slashes from each part
+    parts = parts.map((p) => p.replace(/^\/|\/$/g, ''))
+    return parts.join('/')
 }
 
 export interface HTTPRequest<D> extends Omit<AxiosRequestConfig<D>, 'method' | 'url'> {
@@ -58,23 +52,23 @@ export interface HTTPRequest<D> extends Omit<AxiosRequestConfig<D>, 'method' | '
 // Options used during fetch phase.
 export interface HTTPFetchRequest<D = any> extends Pick<HTTPRequest<D>, 'data' | 'params'> {}
 
-interface EntityHttpRequest<E extends EntityMinimal, ReqT> extends Omit<HTTPRequest<ReqT>, 'method' | 'path'> {
+interface EntityHttpRequest<E extends IEntityMinimal, ReqT> extends Omit<HTTPRequest<ReqT>, 'method' | 'path'> {
     entityInfo: EntityInfo<E>
 }
 
-export interface AddEntityRequest<E extends EntityMinimal> {
-    object: E
+export interface AddEntityRequest<E extends IEntityMinimal> {
+    object: Omit<E, MetaFieldKeys>
 }
 
-export const useAddEntity = <E extends EntityMinimal = any>(props: EntityHttpRequest<E, AddEntityRequest<E>>): readonly [HTTPResponse<E>] => {
+export const useAddEntity = <E extends IEntityMinimal = any>(props: EntityHttpRequest<E, AddEntityRequest<E>>): readonly [HTTPResponse<E>] => {
     const { entityInfo } = props
 
-    console.log('Add Entity: ' + entityInfo.name)
+    console.log('Add Entity: ' + entityInfo.getName())
 
     const [resp, fetch] = useMakeRequest<E, AddEntityRequest<E>>({
         ...props,
         method: 'POST',
-        path: getEntityPath({ serviceName: entityInfo.serviceName, entityName: entityInfo.name }),
+        path: joinURL('v1/', entityInfo.namespace.toURLPath()),
         data: props.data,
     })
 
@@ -85,26 +79,25 @@ export const useAddEntity = <E extends EntityMinimal = any>(props: EntityHttpReq
     return [resp]
 }
 
-export interface UpdateEntityRequest<E extends EntityMinimal> {
+export interface UpdateEntityRequest<E extends IEntityMinimal> {
     object: E
     fields?: EnumFieldFor<E>[]
     exclude_fields?: EnumFieldFor<E>[]
 }
 
-export const useUpdateEntity = <E extends EntityMinimal>(props: EntityHttpRequest<E, UpdateEntityRequest<E>>): readonly [HTTPResponse<E>] => {
+export const useUpdateEntity = <E extends IEntityMinimal>(props: EntityHttpRequest<E, UpdateEntityRequest<E>>): readonly [HTTPResponse<E>] => {
     const { entityInfo } = props
 
-    console.log('Update Entity: ' + entityInfo.name)
+    console.log('Update Entity: ' + entityInfo.getName())
 
     // fetch data from a url endpoint
+    if (!props.data?.object.id) {
+        throw new Error('Object ID not set')
+    }
 
     const [resp, fetch] = useMakeRequest<E, UpdateEntityRequest<E>>({
         method: 'PUT',
-        path: getEntityPath({
-            serviceName: entityInfo.serviceName,
-            entityName: entityInfo.name,
-            suffix: props.data?.object.id,
-        }),
+        path: joinURL('v1/', entityInfo.namespace.toURLPath(), props.data?.object.id),
         data: props.data,
     })
 
@@ -119,15 +112,15 @@ export interface GetEntityRequest {
     id: scalars.ID
 }
 
-export const useGetEntity = <E extends EntityMinimal = any>(props: EntityHttpRequest<E, GetEntityRequest>): readonly [HTTPResponse<E>] => {
+export const useGetEntity = <E extends IEntityMinimal = any>(props: EntityHttpRequest<E, GetEntityRequest>): readonly [HTTPResponse<E>] => {
     const { entityInfo, data } = props
 
-    console.log('Get Entity: ' + entityInfo.name)
+    console.log('Get Entity: ' + entityInfo.getName())
 
     // fetch data from a url endpoint
     const [resp, fetch] = useMakeRequest<E>({
         method: 'GET',
-        path: getEntityPath({ serviceName: entityInfo.serviceName, entityName: entityInfo.name }),
+        path: joinURL('v1/', entityInfo.namespace.toURLPath()),
         params: { req: data },
     })
 
@@ -138,30 +131,30 @@ export const useGetEntity = <E extends EntityMinimal = any>(props: EntityHttpReq
     return [resp]
 }
 
-export interface ListEntityRequest<E extends EntityMinimal> {
+export interface ListEntityRequest<E extends IEntityMinimal> {
     req?: FilterTypeFor<E>
 }
 
-export interface ListEntityResponse<E extends EntityMinimal> {
+export interface ListEntityResponse<E extends IEntityMinimal> {
     items: E[]
     // Page: number
     // HasNextPage: boolean
 }
 
-export const useListEntity = <E extends EntityMinimal>(props: EntityHttpRequest<E, ListEntityRequest<E>>): readonly [HTTPResponse<ListEntityResponse<E>>] => {
+export const useListEntity = <E extends IEntityMinimal>(props: EntityHttpRequest<E, ListEntityRequest<E>>): readonly [HTTPResponse<ListEntityResponse<E>>] => {
     const { entityInfo } = props
 
-    console.log('(provider) (List Entity) ' + entityInfo.name)
+    console.log('(provider) (List Entity) ' + entityInfo.getName())
 
     // fetch data from a url endpoint
     const [resp, fetch] = useMakeRequest<ListEntityResponse<E>>({
         method: 'GET',
-        path: getEntityPath({ serviceName: entityInfo.serviceName, entityName: entityInfo.name }) + `/list`,
+        path: joinURL('v1/', entityInfo.namespace.toURLPath(), 'list'),
         params: props.params, // can include any filters here
     })
 
     useEffect(() => {
-        console.log(`(provider) (List Entity) (${entityInfo.name}) Fetch`)
+        console.log(`(provider) (List Entity) (${entityInfo.getName()}) Fetch`)
         fetch({})
     }, [])
 
@@ -172,17 +165,17 @@ export interface ListByTextQueryRequest {
     query_text: string
 }
 
-export const useListEntityByTextQuery = <E extends EntityMinimal = any>(
+export const useListEntityByTextQuery = <E extends IEntityMinimal = any>(
     props: EntityHttpRequest<E, ListByTextQueryRequest>
 ): readonly [HTTPResponse<ListEntityResponse<E>>, FetchFunc<ListByTextQueryRequest>] => {
     const { entityInfo } = props
 
-    console.log('Query by Text Entity: ' + entityInfo.name)
+    console.log('Query by Text Entity: ' + entityInfo.getName())
 
     // fetch data from a url endpoint
     return useMakeRequest({
         method: 'GET',
-        path: getEntityPath({ serviceName: entityInfo.serviceName, entityName: entityInfo.name }) + `/query_by_text`,
+        path: joinURL('v1/', entityInfo.namespace.toURLPath(), 'query_by_text'),
         params: props.params,
     })
 }
@@ -197,7 +190,7 @@ interface HTTPResponse<T = any> {
     finished: boolean
 }
 
-interface GokuHTTPResponse<T = any> {
+export interface GokuHTTPResponse<T = any> {
     data?: T
     error?: string
     status_code: number
@@ -222,9 +215,8 @@ export const makeRequest = async <T = any, D = any>(props: HTTPRequest<D>): Prom
         }
     }
 
-    console.log('useAxios: Making an HTTP call with config', config)
-    const url = getFullUrl(path)
-    console.log('useAxios: URL:', url)
+    const url = addBaseURL(path)
+    console.log('[HTTP] [useAxios]: Making an HTTP call', 'config', config, 'url', url)
 
     try {
         const result = await axios.request<GokuHTTPResponse<T>>({
@@ -242,7 +234,7 @@ export const makeRequest = async <T = any, D = any>(props: HTTPRequest<D>): Prom
             },
             ...config,
         })
-        console.log('useAxios: result', result)
+        console.log('[HTTP] [useAxios] Request made', 'result', result)
         return { data: result.data?.data, status_code: result.data?.status_code, error: result.data?.error }
     } catch (err) {
         // Handle Error
@@ -308,16 +300,19 @@ export const useMakeRequest = <T = any, D = any>(props: HTTPRequest<D>): readonl
     return [{ statusCode, data, error, loading, finished }, fetch] as const
 }
 
+/* * * * * *
+ * File Upload
+ * * * * * */
+
 interface IDefaultFile {
     id: scalars.ID
-    file_name: string
-    size: number
 }
 
-export const uploadFile = async <FileT = IDefaultFile>(file: File, onProgress: (progress: number) => void): Promise<GokuHTTPResponse<FileT>> => {
+export const uploadFile = async <FileT extends IDefaultFile = IDefaultFile>(file: File, onProgress: (progress: number) => void): Promise<GokuHTTPResponse<FileT>> => {
     // Make a post request to the file entity upload endpoint
-    const relUrl = getEntityPath({ serviceName: 'core', entityName: 'file' })
-    const fullUrl = getFullUrl(relUrl + '/upload')
+    // Get the File entity
+    const fileEntityNamespace = new Namespace({ service: 'file', entity: 'file' })
+    const fullUrl = addBaseURL(fileEntityNamespace.toURLPath() + '/upload')
 
     const session = getSessionCookie()
     const headers = new Headers()
@@ -340,5 +335,60 @@ export const uploadFile = async <FileT = IDefaultFile>(file: File, onProgress: (
     }
 
     const data = (await response.json()) as GokuHTTPResponse<FileT>
+    return data
+}
+
+/* * * * * *
+ * Make Request V2
+ * * * * * */
+
+type HTTPMethod = 'GET' | 'POST' | 'PUT' | 'DELETE'
+
+// makeRequestV2 makes a vanilla fetch request
+export const makeRequestV2 = async <RespT = any, ReqT = any>(props: { relativePath: string; method: HTTPMethod; data: ReqT; unauthenticated?: boolean }): Promise<GokuHTTPResponse<RespT>> => {
+    console.debug('[Provider] [makeRequestV2]', 'props', props)
+    // Get the full path
+    let fullUrl = addBaseURL(props.relativePath)
+
+    const headers = new Headers()
+
+    // Add authentciation token header if needed
+    if (!props.unauthenticated) {
+        const session = getSessionCookie()
+        if (session?.token) {
+            headers.append('Authorization', 'Bearer ' + session.token)
+        }
+    }
+
+    // Create the request
+    const req: RequestInit = {
+        method: props.method,
+        headers: headers,
+    }
+
+    // For GET, add the req as URL param
+    if (props.method == 'GET') {
+        // Add the data as query params
+        const urlParams = new URLSearchParams()
+        // Convert the data object to JSON and add it to the URL as 'req' param
+        urlParams.append('req', JSON.stringify(props.data))
+
+        fullUrl = fullUrl + '?' + urlParams.toString()
+    } else if (props.method == 'POST' || props.method == 'PUT') {
+        // For POST, PUT requests, set the request body
+        req.body = JSON.stringify(props.data)
+    } else {
+        // Unsupported method
+        throw new Error('Unsupported method: ' + props.method)
+    }
+
+    const response = await fetch(fullUrl, req)
+
+    if (!response.ok) {
+        return { error: 'Failed to upload file', status_code: response.status }
+    }
+
+    const data = (await response.json()) as GokuHTTPResponse<RespT>
+
     return data
 }

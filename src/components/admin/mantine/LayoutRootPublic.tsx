@@ -12,7 +12,7 @@ export const LayoutRootPublic = ({ children }: { children: React.ReactNode }) =>
     // Do not allow authenticated users to access this part of the app.
     useEffect(() => {
         if (!loadingSession && session) {
-            console.log('User is authenticated. Redirecting to dashboard...')
+            console.log('[LayoutRootPublic] [useEffect] User is authenticated. Redirecting to dashboard...', 'session', session)
             router.push('/home')
         }
     }, [session])

@@ -1,12 +1,11 @@
-import { AppInfoContext } from '@ongoku/app-lib/src/common/AppContext'
-import * as field from '@ongoku/app-lib/src/common/Field'
-import { FieldInfo, getValueForField } from '@ongoku/app-lib/src/common/Field'
-import { TypeInfo, TypeMinimal } from '@ongoku/app-lib/src/common/Type'
+import { IEnumNamespace, ITypeNamespace } from '@/common/namespacev2'
 import {
+    ComboboxData,
+    ComboboxItem,
     Fieldset,
     JsonInput,
     JsonInputProps,
-    Loader,
+    FileInput as MantineFileInput,
     NumberInput as MantineNumberInput,
     NumberInputProps,
     Select,
@@ -15,100 +14,99 @@ import {
     SwitchProps,
     TextInput,
     TextInputProps,
-    ComboboxData,
-    ComboboxItem,
-    FileInput as MantineFileInput,
 } from '@mantine/core'
 import { DateInputProps, DateTimePicker, DateTimePickerProps, DateInput as MantineDateInput } from '@mantine/dates'
 import { UseFormReturnType } from '@mantine/form'
-import { capitalCase } from 'change-case'
-import React, { useContext, useState } from 'react'
+import { Field, ITypeMinimal, TypeInfo } from '@ongoku/app-lib/src/common/app_v3'
+import { AppContext } from '@ongoku/app-lib/src/common/AppContextV3'
+import * as fieldkind from '@ongoku/app-lib/src/common/fieldkind'
 import { uploadFile } from '@ongoku/app-lib/src/providers/provider'
+import React, { useContext, useState } from 'react'
 
-export const TypeAddForm = <T extends TypeMinimal = any>(props: {
+export const TypeAddForm = <T extends ITypeMinimal = any>(props: {
     typeInfo: TypeInfo<T>
     form: UseFormReturnType<T>
-    identifier?: string // parent key, e.g. 'name', 'address' etc. Set this if this is a nested form, so the child inputs have the correct full key e.g. 'address.street', 'address.city' etc.
+    parentIdentifier?: string // parent key, e.g. 'name', 'address' etc. Set this if this is a nested form, so the child inputs have the correct full key e.g. 'address.street', 'address.city' etc.
     initialData?: T
 }) => {
     const { form, typeInfo } = props
 
     console.log('TypeAddForm', typeInfo)
 
-    const inputElements = typeInfo.fieldInfos.map((fieldInfo) => {
-        if (fieldInfo.isMetaField) {
+    const inputElements = typeInfo.fields.map((f: Field) => {
+        // Skip meta fields
+        if (f.isMetaField) {
             return
         }
-        const label = capitalCase(fieldInfo.name)
+        const label = f.getLabel()
         // if we're dealing with a nested form, the keys should be prefixed with the parent key
-        const identifier = props.identifier ? props.identifier + '.' + fieldInfo.name : fieldInfo.name
-        let value: any
-        if (props.initialData) {
-            value = getValueForField({ obj: props.initialData, fieldInfo: fieldInfo })
-        }
-        return <GenericInput key={identifier} identifier={identifier} label={label} fieldInfo={fieldInfo} form={form} initialData={value} />
+        const identifier = props.parentIdentifier ? props.parentIdentifier + '.' + f.name : f.name
+        const value = props.initialData ? f.getFieldValue(props.initialData) : undefined
+
+        return <GenericInput key={identifier} identifier={identifier} label={label} field={f} form={form} initialData={value} />
     })
 
     return <>{inputElements}</>
 }
 
-const GenericInput = <T extends TypeMinimal = any>(props: {
+const GenericInput = <T extends ITypeMinimal = any>(props: {
     identifier: string // formIdentifier for the input, e.g. 'email', 'name.firstName' etc.
     label: string
-    fieldInfo: FieldInfo
-
+    field: Field
     form: UseFormReturnType<T>
     initialData?: T
 }) => {
-    const { fieldInfo, identifier, label } = props
-    const { appInfo, loading } = useContext(AppInfoContext)
-    if (loading) {
-        return <Loader type="bars" size="sm" />
-    }
+    const { field, identifier, label } = props
+    const { appInfo } = useContext(AppContext)
     if (!appInfo) {
         throw new Error('AppInfo not available')
     }
 
     const defaultPlaceholder = ''
 
-    switch (fieldInfo.kind) {
-        case field.StringKind:
+    switch (field.dtype.kind) {
+        case fieldkind.StringKind:
             return <StringInput label={label} placeholder={defaultPlaceholder} identifier={identifier} form={props.form} />
-        case field.NumberKind:
+        case fieldkind.NumberKind:
             return <NumberInput label={label} placeholder={defaultPlaceholder} identifier={identifier} form={props.form} />
-        case field.BooleanKind:
+        case fieldkind.BooleanKind:
             return <BooleanInput label={label} placeholder={defaultPlaceholder} identifier={identifier} form={props.form} />
-        case field.DateKind:
+        case fieldkind.DateKind:
             return <DateInput label={label} placeholder={defaultPlaceholder} identifier={identifier} form={props.form} />
-        case field.TimestampKind:
+        case fieldkind.TimestampKind:
             return <TimestampInput label={label} placeholder={defaultPlaceholder} identifier={identifier} form={props.form} />
 
-        case field.EnumKind:
-            // Get enum values from fieldInfo
-            if (!fieldInfo.referenceNamespace) {
+        case fieldkind.EnumKind: {
+            // Get enum values for the field
+            const ns = field.dtype.namespace as IEnumNamespace
+            if (!ns) {
                 throw new Error('Enum field does not have a reference namespace')
             }
-            const enumInfo = appInfo.getEnumInfoByNamespace(fieldInfo?.referenceNamespace!)
-            const options: ComboboxData | undefined = enumInfo?.valuesInfo.map((enumValueInfo): ComboboxItem => {
-                return { value: enumValueInfo.value as string, label: enumValueInfo.getDisplayValue() }
+            const enumInfo = appInfo.getEnum(ns)
+            const options: ComboboxData | undefined = enumInfo?.values.map((enumVal): ComboboxItem => {
+                return { value: enumVal.value as string, label: enumVal.getDisplayValue() }
             })
             return <SelectInput label={label} placeholder={defaultPlaceholder} identifier={identifier} form={props.form} internalProps={{ data: options }} />
+        }
 
-        case field.NestedKind:
-            if (!fieldInfo.referenceNamespace) {
+        case fieldkind.NestedKind: {
+            // Get the type info for the nested field
+            const ns = field.dtype.namespace as ITypeNamespace
+            if (!ns) {
                 throw new Error('Nested field does not have a reference namespace')
             }
-            const fieldTypeInfo = appInfo.getTypeInfoByNamespace<T>(fieldInfo.referenceNamespace)
+            const fieldTypeInfo = appInfo.getTypeInfo<T>(ns)
             if (!fieldTypeInfo) {
                 throw new Error('Type Info not found for field')
             }
 
             return (
                 <Fieldset legend={label}>
-                    <TypeAddForm identifier={identifier} typeInfo={fieldTypeInfo} form={props.form} />
+                    <TypeAddForm parentIdentifier={identifier} typeInfo={fieldTypeInfo} form={props.form} />
                 </Fieldset>
             )
-        case field.FileKind:
+        }
+        case fieldkind.FileKind:
             return <FileInput identifier={identifier} form={props.form} label={label} placeholder={defaultPlaceholder} />
 
         default:

@@ -2,9 +2,14 @@
 
 import { TypeMinimal, TypeMinimalWithMeta } from './Type'
 
+// Optional is a type that takes a type and makes the given keys optional
 export type Optional<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>
 
+// RequiredFields is a type that takes a type and makes the given keys required
 export type RequiredFields<T, K extends keyof T> = T & Required<Pick<T, K>>
+
+// PickAndRequired is a type that takes a type and picks the given keys and makes them required
+export type PickAndRequired<T, K extends keyof T> = Required<Pick<T, K>>
 
 export type MetaFieldKeys = 'id' | 'createdAt' | 'updatedAt' | 'deletedAt'
 

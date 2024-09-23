@@ -4,6 +4,7 @@ import { FieldInfo } from '@ongoku/app-lib/src/common/Field'
 import { ID } from '@ongoku/app-lib/src/common/scalars'
 
 import { capitalCase } from 'change-case'
+import { IWithMethods, Method, WithMethods, WithMethodsReq } from './method'
 
 // EntityMinimal represents fields that all Entities should have.
 export interface EntityMinimal extends TypeMinimal {
@@ -18,14 +19,10 @@ export interface EntityMinimal extends TypeMinimal {
  * * * * * * * * * * * * * */
 
 /* * * * * * * * * * * * * *
- * EntityInfo
+ * Interface EntityInfo
  * * * * * * * * * * * * * */
 
-// EntityInfoCommon is the simplest form of EntityInfo without any types
-// export interface EntityInfoCommon extends TypeInfoCommon {
-// }
-
-export interface IEntityInfo<E extends EntityMinimal> extends ITypeInfo {
+export interface IEntityInfo<E extends EntityMinimal> extends ITypeInfo, IWithMethods {
     serviceName: string
     getName(): string
     getNameFormatted(): string
@@ -39,12 +36,18 @@ export interface IEntityInfo<E extends EntityMinimal> extends ITypeInfo {
  * Default?
  * * * * * * * * * * * * * */
 
+/* * * * * * * * * * * * * *
+ * Class EntityInfo
+ * * * * * * * * * * * * * */
+
 // EntityInfoInputProps are the used by the EntityInfo constructor
 export interface NewEntityInfoReq<E extends EntityMinimal> extends NewTypeInfoReq<E> {
     serviceName: string
     enumInfos?: EnumInfo<any>[]
     typeInfos?: TypeInfo<any>[]
     getEmptyInstance: () => E
+
+    withMethodsReq: WithMethodsReq
 }
 
 // EntityInfo holds all the information about how to render/manipulate a particular Entity type.
@@ -56,6 +59,8 @@ export class EntityInfo<E extends EntityMinimal> extends TypeInfo<E> implements 
     typeInfos: Record<string, TypeInfo<any>> = {}
     enumInfos: Record<string, EnumInfo<any>> = {}
     getEmptyInstance: () => E
+
+    withMethods: WithMethods
 
     // 1. Custom props/methods. Each implementation has to define these.
     constructor(props: NewEntityInfoReq<E>) {
@@ -84,6 +89,8 @@ export class EntityInfo<E extends EntityMinimal> extends TypeInfo<E> implements 
                     deleted_at: null,
                 } as E
             })
+
+        this.withMethods = new WithMethods(props.withMethodsReq)
     }
 
     // 2. Basic props/methods - which are shared by all and need not be overridden.
@@ -151,5 +158,10 @@ export class EntityInfo<E extends EntityMinimal> extends TypeInfo<E> implements 
 
     getEnumInfo<EN>(name: string): EnumInfo<EN> | undefined {
         return this.enumInfos[name] as unknown as EnumInfo<EN>
+    }
+
+    // Inherited methods (forwarding)
+    getMethod<reqT, respT>(name: string): Method<reqT, respT> {
+        return this.withMethods.getMethod(name)
     }
 }

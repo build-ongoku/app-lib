@@ -11,7 +11,7 @@ export const LayoutRootPrivate = (props: { children: React.ReactNode }) => {
     const [processing, setProcessing] = useState(true)
     const { session, loading: loadingSession } = useAuth()
 
-    console.log('[LayoutRootPrivate]')
+    console.log('[LayoutRootPrivate] Rendering...')
 
     // Do not allow unauthenticated users to access this part of the app.
     useEffect(() => {
@@ -19,7 +19,7 @@ export const LayoutRootPrivate = (props: { children: React.ReactNode }) => {
         if (loadingSession) {
             return
         }
-        console.log('[LayoutRootPrivate] (useEffect): session loaded, checking...')
+        console.log('[LayoutRootPrivate] [useEffect]: Session loaded, checking...', session)
         if (!session) {
             setProcessing(false)
             router.push('/login')

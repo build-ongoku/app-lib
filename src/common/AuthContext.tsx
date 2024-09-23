@@ -75,11 +75,11 @@ export const AuthProvider = (props: { children: React.ReactNode }) => {
     const stable = 1
     // Load from cookie
     useEffect(() => {
-        console.log('Loading cookie from session...')
+        console.debug('[AuthContext] [useEffect] Loading cookie from session...')
         setLoading(true)
         const sessionCookie = getSessionCookie()
         if (sessionCookie) {
-            console.log('Loaded cookie from session', sessionCookie)
+            console.log('[AuthContext] [useEffect A] Setting session from cookie...', sessionCookie)
             setSession(sessionCookie)
         }
         setLoading(false)
@@ -89,7 +89,7 @@ export const AuthProvider = (props: { children: React.ReactNode }) => {
     useEffect(() => {
         if (session?.token) {
             setLoading(true)
-            console.log('Verifying Session...', session)
+            console.debug('[AuthContext] [useEffect B] Verifying session...', session)
             verifyToken({ token: session.token }).then((ok) => {
                 if (!ok) {
                     setSession(undefined)
@@ -101,7 +101,7 @@ export const AuthProvider = (props: { children: React.ReactNode }) => {
     }, [session])
 
     const authenticate = async (token: string) => {
-        console.log('authenticate()')
+        console.log('[AuthContext] [authenticate] Authenticating token...', token)
         const ok = await verifyToken({ token })
         if (ok) {
             setSessionCookie({ token })
