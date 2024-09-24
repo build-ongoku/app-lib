@@ -1,9 +1,15 @@
 'use client'
 
-import { AuthenticateResponse, AuthenticateTokenRequest } from '@/linker'
 import React, { useEffect, useState, useContext } from 'react'
 
 import { makeRequest } from '@ongoku/app-lib/src/providers/provider'
+
+export interface AuthenticateResponse {
+    token: string
+}
+export interface AuthenticateTokenRequest {
+    token: string
+}
 
 export interface Session {
     token: string
@@ -76,7 +82,9 @@ export const AuthProvider = (props: { children: React.ReactNode }) => {
     // Load from cookie
     useEffect(() => {
         console.debug('[AuthContext] [useEffect] Loading cookie from session...')
-        setLoading(true)
+        if (!loading) {
+            setLoading(true)
+        }
         const sessionCookie = getSessionCookie()
         if (sessionCookie) {
             console.log('[AuthContext] [useEffect A] Setting session from cookie...', sessionCookie)
@@ -88,8 +96,10 @@ export const AuthProvider = (props: { children: React.ReactNode }) => {
     // Verify token
     useEffect(() => {
         if (session?.token) {
-            setLoading(true)
             console.debug('[AuthContext] [useEffect B] Verifying session...', session)
+            if (!loading) {
+                setLoading(true)
+            }
             verifyToken({ token: session.token }).then((ok) => {
                 if (!ok) {
                     setSession(undefined)

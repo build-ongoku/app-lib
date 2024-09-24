@@ -1,18 +1,10 @@
-
 // Define these types here but allow the caller to override them
 
-import { AppInfo } from "./common/App"
-import { EntityMinimal } from "./common/Entity"
+import { AppInfo } from './common/App'
+import { EntityMinimal } from './common/Entity'
 
 export interface EnumFieldFor<E extends EntityMinimal> {}
 export interface FilterTypeFor<E extends EntityMinimal> {}
-
-export interface AuthenticateResponse {
-    token: string
-}
-export interface AuthenticateTokenRequest {
-    token: string
-}
 
 // Function that returns the app info:
 //  set to: import { newAppInfo } from 'goku.generated/types/types.generated'

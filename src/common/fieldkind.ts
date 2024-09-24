@@ -17,7 +17,7 @@ export const NumberKind: IFieldKind = {
     name: 'number',
 }
 
-export const BooleanKind: IFieldKind = {
+export const BoolKind: IFieldKind = {
     ...DefaultFieldKind,
     name: 'boolean',
 }

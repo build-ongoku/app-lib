@@ -193,7 +193,7 @@ interface HTTPResponse<T = any> {
 export interface GokuHTTPResponse<T = any> {
     data?: T
     error?: string
-    status_code: number
+    statusCode: number
 }
 
 interface MustGokuHTTPResponse<T = any> extends RequiredFields<GokuHTTPResponse<T>, 'data'> {}
@@ -235,7 +235,7 @@ export const makeRequest = async <T = any, D = any>(props: HTTPRequest<D>): Prom
             ...config,
         })
         console.log('[HTTP] [useAxios] Request made', 'result', result)
-        return { data: result.data?.data, status_code: result.data?.status_code, error: result.data?.error }
+        return { data: result.data?.data, statusCode: result.data?.statusCode, error: result.data?.error }
     } catch (err) {
         // Handle Error
         let errMsg: string = ''
@@ -256,7 +256,7 @@ export const makeRequest = async <T = any, D = any>(props: HTTPRequest<D>): Prom
             config.errorCb(errMsg)
         }
 
-        return { error: errMsg, status_code: statusCode }
+        return { error: errMsg, statusCode: statusCode }
     }
 }
 
@@ -292,7 +292,7 @@ export const useMakeRequest = <T = any, D = any>(props: HTTPRequest<D>): readonl
         const resp = await makeRequest<T, D>(finalConfig)
         setData(resp.data)
         setError(resp.error)
-        setStatusCode(resp.status_code)
+        setStatusCode(resp.statusCode)
         setLoading(false)
         setFinished(true)
     }
@@ -331,7 +331,7 @@ export const uploadFile = async <FileT extends IDefaultFile = IDefaultFile>(file
     })
 
     if (!response.ok) {
-        return { error: 'Failed to upload file', status_code: response.status }
+        return { error: 'Failed to upload file', statusCode: response.status }
     }
 
     const data = (await response.json()) as GokuHTTPResponse<FileT>
@@ -385,7 +385,7 @@ export const makeRequestV2 = async <RespT = any, ReqT = any>(props: { relativePa
     const response = await fetch(fullUrl, req)
 
     if (!response.ok) {
-        return { error: 'Failed to upload file', status_code: response.status }
+        return { error: 'Failed to upload file', statusCode: response.status }
     }
 
     const data = (await response.json()) as GokuHTTPResponse<RespT>

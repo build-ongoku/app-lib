@@ -69,7 +69,7 @@ const GenericInput = <T extends ITypeMinimal = any>(props: {
             return <StringInput label={label} placeholder={defaultPlaceholder} identifier={identifier} form={props.form} />
         case fieldkind.NumberKind:
             return <NumberInput label={label} placeholder={defaultPlaceholder} identifier={identifier} form={props.form} />
-        case fieldkind.BooleanKind:
+        case fieldkind.BoolKind:
             return <BooleanInput label={label} placeholder={defaultPlaceholder} identifier={identifier} form={props.form} />
         case fieldkind.DateKind:
             return <DateInput label={label} placeholder={defaultPlaceholder} identifier={identifier} form={props.form} />

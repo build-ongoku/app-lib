@@ -50,7 +50,7 @@ export const EntityAddForm = <E extends IEntityMinimal = any>(props: EntityAddFo
                     object: values,
                 }
             }}
-            postEndpoint={entityInfo.namespace.toURLPath()}
+            postEndpoint={joinURL('v1', entityInfo.namespace.toURLPath())}
             onSuccess={(data: E) => {
                 console.log('[EntityAddForm] [onSuccess]', 'data', data)
                 if (data.id) {

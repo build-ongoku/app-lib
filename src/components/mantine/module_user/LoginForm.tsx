@@ -42,9 +42,9 @@ export const LoginForm = () => {
                     </Anchor>
                 }
                 postEndpoint="/v1/auth/login"
-                onSuccess={(data) => {
+                onSuccess={async (data) => {
                     if (data.token) {
-                        authenticate(data.token)
+                        await authenticate(data.token)
                         return
                     }
                     throw new Error('Login call succeeded but no token was returned.')

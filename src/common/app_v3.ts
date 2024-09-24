@@ -388,8 +388,8 @@ export class EntityInfo<E extends IEntityMinimal> implements IEntityInfo<E> {
                 return _r.name
             }
             // Person Name (First + Last)
-            if (_r.name.first_name && _r.name.last_name) {
-                return `${_r.name.first_name} ${_r.name.last_name}`
+            if (_r.name.firstName && _r.name.lastName) {
+                return `${_r.name.firstName} ${_r.name.lastName}`
             }
         }
         return r.id
