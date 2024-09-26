@@ -81,7 +81,7 @@ const AppLayout = (props: { children: React.ReactNode }) => {
                     {appInfo.entityInfos.map((entityInfo) => {
                         return (
                             <Button
-                                key={entityInfo.getName()}
+                                key={entityInfo.getName().toRaw()}
                                 className="mx-5 text-2xl"
                                 variant="light"
                                 onClick={() => {

@@ -1,4 +1,4 @@
-import { IEnumNamespace, ITypeNamespace } from '@/common/namespacev2'
+import { EnumNamespaceReq, IEnumNamespace, ITypeNamespace, TypeNamespaceReq } from '@/common/namespacev2'
 import {
     ComboboxData,
     ComboboxItem,
@@ -38,9 +38,12 @@ export const TypeAddForm = <T extends ITypeMinimal = any>(props: {
         if (f.isMetaField) {
             return
         }
+        if (f.excludeFromForm) {
+            return
+        }
         const label = f.getLabel()
         // if we're dealing with a nested form, the keys should be prefixed with the parent key
-        const identifier = props.parentIdentifier ? props.parentIdentifier + '.' + f.name : f.name
+        const identifier = props.parentIdentifier ? props.parentIdentifier + '.' + f.name.toFieldName() : f.name.toFieldName()
         const value = props.initialData ? f.getFieldValue(props.initialData) : undefined
 
         return <GenericInput key={identifier} identifier={identifier} label={label} field={f} form={form} initialData={value} />
@@ -82,7 +85,7 @@ const GenericInput = <T extends ITypeMinimal = any>(props: {
             if (!ns) {
                 throw new Error('Enum field does not have a reference namespace')
             }
-            const enumInfo = appInfo.getEnum(ns)
+            const enumInfo = appInfo.getEnum(ns.raw as EnumNamespaceReq)
             const options: ComboboxData | undefined = enumInfo?.values.map((enumVal): ComboboxItem => {
                 return { value: enumVal.value as string, label: enumVal.getDisplayValue() }
             })
@@ -95,7 +98,7 @@ const GenericInput = <T extends ITypeMinimal = any>(props: {
             if (!ns) {
                 throw new Error('Nested field does not have a reference namespace')
             }
-            const fieldTypeInfo = appInfo.getTypeInfo<T>(ns)
+            const fieldTypeInfo = appInfo.getTypeInfo<T>(ns.toRaw() as TypeNamespaceReq)
             if (!fieldTypeInfo) {
                 throw new Error('Type Info not found for field')
             }

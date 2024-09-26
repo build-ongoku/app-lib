@@ -34,7 +34,8 @@ export const EntityAddForm = <E extends IEntityMinimal = any>(props: EntityAddFo
         throw new Error('AppInfo not loaded')
     }
     const typeNs = entityInfo.getTypeNamespace()
-    const typeInfo = appInfo.getTypeInfo<E>(typeNs)
+
+    const typeInfo = appInfo.getTypeInfo<E>(typeNs.toRaw())
     if (!typeInfo) {
         throw new Error('TypeInfo not found for ' + typeNs)
     }
@@ -54,6 +55,7 @@ export const EntityAddForm = <E extends IEntityMinimal = any>(props: EntityAddFo
             onSuccess={(data: E) => {
                 console.log('[EntityAddForm] [onSuccess]', 'data', data)
                 if (data.id) {
+                    console.log('[EntityAddForm] [onSuccess] Redirecting to', joinURL(entityInfo.namespace.toURLPath(), data.id))
                     router.push(joinURL(entityInfo.namespace.toURLPath(), data.id))
                     return
                 }

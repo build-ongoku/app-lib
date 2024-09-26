@@ -1,22 +1,26 @@
 import { capitalCase } from 'change-case'
 import { MetaFields } from '@ongoku/app-lib/src/common/field'
-import { IFieldKind } from '@ongoku/app-lib/src/common/fieldkind'
+import { EnumKind, ForeignEntityKind, IFieldKind, NestedKind } from '@ongoku/app-lib/src/common/fieldkind'
 import {
     ITypeNamespace,
     IEnumNamespace,
     IMethodNamespace,
     IServiceNamespace,
     IEntityNamespace,
-    IServicePrimaryNamespace,
     EntityNamespaceReq,
     Namespace,
-    PrimaryNamespace,
-    IToReq,
+    // IToReq,
     INamespace,
     ServiceNamespaceReq,
     ITypeEntityNamespace,
     IMethodEntityNamespace,
-} from './namespacev2'
+    Name,
+    TypeNamespaceReq,
+    EnumNamespaceReq,
+    MethodNamespaceReq,
+    TypeEntityNamespaceReq,
+    MethodEntityNamespaceReq,
+} from '@ongoku/app-lib/src/common/namespacev2'
 import { MetaFieldKeys } from '@ongoku/app-lib/src/common/types'
 import { GokuHTTPResponse, joinURL, makeRequestV2 } from '@ongoku/app-lib/src/providers/provider'
 
@@ -25,26 +29,26 @@ import { GokuHTTPResponse, joinURL, makeRequestV2 } from '@ongoku/app-lib/src/pr
  * * * * * */
 
 export interface IApp {
-    getName(): string
+    getName(): Name
     getNameFriendly(): string
 
     services: IService[]
     entityInfos: IEntityInfo<any>[]
     typeInfos: ITypeInfo<ITypeNamespace>[]
-    enums: IEnum<IEnumNamespace>[]
+    enums: IEnum[]
     methods: IMethod<IMethodNamespace>[]
 
-    getService(namespace: IServiceNamespace): Service
-    getEntityInfo<E extends IEntityMinimal>(namespace: IEntityNamespace): EntityInfo<E> | undefined
-    getTypeInfo<T extends ITypeMinimal>(namespace: ITypeNamespace): TypeInfo<T>
-    getEnum(namespace: IEnumNamespace): Enum<IEnumNamespace>
-    getMethod(name: IMethodNamespace): Method<IMethodNamespace>
+    getService(namespace: ServiceNamespaceReq): Service
+    getEntityInfo<E extends IEntityMinimal>(namespace: EntityNamespaceReq): EntityInfo<E> | undefined
+    getTypeInfo<T extends ITypeMinimal>(namespace: TypeNamespaceReq): TypeInfo<T>
+    getEnum(namespace: EnumNamespaceReq): Enum
+    getMethod(name: MethodNamespaceReq): Method<IMethodNamespace>
 
     getEntityMethods(namespace: IEntityNamespace): IMethod[]
 }
 
 export interface AppReq {
-    name: string
+    name: Name
     services: ServiceReq[]
     entityInfos: EntityInfoReq[]
     typeInfos: TypeInfoReq[]
@@ -53,18 +57,18 @@ export interface AppReq {
 }
 
 export class App implements IApp {
-    name: string
+    name: Name
 
     services: Service[] = []
     entityInfos: EntityInfo<any>[] = []
-    typeInfos: TypeInfo<any, ITypeNamespace>[] = []
-    enums: Enum<IEnumNamespace>[] = []
+    typeInfos: TypeInfo<any>[] = []
+    enums: Enum[] = []
     methods: Method<IMethodNamespace>[] = []
 
     servicesMap: Record<string, Service> = {}
     entitiesMap: Record<string, EntityInfo<any>> = {}
-    typesMap: Record<string, TypeInfo<any, ITypeNamespace>> = {}
-    enumsMap: Record<string, Enum<IEnumNamespace>> = {}
+    typesMap: Record<string, TypeInfo<any>> = {}
+    enumsMap: Record<string, Enum> = {}
     methodsMap: Record<string, Method<IMethodNamespace>> = {}
 
     constructor(req: AppReq) {
@@ -103,44 +107,61 @@ export class App implements IApp {
         })
     }
 
-    getName(): string {
+    getName(): Name {
         return this.name
     }
 
     getNameFriendly(): string {
-        return capitalCase(this.getName())
+        return capitalCase(this.name.toCapital())
     }
 
     getService(nsReq: ServiceNamespaceReq): Service {
-        const ns = new PrimaryNamespace(nsReq)
+        const ns = new Namespace(nsReq)
         return this.servicesMap[ns.toString()]
     }
 
     getEntityInfo<E extends IEntityMinimal>(nsReq: EntityNamespaceReq): EntityInfo<E> | undefined {
-        const ns = new PrimaryNamespace(nsReq)
-        return this.entitiesMap[ns.toString()]
+        console.warn('[App] [getEntityInfo] [nsReq]', nsReq)
+        const ns = new Namespace(nsReq)
+        console.warn('[App] [getEntityInfo] [ns]', ns)
+        const key = ns.toString()
+        console.warn('[App] [getEntityInfo] [key]', key)
+        const ret = this.entitiesMap[ns.toString()]
+        console.warn('[App] [getEntityInfo] [ret]', ret)
+        return ret
     }
 
-    getTypeInfo<T extends ITypeMinimal>(nsReq: ITypeNamespace): TypeInfo<T, ITypeNamespace> {
+    getTypeInfo<T extends ITypeMinimal>(nsReq: TypeNamespaceReq): TypeInfo<T> {
         const ns = new Namespace(nsReq)
         console.log('[App] [getTypeInfo] [ns]', 'namespace', ns.toString(), 'typesMap', this.typesMap)
         return this.typesMap[ns.toString()]
     }
 
-    getEnum(nsReq: IEnumNamespace): Enum<IEnumNamespace> {
+    getEnum(nsReq: EnumNamespaceReq): Enum {
         const ns = new Namespace(nsReq)
         return this.enumsMap[ns.toString()]
     }
 
-    getMethod(nsReq: IMethodNamespace): Method<IMethodNamespace> {
+    getMethod(nsReq: MethodNamespaceReq): Method<IMethodNamespace> {
         const ns = new Namespace(nsReq)
         return this.methodsMap[ns.toString()]
     }
 
-    getEntityMethods(nsReq: IEntityNamespace): IMethod[] {
+    getEntityMethods(entNs: IEntityNamespace): IMethod[] {
         // Loop through all the methods and return the ones that match the entity namespace
+
         return this.methods.filter((m) => {
-            return m.namespace.service === nsReq.service && m.namespace.entity === nsReq.entity
+            if (m.namespace.service !== entNs.service) {
+                return false
+            }
+            {
+                // If the type of m IMethodEntityNamespace?
+                const mUnsafe = m as Method<IMethodEntityNamespace>
+                if (mUnsafe.namespace.entity && mUnsafe.namespace.entity !== entNs.entity) {
+                    return false
+                }
+            }
+            return true
         })
     }
 }
@@ -150,28 +171,31 @@ export class App implements IApp {
  * * * * * */
 
 interface IService {
-    namespace: IServicePrimaryNamespace
-    getName(): string
+    namespace: IServiceNamespace
+    getName(): Name
     getNameFriendly(): string
 }
 
 export interface ServiceReq {
-    namespace: IToReq<IServiceNamespace>
+    namespace: ServiceNamespaceReq
 }
 
 export class Service implements IService {
     namespace: IServiceNamespace
 
     constructor(req: ServiceReq) {
-        this.namespace = new PrimaryNamespace(req.namespace) as IServiceNamespace
+        this.namespace = new Namespace(req.namespace) as IServiceNamespace
+        if (!this.namespace.service) {
+            throw new Error('Service name is required')
+        }
     }
 
-    getName(): string {
-        return this.namespace.service
+    getName(): Name {
+        return this.namespace.service!
     }
 
     getNameFriendly(): string {
-        return capitalCase(this.getName())
+        return this.namespace.service!.toCapital()
     }
 }
 
@@ -185,30 +209,30 @@ export interface ITypeMinimal {}
  * Type Info
  * * * * * */
 
-interface ITypeInfo<T extends ITypeMinimal = any, NamespaceT extends ITypeNamespace = ITypeNamespace> {
-    namespace: NamespaceT
+interface ITypeInfo<T extends ITypeMinimal = any> {
+    namespace: ITypeNamespace
     fields: IField[]
     getField(name: string): IField
     getTypeName(r: T): string
     getEmptyObject(): Omit<T, MetaFieldKeys>
 }
 
-export interface TypeInfoReq<T extends ITypeMinimal = any, NamespaceT extends ITypeNamespace = ITypeNamespace> {
-    namespace: IToReq<NamespaceT>
+export interface TypeInfoReq<T extends ITypeMinimal = any> {
+    namespace: TypeNamespaceReq
     fields: FieldReq[]
     getEmptyObjectFunc?: () => Omit<T, MetaFieldKeys>
 }
 
-export class TypeInfo<T extends ITypeMinimal = any, NamespaceT extends ITypeNamespace = ITypeNamespace> implements ITypeInfo<T, NamespaceT> {
-    namespace: NamespaceT
+export class TypeInfo<T extends ITypeMinimal = any> implements ITypeInfo<T> {
+    namespace: ITypeNamespace
     fields: Field[] = []
     fieldsMap: Record<string, Field> = {}
 
-    constructor(req: TypeInfoReq<T, NamespaceT>) {
-        this.namespace = new Namespace(req.namespace) as NamespaceT
+    constructor(req: TypeInfoReq<T>) {
+        this.namespace = new Namespace(req.namespace) as ITypeNamespace
         this.fields = req.fields.map((f) => new Field<any, T>(f))
         this.fields.forEach((f) => {
-            this.fieldsMap[f.name] = f
+            this.fieldsMap[f.name.toRaw()] = f
         })
     }
 
@@ -234,7 +258,7 @@ export class TypeInfo<T extends ITypeMinimal = any, NamespaceT extends ITypeName
  * * * * * */
 
 interface IField<T = any, ParentT = any> {
-    name: string
+    name: Name
     dtype: IDtype<T>
     isRepeated?: boolean
     isOptional?: boolean
@@ -244,25 +268,28 @@ interface IField<T = any, ParentT = any> {
 }
 
 export interface FieldReq<T = any, ParentT = any> {
-    name: string
+    name: Name
     dtype: DtypeReq<T>
     isRepeated?: boolean
     isMetaField?: boolean
+    excludeFromForm?: boolean
     isOptional?: boolean
 }
 
 export class Field<T = any, ParentT = any> implements IField<T, ParentT> {
-    name: string
+    name: Name
     dtype: IDtype<T>
     isRepeated?: boolean
     isMetaField?: boolean
+    excludeFromForm?: boolean
     isOptional?: boolean | undefined
 
     constructor(req: FieldReq<T>) {
         this.name = req.name
-        this.dtype = new Dtype(req.dtype)
+        this.dtype = new Dtype<T>(req.dtype)
         this.isRepeated = req.isRepeated
         this.isMetaField = req.isMetaField
+        this.excludeFromForm = req.excludeFromForm
         this.isOptional = req.isOptional
     }
 
@@ -271,13 +298,13 @@ export class Field<T = any, ParentT = any> implements IField<T, ParentT> {
     }
     // Default (Overidable)
     getLabelFunc = (field: Field<T, ParentT>): string => {
-        return capitalCase(field.name)
+        return field.name.toCapital()
     }
 
     getFieldValue(obj: ParentT): T {
         // Loop though all the fields in the object and get the value for this field
         const _obj: any = obj
-        return _obj[this.name] as T
+        return _obj[this.name.toFieldName()] as T
     }
 }
 
@@ -286,33 +313,57 @@ export class Field<T = any, ParentT = any> implements IField<T, ParentT> {
  * * * * * */
 
 interface IDtype<T = any> {
-    name: string
+    name: Name
     kind: IFieldKind
-    namespace?: TypeToNamespace<T>
+    namespace?: IEntityNamespace | ITypeNamespace | IEnumNamespace
 }
 
 // TypeToNamespace is a type that takes a type and returns the namespace type.
 // If T is Entity, then it returns IEntityNamespace.
 // If T is Type, then it returns ITypeNamespace.
 // Otherwise it returns IEnumNamespace or undefined. There is not way to detect if T is an Enum.
-type TypeToNamespace<T> = T extends ITypeMinimal ? ITypeNamespace : T extends IEntityMinimal ? IEntityNamespace : IEnumNamespace | INamespace | undefined
+// type TypeToNamespace<T> = T extends ITypeMinimal ? ITypeNamespace : T extends IEntityMinimal ? IEntityNamespace : IEnumNamespace | INamespace | undefined
 
 export interface DtypeReq<T = any> {
-    name: string
+    name: Name
     kind: IFieldKind
-    namespace?: TypeToNamespace<T> extends PrimaryNamespace ? IToReq<TypeToNamespace<T>> : IToReq<IEnumNamespace> | IToReq<INamespace> | undefined
+    namespace?: EntityNamespaceReq | TypeNamespaceReq | EnumNamespaceReq
 }
 
 class Dtype<T = any> implements IDtype {
-    name: string
+    name: Name
     kind: IFieldKind
-    namespace?: TypeToNamespace<T>
+    namespace?: IEntityNamespace | ITypeNamespace | IEnumNamespace
 
     constructor(req: DtypeReq) {
         this.name = req.name
         this.kind = req.kind
         if (req.namespace) {
-            this.namespace = new Namespace(req.namespace) as TypeToNamespace<T>
+            this.namespace = new Namespace(req.namespace) as unknown as IEntityNamespace | ITypeNamespace | IEnumNamespace
+        }
+        if (this.kind === EnumKind) {
+            if (!this.namespace) {
+                throw new Error('Enum field does not have a reference namespace')
+            }
+            if (!this.namespace.enum) {
+                throw new Error('Enum field does not have a reference enum')
+            }
+        }
+        if (this.kind === NestedKind) {
+            if (!this.namespace) {
+                throw new Error('Nested field does not have a reference namespace')
+            }
+            if (!this.namespace.types || this.namespace.types.length === 0) {
+                throw new Error('Nested field does not have a reference type')
+            }
+        }
+        if (this.kind === ForeignEntityKind) {
+            if (!this.namespace) {
+                throw new Error('ForeignEntity field does not have a reference namespace')
+            }
+            if (!this.namespace.entity) {
+                throw new Error('ForeignEntity field does not have a reference entity')
+            }
         }
     }
 }
@@ -331,14 +382,14 @@ interface IEntityInfo<E extends IEntityMinimal> {
     namespace: IEntityNamespace
     actions: IEntityAction[]
     getTypeNamespace(): ITypeEntityNamespace
-    getName(): string
+    getName(): Name
     getNameFriendly(): string
     getEntityName(r: E): string
     getEntityNameFriendly(r: E): string
 }
 
 export interface EntityInfoReq<E extends IEntityMinimal = any> {
-    namespace: IToReq<IEntityNamespace>
+    namespace: EntityNamespaceReq
     actions: EntityActionReq[]
 }
 
@@ -347,24 +398,23 @@ export class EntityInfo<E extends IEntityMinimal> implements IEntityInfo<E> {
     actions: EntityAction[] = []
 
     constructor(req: EntityInfoReq) {
-        this.namespace = new PrimaryNamespace(req.namespace) as IEntityNamespace
+        this.namespace = new Namespace(req.namespace) as IEntityNamespace
         req.actions.forEach((elem) => {
             this.actions.push(new EntityAction(elem))
         })
+        if (!this.namespace.service || !this.namespace.entity) {
+            throw new Error('Service and Entity name is required')
+        }
     }
 
     getTypeNamespace(): ITypeEntityNamespace {
         // Take the entity namespace and add the type to it
-        const ns = new Namespace({ service: this.namespace.service, entity: this.namespace.entity, types: [this.namespace.entity] })
+        const ns = new Namespace({ service: this.namespace.service!.toRaw(), entity: this.namespace.entity!.toRaw(), types: [this.namespace.entity!.toRaw()] })
         return ns as ITypeEntityNamespace
     }
 
-    getName(): string {
-        return this.funcGetName(this)
-    }
-    // Default (Overidable)
-    funcGetName = function (info: EntityInfo<E>): string {
-        return info.namespace.entity
+    getName(): Name {
+        return this.namespace.entity!
     }
 
     getNameFriendly(): string {
@@ -373,7 +423,7 @@ export class EntityInfo<E extends IEntityMinimal> implements IEntityInfo<E> {
     // Default (Overidable)
     funcGetNameFriendly = (info: EntityInfo<E>): string => {
         console.log('[EntityInfo] [funcGetNameFriendly] [default] called')
-        return capitalCase(info.getName())
+        return info.getName().toCapital()
     }
 
     getEntityName(r: E): string {
@@ -400,7 +450,7 @@ export class EntityInfo<E extends IEntityMinimal> implements IEntityInfo<E> {
     }
     // Default (Overidable)
     funcGetEntityNameFriendly = function (r: E, info: EntityInfo<E>): string {
-        return capitalCase(info.getEntityName(r))
+        return info.getEntityName(r)
     }
 }
 
@@ -409,18 +459,18 @@ export class EntityInfo<E extends IEntityMinimal> implements IEntityInfo<E> {
  * * * * * */
 
 interface IEntityAction {
-    name: string
+    name: Name
     getLabel(): string
     methodNamespace: IMethodEntityNamespace
 }
 
 interface EntityActionReq {
-    name: string
-    methodNamespace: IToReq<IMethodEntityNamespace>
+    name: Name
+    methodNamespace: MethodEntityNamespaceReq
 }
 
 class EntityAction implements IEntityAction {
-    name: string
+    name: Name
     methodNamespace: IMethodEntityNamespace
 
     constructor(req: EntityActionReq) {
@@ -429,7 +479,7 @@ class EntityAction implements IEntityAction {
     }
 
     getLabel(): string {
-        return capitalCase(this.name)
+        return this.name.toCapital()
     }
 }
 
@@ -437,25 +487,28 @@ class EntityAction implements IEntityAction {
  * Enum
  * * * * * */
 
-interface IEnum<NamespaceT extends IEnumNamespace = IEnumNamespace> {
-    namespace: NamespaceT
+interface IEnum {
+    namespace: IEnumNamespace
     values: IEnumValue[]
 }
 
-export interface EnumReq<NamespaceT extends IEnumNamespace = IEnumNamespace> {
-    namespace: IToReq<NamespaceT>
+export interface EnumReq {
+    namespace: EnumNamespaceReq
     values: EnumValueReq[]
 }
 
-export class Enum<NamespaceT extends IEnumNamespace> implements IEnum<NamespaceT> {
-    namespace: NamespaceT
+export class Enum implements IEnum {
+    namespace: IEnumNamespace
     values: IEnumValue[] = []
 
-    constructor(req: EnumReq<NamespaceT>) {
-        this.namespace = new Namespace(req.namespace) as NamespaceT
+    constructor(req: EnumReq) {
+        this.namespace = new Namespace(req.namespace) as IEnumNamespace
         req.values.forEach((elem) => {
             this.values.push(new EnumValue(elem))
         })
+        if (!this.namespace.enum) {
+            throw new Error('Enum namespace does not have a reference enum')
+        }
     }
 }
 
@@ -499,34 +552,38 @@ export class EnumValue implements IEnumValue {
  * Method
  * * * * * */
 
-interface IMethod<NamespaceT extends IMethodNamespace = IMethodNamespace, reqT = any, resT = any> {
-    namespace: NamespaceT
+interface IMethod<reqT = any, resT = any> {
+    namespace: IMethodNamespace
     apis: IMethodAPI[]
     requestTypeNamespace?: ITypeNamespace
     responseTypeNamespace: ITypeNamespace
     makeAPIRequest(req: reqT): Promise<GokuHTTPResponse<resT>>
 }
 
-export interface MethodReq<NamespaceT extends IMethodNamespace = IMethodNamespace> {
-    namespace: IToReq<NamespaceT>
-    requestTypeNamespace?: IToReq<ITypeNamespace>
-    responseTypeNamespace: IToReq<ITypeNamespace>
+export interface MethodReq {
+    namespace: MethodNamespaceReq
+    requestTypeNamespace?: TypeNamespaceReq
+    responseTypeNamespace: TypeNamespaceReq
     apis: IMethodAPI[]
 }
 
-export class Method<NamespaceT extends IMethodNamespace = IMethodNamespace, reqT = any, resT = any> implements IMethod<NamespaceT, reqT, resT> {
-    namespace: NamespaceT
+export class Method<reqT = any, resT = any> implements IMethod<reqT, resT> {
+    namespace: IMethodNamespace
     requestTypeNamespace?: ITypeNamespace
     responseTypeNamespace: ITypeNamespace
     apis: IMethodAPI[]
 
-    constructor(req: MethodReq<NamespaceT>) {
-        this.namespace = new Namespace(req.namespace) as NamespaceT
+    constructor(req: MethodReq) {
+        this.namespace = new Namespace(req.namespace) as IMethodNamespace
         if (req.requestTypeNamespace) {
             this.requestTypeNamespace = new Namespace(req.requestTypeNamespace) as ITypeNamespace
         }
         this.responseTypeNamespace = new Namespace(req.responseTypeNamespace) as ITypeNamespace
         this.apis = req.apis
+
+        if (!this.namespace.service || !this.namespace.method) {
+            throw new Error('Service and Method name is required')
+        }
     }
 
     makeAPIRequest<ReqT = any, RespT = any>(req: ReqT): Promise<GokuHTTPResponse<RespT>> {

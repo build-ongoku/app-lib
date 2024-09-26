@@ -50,14 +50,15 @@ const EntityActionButtons = <E extends IEntityMinimal>(props: { entityInfo: Enti
 
     const actionButtons = actions.map((action) => {
         // Get the method
-        const method = appInfo.getMethod(action.methodNamespace)
+        const mthdNs = action.methodNamespace
+        const method = appInfo.getMethod(mthdNs.toRaw())
         if (!method) {
             console.error('Method not found', 'namespace', action.methodNamespace)
             throw new Error('Method not found')
         }
         return (
             <Button
-                key={action.name}
+                key={action.name.toRaw()}
                 onClick={() => {
                     console.log('Calling action', action.name)
                     method.makeAPIRequest<DefaultApplyActionRequest, E>({
@@ -65,7 +66,7 @@ const EntityActionButtons = <E extends IEntityMinimal>(props: { entityInfo: Enti
                     })
                 }}
             >
-                {action.name}
+                {action.name.toCapital()}
             </Button>
         )
     })

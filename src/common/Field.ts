@@ -4,13 +4,13 @@ import * as scalars from '@ongoku/app-lib/src/common/scalars'
 
 export interface MetaFields {
     id: scalars.ID
-    created_at: Date
-    updated_at: Date
-    deleted_at: Date | null
+    createdAt: Date
+    updatedAt: Date
+    deletedAt: Date | null
 }
 
 export interface MetaFieldWithParentID extends MetaFields {
-    parent_id: scalars.ID
+    parentID: scalars.ID
 }
 
 // // FieldInfoProps require both FieldInfo and EntityInfo
