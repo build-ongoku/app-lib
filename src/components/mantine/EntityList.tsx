@@ -27,7 +27,7 @@ const getDefaultEntityColumns = <E extends IEntityMinimal>(entityInfo: EntityInf
         },
     },
     {
-        accessorKey: 'created_at',
+        accessorKey: 'createdAt',
         header: 'Created At',
         Cell: ({ cell }) => {
             const value = cell.getValue<Date>()
@@ -36,7 +36,7 @@ const getDefaultEntityColumns = <E extends IEntityMinimal>(entityInfo: EntityInf
         },
     },
     {
-        accessorKey: 'updated_at',
+        accessorKey: 'updatedAt',
         header: 'Updated At',
         Cell: ({ cell }) => {
             const value = cell.getValue<Date>()

@@ -88,6 +88,7 @@ export interface INamespace<NsReqT extends NamespaceReq> {
     toRaw(): NsReqT
     toString(): string
     toURLPath(): string
+    equal(other: INamespace<NsReqT>): boolean
 }
 
 type NamespaceMethodKeys = 'toRaw' | 'toString' | 'toURLPath'
@@ -199,6 +200,10 @@ export class Namespace<NsReqT extends NamespaceReq> implements INamespace<NsReqT
             str = str + `/` + this.entity.toSnake()
         }
         return str
+    }
+
+    equal(other: INamespace<NsReqT>): boolean {
+        return this.toString() === other.toString()
     }
 }
 

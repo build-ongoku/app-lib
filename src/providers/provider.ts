@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react'
 import { EntityInfo, IEntityMinimal } from '@ongoku/app-lib/src/common/app_v3'
 import { Namespace } from '@ongoku/app-lib/src/common/namespacev2'
 import { MetaFieldKeys, RequiredFields } from '@ongoku/app-lib/src/common/types'
-import { EnumFieldFor, FilterTypeFor } from '@ongoku/app-lib/src/linker'
+import { EnumFieldFor } from '@ongoku/app-lib/src/linker'
 
 // getBaseURL returns the base URL for the backend API
 // It does not add the version number.
@@ -115,7 +115,7 @@ export interface GetEntityRequest {
 export const useGetEntity = <E extends IEntityMinimal = any>(props: EntityHttpRequest<E, GetEntityRequest>): readonly [HTTPResponse<E>] => {
     const { entityInfo, data } = props
 
-    console.log('Get Entity: ' + entityInfo.getName())
+    console.log('[Provider] [Get Entity]', 'Fetching entity', 'entityName', entityInfo.getName().toRaw(), 'id', data?.id)
 
     // fetch data from a url endpoint
     const [resp, fetch] = useMakeRequest<E>({
@@ -382,13 +382,69 @@ export const makeRequestV2 = async <RespT = any, ReqT = any>(props: { relativePa
         throw new Error('Unsupported method: ' + props.method)
     }
 
-    const response = await fetch(fullUrl, req)
-
-    if (!response.ok) {
-        return { error: 'Failed to upload file', statusCode: response.status }
+    let httpResp: Response
+    try {
+        httpResp = await fetch(fullUrl, req)
+    } catch (err) {
+        const errMsg = 'Could not make the HTTP request: ' + err
+        console.error(errMsg)
+        return { error: errMsg, statusCode: 0 } // We don't know the status code because the request itself failed
     }
 
-    const data = (await response.json()) as GokuHTTPResponse<RespT>
+    if (!httpResp.ok) {
+        return { error: 'Got a non-OK HTTP response', statusCode: httpResp.status }
+    }
 
-    return data
+    try {
+        const data = (await httpResp.json()) as GokuHTTPResponse<RespT>
+        return data
+    } catch (err) {
+        const errMsg = 'Could not parse HTTP response to JSON: ' + err
+        console.error(errMsg)
+        return { error: errMsg, statusCode: httpResp.status }
+    }
+}
+
+/* * * * * *
+ * List Entity V2
+ * * * * * */
+
+type FilterTypeFor<E extends IEntityMinimal> = any
+
+export interface DefaultRequestEntityList<E extends IEntityMinimal> {
+    filter?: FilterTypeFor<E>
+}
+
+export interface DefaultResponseEntityList<E extends IEntityMinimal> {
+    items: E[]
+}
+
+export const listEntityV2 = <E extends IEntityMinimal>(props: { entityInfo: EntityInfo<E>; data: DefaultRequestEntityList<E> }): Promise<GokuHTTPResponse<DefaultResponseEntityList<E>>> => {
+    // Get the path to make the request
+    const path = joinURL('v1/', props.entityInfo.namespace.toURLPath(), 'list')
+
+    // Make the request
+    return makeRequestV2<DefaultResponseEntityList<E>, DefaultRequestEntityList<E>>({
+        relativePath: path,
+        method: 'GET',
+        data: props.data,
+    })
+}
+
+export const useListEntityV2 = <E extends IEntityMinimal>(props: {
+    entityInfo: EntityInfo<E>
+    data: DefaultRequestEntityList<E>
+}): [GokuHTTPResponse<DefaultResponseEntityList<E>> | undefined, boolean] => {
+    const [resp, setResp] = useState<GokuHTTPResponse<DefaultResponseEntityList<E>>>()
+    const [loading, setLoading] = useState<boolean>(true)
+
+    useEffect(() => {
+        console.log('[Provider] [useListEntityV2] Fetching list entity', 'entity', props.entityInfo.getName().toRaw())
+        const resp = listEntityV2(props).then((r) => {
+            setResp(r)
+            setLoading(false)
+        })
+    }, [])
+
+    return [resp, loading]
 }

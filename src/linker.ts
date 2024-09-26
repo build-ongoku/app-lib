@@ -1,10 +1,9 @@
 // Define these types here but allow the caller to override them
 
-import { AppInfo } from './common/App'
-import { EntityMinimal } from './common/Entity'
+import { IEntityMinimal } from '@ongoku/app-lib/src/common/app_v3'
 
-export interface EnumFieldFor<E extends EntityMinimal> {}
-export interface FilterTypeFor<E extends EntityMinimal> {}
+export interface EnumFieldFor<E extends IEntityMinimal> {}
+export interface FilterTypeFor<E extends IEntityMinimal> {}
 
 // Function that returns the app info:
 //  set to: import { newAppInfo } from 'goku.generated/types/types.generated'

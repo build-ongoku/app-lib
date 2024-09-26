@@ -27,7 +27,9 @@ export const AppProvider = (props: { appReq: AppReq; applyOverrides?: (appInfo: 
                     setApp(app)
                 })
                 .catch((e) => {
-                    console.error('[AppProvider] Error applying overrides', e)
+                    const errMsg = '[AppProvider] Failed to apply entity overrides. There was an error.'
+                    console.error(errMsg, 'error', e)
+                    throw new Error(errMsg)
                 })
             console.log('[AppProvider] Applied overrides!', 'appInfo', app)
         }

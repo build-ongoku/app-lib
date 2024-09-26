@@ -121,13 +121,9 @@ export class App implements IApp {
     }
 
     getEntityInfo<E extends IEntityMinimal>(nsReq: EntityNamespaceReq): EntityInfo<E> | undefined {
-        console.warn('[App] [getEntityInfo] [nsReq]', nsReq)
         const ns = new Namespace(nsReq)
-        console.warn('[App] [getEntityInfo] [ns]', ns)
         const key = ns.toString()
-        console.warn('[App] [getEntityInfo] [key]', key)
         const ret = this.entitiesMap[ns.toString()]
-        console.warn('[App] [getEntityInfo] [ret]', ret)
         return ret
     }
 
@@ -184,7 +180,7 @@ export class Service implements IService {
     namespace: IServiceNamespace
 
     constructor(req: ServiceReq) {
-        this.namespace = new Namespace(req.namespace) as IServiceNamespace
+        this.namespace = new Namespace(req.namespace)
         if (!this.namespace.service) {
             throw new Error('Service name is required')
         }
@@ -229,7 +225,7 @@ export class TypeInfo<T extends ITypeMinimal = any> implements ITypeInfo<T> {
     fieldsMap: Record<string, Field> = {}
 
     constructor(req: TypeInfoReq<T>) {
-        this.namespace = new Namespace(req.namespace) as ITypeNamespace
+        this.namespace = new Namespace(req.namespace)
         this.fields = req.fields.map((f) => new Field<any, T>(f))
         this.fields.forEach((f) => {
             this.fieldsMap[f.name.toRaw()] = f
@@ -339,7 +335,7 @@ class Dtype<T = any> implements IDtype {
         this.name = req.name
         this.kind = req.kind
         if (req.namespace) {
-            this.namespace = new Namespace(req.namespace) as unknown as IEntityNamespace | ITypeNamespace | IEnumNamespace
+            this.namespace = new Namespace(req.namespace) as IEntityNamespace | ITypeNamespace | IEnumNamespace
         }
         if (this.kind === EnumKind) {
             if (!this.namespace) {
@@ -381,6 +377,7 @@ export interface IEntityMinimal extends ITypeMinimal, MetaFields {}
 interface IEntityInfo<E extends IEntityMinimal> {
     namespace: IEntityNamespace
     actions: IEntityAction[]
+    associations: IEntityAssociation[]
     getTypeNamespace(): ITypeEntityNamespace
     getName(): Name
     getNameFriendly(): string
@@ -391,16 +388,21 @@ interface IEntityInfo<E extends IEntityMinimal> {
 export interface EntityInfoReq<E extends IEntityMinimal = any> {
     namespace: EntityNamespaceReq
     actions: EntityActionReq[]
+    associations: EntityAssociationReq[]
 }
 
 export class EntityInfo<E extends IEntityMinimal> implements IEntityInfo<E> {
     namespace: IEntityNamespace
+    associations: IEntityAssociation[] = []
     actions: EntityAction[] = []
 
     constructor(req: EntityInfoReq) {
         this.namespace = new Namespace(req.namespace) as IEntityNamespace
         req.actions.forEach((elem) => {
             this.actions.push(new EntityAction(elem))
+        })
+        req.associations.forEach((elem) => {
+            this.associations.push(new EntityAssociation(elem))
         })
         if (!this.namespace.service || !this.namespace.entity) {
             throw new Error('Service and Entity name is required')
@@ -455,6 +457,42 @@ export class EntityInfo<E extends IEntityMinimal> implements IEntityInfo<E> {
 }
 
 /* * * * * *
+ * Entity Association
+ * * * * * */
+
+interface IEntityAssociation {
+    relationship: 'child_of' | 'parent_of'
+    type: 'one' | 'many'
+    entityNamespace: IEntityNamespace
+    name: Name
+    otherAssociationName: Name
+}
+
+export interface EntityAssociationReq {
+    relationship: 'child_of' | 'parent_of'
+    type: 'one' | 'many'
+    entityNamespace: EntityNamespaceReq
+    name: Name
+    otherAssociationName: Name
+}
+
+export class EntityAssociation implements IEntityAssociation {
+    relationship: 'child_of' | 'parent_of'
+    type: 'one' | 'many'
+    entityNamespace: IEntityNamespace
+    name: Name
+    otherAssociationName: Name
+
+    constructor(req: EntityAssociationReq) {
+        this.relationship = req.relationship
+        this.type = req.type
+        this.entityNamespace = new Namespace(req.entityNamespace)
+        this.name = req.name
+        this.otherAssociationName = req.otherAssociationName
+    }
+}
+
+/* * * * * *
  * Entity Action
  * * * * * */
 
@@ -475,7 +513,7 @@ class EntityAction implements IEntityAction {
 
     constructor(req: EntityActionReq) {
         this.name = req.name
-        this.methodNamespace = new Namespace(req.methodNamespace) as IMethodEntityNamespace
+        this.methodNamespace = new Namespace(req.methodNamespace)
     }
 
     getLabel(): string {
@@ -502,7 +540,7 @@ export class Enum implements IEnum {
     values: IEnumValue[] = []
 
     constructor(req: EnumReq) {
-        this.namespace = new Namespace(req.namespace) as IEnumNamespace
+        this.namespace = new Namespace(req.namespace)
         req.values.forEach((elem) => {
             this.values.push(new EnumValue(elem))
         })
@@ -576,9 +614,9 @@ export class Method<reqT = any, resT = any> implements IMethod<reqT, resT> {
     constructor(req: MethodReq) {
         this.namespace = new Namespace(req.namespace) as IMethodNamespace
         if (req.requestTypeNamespace) {
-            this.requestTypeNamespace = new Namespace(req.requestTypeNamespace) as ITypeNamespace
+            this.requestTypeNamespace = new Namespace(req.requestTypeNamespace)
         }
-        this.responseTypeNamespace = new Namespace(req.responseTypeNamespace) as ITypeNamespace
+        this.responseTypeNamespace = new Namespace(req.responseTypeNamespace)
         this.apis = req.apis
 
         if (!this.namespace.service || !this.namespace.method) {
