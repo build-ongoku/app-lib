@@ -22,7 +22,7 @@ const getBaseURL = (): string => {
         console.error('[Provider] [getBaseURL] Port not set. Defaulting to 80')
         port = '80'
     }
-    return `http://${host}:${port}/api/`
+    return `http://${host}:${port}/api`
 }
 
 // addBaseURL adds the base URL to the path
@@ -31,14 +31,14 @@ const addBaseURL = (path: string): string => {
     if (path.startsWith('/')) {
         path = path.slice(1)
     }
-    return getBaseURL() + path
+    return getBaseURL() + '/' + path
 }
 
 // joinURL takes a list of strings and joins them with a slash
 export const joinURL = (...parts: string[]): string => {
     // Remove any leading or trailing slashes from each part
     parts = parts.map((p) => p.replace(/^\/|\/$/g, ''))
-    return parts.join('/')
+    return '/' + parts.join('/')
 }
 
 export interface HTTPRequest<D> extends Omit<AxiosRequestConfig<D>, 'method' | 'url'> {

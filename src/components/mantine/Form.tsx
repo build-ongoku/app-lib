@@ -72,6 +72,7 @@ export const Form = <FormT extends Record<string, any>, RequestT = FormT, Respon
                 props.onSuccess(resp.data)
             }
             if (props.redirectPath) {
+                console.log('[Form] [useEffect] props.redirectPath detected: Redirecting to', props.redirectPath)
                 router.push(props.redirectPath)
             } else {
                 setProcessing(false)

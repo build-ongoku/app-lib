@@ -189,9 +189,15 @@ const EntityActionButtons = <E extends IEntityMinimal>(props: { entityInfo: Enti
                 key={action.name.toRaw()}
                 onClick={() => {
                     console.log('[EntityDetail] [EntityActionButtons] [Button] Calling action', 'action', action.name.toRaw())
-                    method.makeAPIRequest<DefaultEntityRequest, E>({
-                        ID: props.id,
-                    })
+                    method
+                        .makeAPIRequest<DefaultEntityRequest, E>({
+                            ID: props.id,
+                        })
+                        .then((resp) => {
+                            console.log('[EntityDetail] [EntityActionButtons] [Button] [Response]', 'data', resp.data)
+                            // refresh the page
+                            window.location.reload()
+                        })
                 }}
             >
                 {action.name.toCapital()}

@@ -55,8 +55,9 @@ export const EntityAddForm = <E extends IEntityMinimal = any>(props: EntityAddFo
             onSuccess={(data: E) => {
                 console.log('[EntityAddForm] [onSuccess]', 'data', data)
                 if (data.id) {
-                    console.log('[EntityAddForm] [onSuccess] Redirecting to', joinURL(entityInfo.namespace.toURLPath(), data.id))
-                    router.push(joinURL(entityInfo.namespace.toURLPath(), data.id))
+                    const redirectURL = joinURL(entityInfo.namespace.toURLPath(), data.id)
+                    console.log('[EntityAddForm] [onSuccess] Redirecting to', redirectURL)
+                    router.push(redirectURL)
                     return
                 }
             }}
