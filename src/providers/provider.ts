@@ -311,8 +311,9 @@ interface IDefaultFile {
 export const uploadFile = async <FileT extends IDefaultFile = IDefaultFile>(file: File, onProgress: (progress: number) => void): Promise<GokuHTTPResponse<FileT>> => {
     // Make a post request to the file entity upload endpoint
     // Get the File entity
-    const fileEntityNamespace = new Namespace({ service: 'file', entity: 'file' })
-    const fullUrl = addBaseURL(fileEntityNamespace.toURLPath() + '/upload')
+    const fileEntityNamespace = new Namespace({ service: 'core' })
+    const relPath = joinURL('v1/', fileEntityNamespace.toURLPath(), 'file/upload')
+    const fullUrl = addBaseURL(relPath)
 
     const session = getSessionCookie()
     const headers = new Headers()
