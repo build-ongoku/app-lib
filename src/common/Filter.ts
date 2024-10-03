@@ -1,18 +1,18 @@
 import { Email, ID } from '@ongoku/app-lib/src/common/scalars'
 
 export enum Operator {
-    EQUAL,
-    NOT_EQUAL,
-    IN,
-    GREATER_THAN,
-    GREATER_THAN_EQUAL,
-    LESS_THAN,
-    LESS_THAN_EQUAL,
-    LIKE,
-    ILIKE,
-    NOT_LIKE,
-    IS_NULL,
-    IS_NOT_NULL,
+    EQUAL = 'EQ',
+    NOT_EQUAL = 'NE',
+    IN = 'IN',
+    GREATER_THAN = 'GREATER_THAN',
+    GREATER_THAN_EQUAL = 'GREATER_THAN_EQUAL',
+    LESS_THAN = 'LESS_THAN',
+    LESS_THAN_EQUAL = 'LESS_THAN_EQUAL',
+    LIKE = 'LIKE',
+    ILIKE = 'ILIKE',
+    NOT_LIKE = 'NOT_LIKE',
+    IS_NULL = 'IS_NULL',
+    IS_NOT_NULL = 'IS_NOT_NULL',
 }
 
 export interface GenericCondition<T> {

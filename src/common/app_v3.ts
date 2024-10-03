@@ -40,6 +40,7 @@ export interface IApp {
 
     getService(namespace: ServiceNamespaceReq): Service
     getEntityInfo<E extends IEntityMinimal>(namespace: EntityNamespaceReq): EntityInfo<E> | undefined
+    getServiceEntities(namespace: ServiceNamespaceReq): EntityInfo<any>[]
     getTypeInfo<T extends ITypeMinimal>(namespace: TypeNamespaceReq): TypeInfo<T>
     getEnum(namespace: EnumNamespaceReq): Enum
     getMethod(name: MethodNamespaceReq): Method<IMethodNamespace>
@@ -125,6 +126,11 @@ export class App implements IApp {
         const key = ns.toString()
         const ret = this.entitiesMap[ns.toString()]
         return ret
+    }
+
+    getServiceEntities(nsReq: ServiceNamespaceReq): EntityInfo<any>[] {
+        const ns = new Namespace(nsReq)
+        return this.entityInfos.filter((ent) => ent.namespace.service!.equal(ns.service!))
     }
 
     getTypeInfo<T extends ITypeMinimal>(nsReq: TypeNamespaceReq): TypeInfo<T> {
@@ -465,7 +471,7 @@ interface IEntityAssociation {
     type: 'one' | 'many'
     entityNamespace: IEntityNamespace
     name: Name
-    otherAssociationName: Name
+    otherAssociationName?: Name
 }
 
 export interface EntityAssociationReq {
@@ -473,7 +479,7 @@ export interface EntityAssociationReq {
     type: 'one' | 'many'
     entityNamespace: EntityNamespaceReq
     name: Name
-    otherAssociationName: Name
+    otherAssociationName?: Name
 }
 
 export class EntityAssociation implements IEntityAssociation {
@@ -481,7 +487,7 @@ export class EntityAssociation implements IEntityAssociation {
     type: 'one' | 'many'
     entityNamespace: IEntityNamespace
     name: Name
-    otherAssociationName: Name
+    otherAssociationName?: Name
 
     constructor(req: EntityAssociationReq) {
         this.relationship = req.relationship

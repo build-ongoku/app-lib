@@ -9,9 +9,10 @@ import { RequiredFields } from './types'
 export const acronyms = ['api', 'dal', 'http', 'https', 'id', 'jwt', 'sha', 'ui', 'url', 'usa', 'uuid']
 
 interface IName {
-    toRaw(): string
     equal(other: IName): boolean
+    append(suffix: string): Name
 
+    toRaw(): string
     toCapital(): string
     toSnake(): string
     toPascal(): string
@@ -28,12 +29,17 @@ export class Name implements IName {
         this.raw = snakeCase(raw)
     }
 
-    toRaw(): string {
-        return this.raw
-    }
-
     equal(other: IName): boolean {
         return this.raw === other.toRaw()
+    }
+
+    append(suffix: string): Name {
+        // convert suffix to snake case
+        return new Name(this.raw + '_' + snakeCase(suffix))
+    }
+
+    toRaw(): string {
+        return this.raw
     }
 
     toCapital(): string {

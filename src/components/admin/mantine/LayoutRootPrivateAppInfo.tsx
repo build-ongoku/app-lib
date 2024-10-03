@@ -1,7 +1,7 @@
 'use client'
 
 import { useContext } from 'react'
-import { Loader } from '@mantine/core'
+import { Loader, NavLink } from '@mantine/core'
 import { Anchor, AppShell, Burger, Group, Stack, Image, Title, Button } from '@mantine/core'
 import { useDisclosure } from '@mantine/hooks'
 import { useAuth } from '@ongoku/app-lib/src/common/AuthContext'
@@ -77,22 +77,22 @@ const AppLayout = (props: { children: React.ReactNode }) => {
                 </Group>
             </AppShell.Header>
             <AppShell.Navbar>
-                <Stack className="pt-10" align="flex-start" justify="flex-start" gap="xl">
-                    {appInfo.entityInfos.map((entityInfo) => {
+                <>
+                    {appInfo.services.map((svc) => {
+                        const entities = appInfo.getServiceEntities(svc.namespace.toRaw())
+                        // If service has no entities, don't show it in the navbar
+                        if (!entities || entities.length === 0) {
+                            return null
+                        }
                         return (
-                            <Button
-                                key={entityInfo.getName().toRaw()}
-                                className="mx-5 text-2xl"
-                                variant="light"
-                                onClick={() => {
-                                    router.push(`${entityInfo.namespace.toURLPath()}/list`)
-                                }}
-                            >
-                                {entityInfo.getNameFriendly()}
-                            </Button>
+                            <NavLink key={svc.getName().toRaw()} href={`svc-${svc.getName().toRaw()}`} label={svc.getNameFriendly()}>
+                                {entities.map((ent) => {
+                                    return <NavLink key={ent.namespace.toString()} href={`${ent.namespace.toURLPath()}/list`} label={ent.getNameFriendly()} />
+                                })}
+                            </NavLink>
                         )
                     })}
-                </Stack>
+                </>
             </AppShell.Navbar>
             <AppShell.Main>
                 <div className="p-10">
