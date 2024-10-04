@@ -81,9 +81,18 @@ export const EntityListTableInner = <E extends IEntityMinimal>(props: { entityIn
     const cols = getDefaultEntityColumns<E>(props.entityInfo)
     const colsMemo = useMemo<MRT_ColumnDef<E>[]>(() => cols, [])
 
+    const fancyTable = props.data.items.length > 10
+
     const table = useMantineReactTable<E>({
         columns: colsMemo,
         data: props.data.items ?? [],
+        enableColumnActions: fancyTable,
+        enableColumnFilters: fancyTable,
+        enablePagination: fancyTable,
+        enableSorting: fancyTable,
+        mantineTableProps: {
+            withColumnBorders: false,
+        },
     })
 
     return <MantineReactTable table={table} />

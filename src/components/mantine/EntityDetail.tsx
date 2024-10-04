@@ -47,7 +47,7 @@ const EntityAssociations = <E extends IEntityMinimal>(props: { entityInfo: Entit
         return <EntityAssociationGeneric key={assoc.name.toRaw()} entityInfo={props.entityInfo} assoc={assoc} entityID={props.entityID} entityData={props.entityData} />
     })
 
-    return <div>{items}</div>
+    return <div className="flex flex-col gap-10">{items}</div>
 }
 
 const EntityAssociationGeneric = <E extends IEntityMinimal>(props: { entityInfo: EntityInfo<E>; assoc: EntityAssociation; entityID: ID; entityData: E }) => {
@@ -207,7 +207,11 @@ const EntityActionButtons = <E extends IEntityMinimal>(props: { entityInfo: Enti
                         })
                         .then((resp) => {
                             console.log('[EntityDetail] [EntityActionButtons] [Button] [Response]', 'data', resp.data)
-                            // refresh the page
+                            // refresh the page only if the action is successful
+                            if (resp.error) {
+                                console.error('[EntityDetail] [EntityActionButtons] [Button] [Response] Error', 'error', resp.error)
+                                return
+                            }
                             window.location.reload()
                         })
                 }}
