@@ -1,4 +1,4 @@
-import { ColorSchemeScript, createTheme, MantineProvider } from '@mantine/core'
+import { ColorSchemeScript, createTheme, InputWrapper, MantineProvider } from '@mantine/core'
 import { AuthProvider } from '@ongoku/app-lib/src/common/AuthContext'
 
 const theme = createTheme({
@@ -53,24 +53,10 @@ const theme = createTheme({
                 legend: 'text-xl font-light',
             },
         },
-        TextInput: {
+        // Do it for all input components
+        InputWrapper: {
             classNames: {
                 label: 'text-md font-light',
-            },
-        },
-        PasswordInput: {
-            classNames: {
-                label: 'text-md font-light',
-            },
-        },
-        JsonInput: {
-            classNames: {
-                label: 'text-md font-light',
-            },
-        },
-        Input: {
-            classNames: {
-                input: 'text-md font-light',
             },
         },
     },

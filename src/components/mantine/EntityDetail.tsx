@@ -1,4 +1,4 @@
-import { useGetEntity, useListEntityV2 } from '@ongoku/app-lib/src/providers/provider'
+import { FetchFunc, useGetEntity, useListEntityV2 } from '@ongoku/app-lib/src/providers/provider'
 import { Button, ButtonGroup, Title } from '@mantine/core'
 import { ServerResponseWrapper } from '@ongoku/app-lib/src/components/mantine/ServerResponseWrapper'
 import { EntityAssociation, EntityInfo, IEntityMinimal } from '@ongoku/app-lib/src/common/app_v3'
@@ -14,7 +14,7 @@ export const EntityDetail = <E extends IEntityMinimal = any>(props: { entityInfo
     // Todo: Assume that the identifier is the id for now but this could include any other human readable identifier
 
     // Fetch the entity from the server
-    const [resp] = useGetEntity<E>({
+    const [resp, refetch] = useGetEntity<E>({
         entityInfo,
         data: {
             id: identifier,
@@ -27,7 +27,7 @@ export const EntityDetail = <E extends IEntityMinimal = any>(props: { entityInfo
                 {resp.data && (
                     <div className="flex flex-col gap-4">
                         <Title order={1}>{entityInfo.getEntityNameFriendly(resp.data)}</Title>
-                        <EntityActionButtons entityInfo={entityInfo} id={identifier} />
+                        <EntityActionButtons entityInfo={entityInfo} id={identifier} refetchEntity={refetch} />
                         <pre>{JSON.stringify(resp.data, null, 2)}</pre>
                         <EntityAssociations entityInfo={entityInfo} entityID={identifier} entityData={resp.data} />
                     </div>
@@ -178,7 +178,7 @@ interface DefaultEntityRequest {
     ID: string
 }
 
-const EntityActionButtons = <E extends IEntityMinimal>(props: { entityInfo: EntityInfo<E>; id: ID }) => {
+const EntityActionButtons = <E extends IEntityMinimal>(props: { entityInfo: EntityInfo<E>; id: ID; refetchEntity: FetchFunc }) => {
     const { appInfo } = useContext(AppContext)
     if (!appInfo) {
         throw new Error('AppInfo not loaded')
@@ -212,7 +212,11 @@ const EntityActionButtons = <E extends IEntityMinimal>(props: { entityInfo: Enti
                                 console.error('[EntityDetail] [EntityActionButtons] [Button] [Response] Error', 'error', resp.error)
                                 return
                             }
-                            window.location.reload()
+                            if (props.refetchEntity) {
+                                props.refetchEntity({})
+                            } else {
+                                window.location.reload()
+                            }
                         })
                 }}
             >

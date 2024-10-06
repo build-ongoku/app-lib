@@ -170,7 +170,15 @@ export const TimestampInput = (props: InputProps<DateTimePickerProps>) => {
 export const SelectInput = (props: InputProps<SelectProps>) => {
     const { form } = props
     return (
-        <Select label={props.label} description={props.description} placeholder={props.placeholder} key={props.identifier} data={props.internalProps!.data} {...form.getInputProps(props.identifier)} />
+        <Select
+            label={props.label}
+            description={props.description}
+            placeholder={props.placeholder}
+            key={props.identifier}
+            data={props.internalProps!.data}
+            searchable
+            {...form.getInputProps(props.identifier)}
+        />
     )
 }
 

@@ -112,7 +112,7 @@ export interface GetEntityRequest {
     id: scalars.ID
 }
 
-export const useGetEntity = <E extends IEntityMinimal = any>(props: EntityHttpRequest<E, GetEntityRequest>): readonly [HTTPResponse<E>] => {
+export const useGetEntity = <E extends IEntityMinimal = any>(props: EntityHttpRequest<E, GetEntityRequest>): readonly [HTTPResponse<E>, FetchFunc] => {
     const { entityInfo, data } = props
 
     console.log('[Provider] [Get Entity]', 'Fetching entity', 'entityName', entityInfo.getName().toRaw(), 'id', data?.id)
@@ -128,7 +128,7 @@ export const useGetEntity = <E extends IEntityMinimal = any>(props: EntityHttpRe
         fetch({})
     }, [])
 
-    return [resp]
+    return [resp, fetch]
 }
 
 export interface ListEntityRequest<E extends IEntityMinimal> {
@@ -198,7 +198,7 @@ export interface GokuHTTPResponse<T = any> {
 
 interface MustGokuHTTPResponse<T = any> extends RequiredFields<GokuHTTPResponse<T>, 'data'> {}
 
-type FetchFunc<D = any> = (config: HTTPFetchRequest<D>) => void
+export type FetchFunc<D = any> = (config: HTTPFetchRequest<D>) => void
 
 export const makeRequest = async <T = any, D = any>(props: HTTPRequest<D>): Promise<GokuHTTPResponse<T>> => {
     const { path, unauthenticated } = props
@@ -270,6 +270,12 @@ export const useMakeRequest = <T = any, D = any>(props: HTTPRequest<D>): readonl
 
     const fetch = async (fetchProps: HTTPFetchRequest<D>) => {
         // Whenever we fetch, we want to reset some values
+        if (!loading) {
+            setLoading(true)
+        }
+        if (finished) {
+            setFinished(false)
+        }
         if (data) {
             setData(undefined)
         }
@@ -278,12 +284,6 @@ export const useMakeRequest = <T = any, D = any>(props: HTTPRequest<D>): readonl
         }
         if (statusCode) {
             setStatusCode(undefined)
-        }
-        if (!loading) {
-            setLoading(true)
-        }
-        if (finished) {
-            setFinished(false)
         }
 
         // Overwrite the props with any new values in the config
