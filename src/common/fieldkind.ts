@@ -42,6 +42,11 @@ export const EmailKind: IFieldKind = {
     name: 'email',
 }
 
+export const GenericDataKind: IFieldKind = {
+    ...StringKind,
+    name: 'generic data',
+}
+
 export const EnumKind: IFieldKind = {
     ...DefaultFieldKind,
     name: 'enum',
