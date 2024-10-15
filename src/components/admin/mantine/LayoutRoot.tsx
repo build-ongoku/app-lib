@@ -1,4 +1,5 @@
-import { ColorSchemeScript, createTheme, InputWrapper, MantineProvider } from '@mantine/core'
+import { ColorSchemeScript, createTheme, MantineProvider } from '@mantine/core'
+import { Notifications } from '@mantine/notifications'
 import { AuthProvider } from '@ongoku/app-lib/src/common/AuthContext'
 
 const theme = createTheme({
@@ -70,6 +71,7 @@ export const LayoutRoot = (props: { children: React.ReactNode }) => {
             </head>
             <body>
                 <MantineProvider theme={theme}>
+                    <Notifications />
                     <AuthProvider>{props.children}</AuthProvider>
                 </MantineProvider>
             </body>

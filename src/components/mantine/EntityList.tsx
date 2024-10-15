@@ -7,7 +7,7 @@ import { MantineReactTable, useMantineReactTable, type MRT_ColumnDef } from 'man
 import 'mantine-react-table/styles.css' //make sure MRT styles were imported in your app root (once)
 import { useMemo } from 'react'
 import { useRouter } from 'next/navigation'
-import { getEntityAddPath } from '../EntityLink'
+import { getEntityAddPath } from '@ongoku/app-lib/src/components/EntityLink'
 import { EntityInfo, IEntityMinimal } from '@ongoku/app-lib/src/common/app_v3'
 
 dayjs.extend(relativeTime)

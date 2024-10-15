@@ -1,4 +1,5 @@
 import { EnumNamespaceReq, IEnumNamespace, ITypeNamespace, TypeNamespaceReq } from '@/common/namespacev2'
+import { Email } from '@/common/scalars'
 import {
     ComboboxData,
     ComboboxItem,
@@ -78,7 +79,8 @@ const GenericInput = <T extends ITypeMinimal = any>(props: {
             return <DateInput label={label} placeholder={defaultPlaceholder} identifier={identifier} form={props.form} />
         case fieldkind.TimestampKind:
             return <TimestampInput label={label} placeholder={defaultPlaceholder} identifier={identifier} form={props.form} />
-
+        case fieldkind.EmailKind:
+            return <EmailInput label={label} placeholder={defaultPlaceholder} identifier={identifier} form={props.form} />
         case fieldkind.EnumKind: {
             // Get enum values for the field
             const ns = field.dtype.namespace as IEnumNamespace
@@ -167,6 +169,20 @@ export const TimestampInput = (props: InputProps<DateTimePickerProps>) => {
     return <DateTimePicker label={props.label} description={props.description} placeholder={props.placeholder} key={props.identifier} {...form.getInputProps(props.identifier)} />
 }
 
+export const EmailInput = (props: InputProps<TextInputProps>) => {
+    const { form } = props
+    // Update the validate function for a specific field
+
+    // form.validate = (values: any) => {
+    //     return {
+    //         ...form.validate,
+    //         [props.identifier]: /^\S+@\S+$/.test(values.email) ? null : 'Invalid email',
+    //     }
+    // }
+
+    return <TextInput label={props.label} description={props.description} placeholder={props.placeholder} key={props.identifier} {...form.getInputProps(props.identifier)} leftSection="@" />
+}
+
 export const SelectInput = (props: InputProps<SelectProps>) => {
     const { form } = props
     return (
@@ -184,18 +200,7 @@ export const SelectInput = (props: InputProps<SelectProps>) => {
 
 export const JSONInput = (props: InputProps<JsonInputProps>) => {
     const { form } = props
-    return (
-        <JsonInput
-            label={props.label}
-            placeholder={props.placeholder}
-            validationError="Invalid JSON"
-            formatOnBlur
-            autosize
-            minRows={4}
-            key={props.identifier}
-            {...form.getInputProps(props.identifier)}
-        />
-    )
+    return <JsonInput label={props.label} placeholder={props.placeholder} validationError="Invalid JSON" formatOnBlur autosize key={props.identifier} {...form.getInputProps(props.identifier)} />
 }
 
 export const FileInput = (props: InputProps<never>) => {

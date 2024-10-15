@@ -91,6 +91,7 @@ export interface INamespace<NsReqT extends NamespaceReq> {
     types?: Name[]
     enum?: Name
     method?: Name
+    getTypeName(): Name
     toRaw(): NsReqT
     toString(): string
     toURLPath(): string
@@ -175,6 +176,13 @@ export class Namespace<NsReqT extends NamespaceReq> implements INamespace<NsReqT
 
     toRaw(): NsReqT {
         return this.raw
+    }
+
+    getTypeName(): Name {
+        if (!this.types || this.types.length === 0) {
+            throw new Error('Namespace does not have types')
+        }
+        return this.types[0]
     }
 
     toString(): string {

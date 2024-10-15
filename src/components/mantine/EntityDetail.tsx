@@ -2,14 +2,19 @@ import { FetchFunc, useGetEntity, useListEntityV2 } from '@ongoku/app-lib/src/pr
 import { Button, ButtonGroup, Title } from '@mantine/core'
 import { ServerResponseWrapper } from '@ongoku/app-lib/src/components/mantine/ServerResponseWrapper'
 import { EntityAssociation, EntityInfo, IEntityMinimal } from '@ongoku/app-lib/src/common/app_v3'
-import { useContext } from 'react'
+import { useContext, useState } from 'react'
 import { AppContext } from '@ongoku/app-lib/src/common/AppContextV3'
 import { ID } from '@ongoku/app-lib/src/common/scalars'
 import { Operator } from '@ongoku/app-lib/src/common/Filter'
-import { EntityListTableInner } from './EntityList'
+import { getEntityAddPath } from '@ongoku/app-lib/src/components/EntityLink'
+import { EntityListTableInner } from '@ongoku/app-lib/src/components/mantine/EntityList'
+import { useRouter } from 'next/navigation'
+import { notifications } from '@mantine/notifications'
 
 export const EntityDetail = <E extends IEntityMinimal = any>(props: { entityInfo: EntityInfo<E>; identifier: string }) => {
     const { entityInfo, identifier } = props
+
+    const router = useRouter()
 
     // Todo: Assume that the identifier is the id for now but this could include any other human readable identifier
 
@@ -26,8 +31,17 @@ export const EntityDetail = <E extends IEntityMinimal = any>(props: { entityInfo
             <ServerResponseWrapper error={resp.error} loading={resp.loading}>
                 {resp.data && (
                     <div className="flex flex-col gap-4">
-                        <Title order={1}>{entityInfo.getEntityNameFriendly(resp.data)}</Title>
-                        <EntityActionButtons entityInfo={entityInfo} id={identifier} refetchEntity={refetch} />
+                        <div className="flex justify-between my-5">
+                            <Title order={2}>{`${entityInfo.getNameFriendly()}: ${entityInfo.getEntityNameFriendly(resp.data)}`}</Title>
+                            <Button
+                                onClick={() => {
+                                    router.push(getEntityAddPath(entityInfo))
+                                }}
+                            >
+                                Add New {entityInfo.getNameFriendly()}
+                            </Button>
+                        </div>
+                        <EntityActions entityInfo={entityInfo} id={identifier} refetchEntity={refetch} />
                         <pre>{JSON.stringify(resp.data, null, 2)}</pre>
                         <EntityAssociations entityInfo={entityInfo} entityID={identifier} entityData={resp.data} />
                     </div>
@@ -178,7 +192,11 @@ interface DefaultEntityRequest {
     ID: string
 }
 
-const EntityActionButtons = <E extends IEntityMinimal>(props: { entityInfo: EntityInfo<E>; id: ID; refetchEntity: FetchFunc }) => {
+interface DefaultEntityResponse<E extends IEntityMinimal> {
+    Object: E
+}
+
+const EntityActions = <E extends IEntityMinimal>(props: { entityInfo: EntityInfo<E>; id: ID; refetchEntity: FetchFunc }) => {
     const { appInfo } = useContext(AppContext)
     if (!appInfo) {
         throw new Error('AppInfo not loaded')
@@ -193,30 +211,37 @@ const EntityActionButtons = <E extends IEntityMinimal>(props: { entityInfo: Enti
         const mthdNs = action.methodNamespace
         const method = appInfo.getMethod(mthdNs.toRaw())
         if (!method) {
-            console.error('[EntityDetail] [EntityActionButtons] Method not found', 'namespace', action.methodNamespace)
+            console.error('[EntityDetail] [EntityActions] Method not found', 'namespace', action.methodNamespace)
             throw new Error('Method not found')
         }
         return (
             <Button
                 key={action.name.toRaw()}
                 onClick={() => {
-                    console.log('[EntityDetail] [EntityActionButtons] [Button] Calling action', 'action', action.name.toRaw())
+                    console.log('[EntityDetail] [EntityActions] [Button] Calling action', 'action', action.name.toRaw())
                     method
-                        .makeAPIRequest<DefaultEntityRequest, E>({
+                        .makeAPIRequest<DefaultEntityRequest, DefaultEntityResponse<E>>({
                             ID: props.id,
                         })
                         .then((resp) => {
-                            console.log('[EntityDetail] [EntityActionButtons] [Button] [Response]', 'data', resp.data)
+                            console.log('[EntityDetail] [EntityActions] [Button] [Response]', 'data', resp.data)
                             // refresh the page only if the action is successful
                             if (resp.error) {
-                                console.error('[EntityDetail] [EntityActionButtons] [Button] [Response] Error', 'error', resp.error)
+                                console.error('[EntityDetail] [EntityActions] [Button] [Response] Error', 'error', resp.error)
+                                notifications.show({
+                                    title: `${action.name.toCapital()} Action: Failed`,
+                                    message: resp.error,
+                                    color: 'red',
+                                    position: 'bottom-right',
+                                })
                                 return
                             }
-                            if (props.refetchEntity) {
-                                props.refetchEntity({})
-                            } else {
-                                window.location.reload()
-                            }
+                            notifications.show({
+                                title: `${action.name.toCapital()} Action: Result`,
+                                message: <pre>{JSON.stringify(resp.data, null, 2)}</pre>,
+                                position: 'bottom-right',
+                            })
+                            props.refetchEntity({})
                         })
                 }}
             >
@@ -225,5 +250,9 @@ const EntityActionButtons = <E extends IEntityMinimal>(props: { entityInfo: Enti
         )
     })
 
-    return <ButtonGroup>{actionButtons}</ButtonGroup>
+    return (
+        <>
+            <ButtonGroup>{actionButtons}</ButtonGroup>
+        </>
+    )
 }

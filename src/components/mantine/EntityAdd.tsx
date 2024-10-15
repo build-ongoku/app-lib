@@ -4,7 +4,7 @@ import { AddEntityRequest, joinURL } from '@ongoku/app-lib/src/providers/provide
 import { useForm } from '@mantine/form'
 import { useRouter } from 'next/navigation'
 import React, { useContext } from 'react'
-import { EntityInfo, IEntityMinimal } from '@ongoku/app-lib/src/common/app_v3'
+import { EntityInfo, IEntityMinimal, ITypeMinimal, TypeInfo } from '@ongoku/app-lib/src/common/app_v3'
 import { AppContext } from '@ongoku/app-lib/src/common/AppContextV3'
 import { MetaFieldKeys } from '@/common/types'
 

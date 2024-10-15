@@ -146,7 +146,12 @@ export class App implements IApp {
 
     getMethod(nsReq: MethodNamespaceReq): Method<IMethodNamespace> {
         const ns = new Namespace(nsReq)
-        return this.methodsMap[ns.toString()]
+        const searchTerm = ns.toString()
+        const mthd = this.methodsMap[searchTerm]
+        if (!mthd) {
+            throw new Error(`Method not found: ${searchTerm}`)
+        }
+        return mthd
     }
 
     getEntityMethods(entNs: IEntityNamespace): IMethod[] {
@@ -601,6 +606,7 @@ interface IMethod<reqT = any, resT = any> {
     apis: IMethodAPI[]
     requestTypeNamespace?: ITypeNamespace
     responseTypeNamespace: ITypeNamespace
+    getAPIEndpoint(): string
     makeAPIRequest(req: reqT): Promise<GokuHTTPResponse<resT>>
 }
 
@@ -630,11 +636,16 @@ export class Method<reqT = any, resT = any> implements IMethod<reqT, resT> {
         }
     }
 
-    makeAPIRequest<ReqT = any, RespT = any>(req: ReqT): Promise<GokuHTTPResponse<RespT>> {
-        console.debug('[Method] [makeAPIRequest]', 'namespace', this.namespace.toString(), 'req', req)
+    getAPIEndpoint(): string {
         if (this.apis.length === 0) {
             throw new Error('No API found for method')
         }
+        const api = this.apis[0]
+        return joinURL('v' + api.version, this.namespace.toURLPath(), api.path)
+    }
+
+    makeAPIRequest<ReqT = any, RespT = any>(req: ReqT): Promise<GokuHTTPResponse<RespT>> {
+        console.debug('[Method] [makeAPIRequest]', 'namespace', this.namespace.toString(), 'req', req)
         const api = this.apis[0]
         const relPath = joinURL('v' + api.version, this.namespace.toURLPath(), api.path)
         return makeRequestV2<RespT>({ relativePath: relPath, method: api.method, data: req })
