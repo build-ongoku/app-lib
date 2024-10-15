@@ -71,7 +71,7 @@ export const LayoutRoot = (props: { children: React.ReactNode }) => {
             </head>
             <body>
                 <MantineProvider theme={theme}>
-                    <Notifications />
+                    <Notifications position="bottom-right" autoClose={false} notificationMaxHeight={10000} containerWidth={1000} />
                     <AuthProvider>{props.children}</AuthProvider>
                 </MantineProvider>
             </body>
