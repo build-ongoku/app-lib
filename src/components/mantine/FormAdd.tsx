@@ -79,6 +79,10 @@ const GenericInput = <T extends ITypeMinimal = any>(props: {
             return <DateInput label={label} placeholder={defaultPlaceholder} identifier={identifier} form={props.form} />
         case fieldkind.TimestampKind:
             return <TimestampInput label={label} placeholder={defaultPlaceholder} identifier={identifier} form={props.form} />
+        case fieldkind.IDKind:
+            return <StringInput label={label} placeholder={defaultPlaceholder} identifier={identifier} form={props.form} />
+        case fieldkind.ForeignEntityKind:
+            return <StringInput label={label} placeholder={defaultPlaceholder} identifier={identifier} form={props.form} />
         case fieldkind.EmailKind:
             return <EmailInput label={label} placeholder={defaultPlaceholder} identifier={identifier} form={props.form} />
         case fieldkind.EnumKind: {
