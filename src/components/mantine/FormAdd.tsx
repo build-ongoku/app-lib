@@ -66,6 +66,10 @@ const GenericInput = <T extends ITypeMinimal = any>(props: {
         throw new Error('AppInfo not available')
     }
 
+    if (field.isRepeated) {
+        return <DefaultInput label={label} placeholder="{}" identifier={identifier} form={props.form} />
+    }
+
     const defaultPlaceholder = ''
 
     switch (field.dtype.kind) {
@@ -118,8 +122,10 @@ const GenericInput = <T extends ITypeMinimal = any>(props: {
         case fieldkind.FileKind:
             return <FileInput identifier={identifier} form={props.form} label={label} placeholder={defaultPlaceholder} />
 
+        case fieldkind.ConditionKind:
+            return <DefaultConditionInput identifier={identifier} form={props.form} label={label} placeholder={defaultPlaceholder} />
         default:
-            return <DefaultInput label={label} placeholder="..." identifier={identifier} form={props.form} />
+            return <DefaultInput label={label} placeholder="{}" identifier={identifier} form={props.form} />
     }
 }
 
@@ -202,9 +208,35 @@ export const SelectInput = (props: InputProps<SelectProps>) => {
     )
 }
 
+const DefaultConditionInput = (props: InputProps<never>) => {
+    const { form } = props
+
+    const operators = [
+        { value: 'EQUAL' as string, label: 'Equal' },
+        { value: 'NOT_EQUAL' as string, label: 'Not Equal' },
+        { value: 'GREATER_THAN' as string, label: 'Greater Than' },
+    ]
+    return (
+        <Fieldset legend={props.label}>
+            <SelectInput label={'Operator'} placeholder={'Operator'} identifier={props.identifier + '.' + 'operator'} form={props.form} internalProps={{ data: operators }} />
+            <JSONInput label={'Values'} placeholder={'{}'} identifier={props.identifier + '.' + 'values'} form={props.form} />
+        </Fieldset>
+    )
+}
+
 export const JSONInput = (props: InputProps<JsonInputProps>) => {
     const { form } = props
-    return <JsonInput label={props.label} placeholder={props.placeholder} validationError="Invalid JSON" formatOnBlur autosize key={props.identifier} {...form.getInputProps(props.identifier)} />
+    return (
+        <JsonInput
+            label={props.label}
+            placeholder={props.placeholder}
+            validationError="The JSON you have provided looks invalid. Try using an online JSON validator?"
+            formatOnBlur
+            autosize
+            key={props.identifier}
+            {...form.getInputProps(props.identifier)}
+        />
+    )
 }
 
 export const FileInput = (props: InputProps<never>) => {

@@ -1,3 +1,5 @@
+'use client'
+
 import { ITypeMinimal, TypeInfo } from '@ongoku/app-lib/src/common/app_v3'
 import { AppContext } from '@ongoku/app-lib/src/common/AppContextV3'
 import { MetaFieldKeys } from '@ongoku/app-lib/src/common/types'

@@ -1,15 +1,15 @@
 'use client'
 
 import { useContext } from 'react'
-import { Loader, NavLink } from '@mantine/core'
-import { Anchor, AppShell, Burger, Group, Stack, Image, Title, Button } from '@mantine/core'
+import { NavLink } from '@mantine/core'
+import { Anchor, AppShell, Burger, Group, Image, Title } from '@mantine/core'
 import { useDisclosure } from '@mantine/hooks'
-import { useAuth } from '@ongoku/app-lib/src/common/AuthContext'
 import { useRouter } from 'next/navigation'
 import { Suspense } from 'react'
 import { LogoutButton } from '@ongoku/app-lib/src/components/mantine/module_user/LogoutButton'
 import { AppContext, AppProvider } from '@ongoku/app-lib/src/common/AppContextV3'
 import { App, AppReq } from '@ongoku/app-lib/src/common/app_v3'
+import { joinURL } from '@ongoku/app-lib/src/providers/provider'
 
 export const LayoutRootPrivateAppInfo = (props: { appReq: AppReq; applyOverrides?: (appInfo: App) => Promise<App>; children: React.ReactNode }) => {
     return (
@@ -18,19 +18,6 @@ export const LayoutRootPrivateAppInfo = (props: { appReq: AppReq; applyOverrides
         </AppProvider>
     )
 }
-
-// // LoadingAppContext allows to show a loader while appInfo context is being setup
-// const LoadingAppContext = (props: { children: React.ReactNode }) => {
-//     const { appInfo } = useContext(AppContext)
-
-//     if (!appInfo) {
-//         return <Loader size="xl" type="bars" />
-//     }
-
-//     console.log('[LoadingAppContext] AppInfo loaded', appInfo)
-
-//     return <AppLayout>{props.children}</AppLayout>
-// }
 
 const AppLayout = (props: { children: React.ReactNode }) => {
     const router = useRouter()
@@ -93,6 +80,16 @@ const AppLayout = (props: { children: React.ReactNode }) => {
                         )
                     })}
                 </>
+                <NavLink key={'methods'} href={`methods`} label={'Methods'}>
+                    {appInfo.methods.map((mth) => {
+                        if (!mth.namespace.entity) {
+                            // Do not show entity methods for now
+                            return (
+                                <NavLink key={mth.namespace.toString()} href={joinURL(mth.namespace.service!.toSnake(), 'method', mth.namespace.method!.toSnake())} label={mth.namespace.toLabel()} />
+                            )
+                        }
+                    })}
+                </NavLink>
             </AppShell.Navbar>
             <AppShell.Main>
                 <div className="p-10">

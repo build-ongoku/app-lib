@@ -94,6 +94,7 @@ export interface INamespace<NsReqT extends NamespaceReq> {
     getTypeName(): Name
     toRaw(): NsReqT
     toString(): string
+    toLabel(): string
     toURLPath(): string
     equal(other: INamespace<NsReqT>): boolean
 }
@@ -201,6 +202,27 @@ export class Namespace<NsReqT extends NamespaceReq> implements INamespace<NsReqT
         }
         if (this.method) {
             str = str + `.method[${this.method.toSnake()}]`
+        }
+        return str
+    }
+
+    toLabel(): string {
+        const sep = ' > '
+        let str = ''
+        if (this.service) {
+            str = str + this.service.toCapital()
+        }
+        if (this.entity) {
+            str = str + `${sep}${this.entity.toCapital()}`
+        }
+        if (this.types && this.types.length > 0) {
+            str = str + `${sep}${this.types.map((type) => type.toCapital()).join('.')}`
+        }
+        if (this.enum) {
+            str = str + `${sep}${this.enum.toCapital()}`
+        }
+        if (this.method) {
+            str = str + `${sep}${this.method.toCapital()}`
         }
         return str
     }
