@@ -221,13 +221,13 @@ interface ITypeInfo<T extends ITypeMinimal = any> {
     fields: IField[]
     getField(name: string): IField
     getTypeName(r: T): string
-    getEmptyObject(): Omit<T, MetaFieldKeys>
+    getEmptyObject(appInfo: App): Omit<T, MetaFieldKeys>
 }
 
 export interface TypeInfoReq<T extends ITypeMinimal = any> {
     namespace: TypeNamespaceReq
     fields: FieldReq[]
-    getEmptyObjectFunc?: () => Omit<T, MetaFieldKeys>
+    getEmptyObjectFunc?: (appInfo: App) => Omit<T, MetaFieldKeys>
 }
 
 export class TypeInfo<T extends ITypeMinimal = any> implements ITypeInfo<T> {
@@ -241,6 +241,9 @@ export class TypeInfo<T extends ITypeMinimal = any> implements ITypeInfo<T> {
         this.fields.forEach((f) => {
             this.fieldsMap[f.name.toRaw()] = f
         })
+        if (req.getEmptyObjectFunc) {
+            this.getEmptyObjectFunc = req.getEmptyObjectFunc
+        }
     }
 
     getField(name: string): IField {
@@ -251,11 +254,11 @@ export class TypeInfo<T extends ITypeMinimal = any> implements ITypeInfo<T> {
         return r.id
     }
 
-    getEmptyObject(): Omit<T, MetaFieldKeys> {
-        return this.getEmptyObjectFunc()
+    getEmptyObject(appInfo: App): Omit<T, MetaFieldKeys> {
+        return this.getEmptyObjectFunc(appInfo)
     }
 
-    getEmptyObjectFunc = (): Omit<T, MetaFieldKeys> => {
+    getEmptyObjectFunc = (appInfo: App): Omit<T, MetaFieldKeys> => {
         return {} as T
     }
 }
@@ -477,6 +480,8 @@ interface IEntityAssociation {
     entityNamespace: IEntityNamespace
     name: Name
     otherAssociationName?: Name
+
+    toFieldName(): Name
 }
 
 export interface EntityAssociationReq {
@@ -500,6 +505,13 @@ export class EntityAssociation implements IEntityAssociation {
         this.entityNamespace = new Namespace(req.entityNamespace)
         this.name = req.name
         this.otherAssociationName = req.otherAssociationName
+    }
+
+    toFieldName(): Name {
+        if (this.relationship === 'child_of') {
+            return this.type === 'one' ? this.name.append('id') : this.name.append('ids')
+        }
+        throw new Error('assoctaion.toFieldName() not implemented for associations of type `parent_of`. This is because the parent entity does not have a field for the child entity.')
     }
 }
 

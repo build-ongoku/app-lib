@@ -1,8 +1,8 @@
 import { Email, ID } from '@ongoku/app-lib/src/common/scalars'
 
 export enum Operator {
-    EQUAL = 'EQ',
-    NOT_EQUAL = 'NE',
+    EQUAL = 'EQUAL',
+    NOT_EQUAL = 'NOT_EQUAL',
     IN = 'IN',
     GREATER_THAN = 'GREATER_THAN',
     GREATER_THAN_EQUAL = 'GREATER_THAN_EQUAL',

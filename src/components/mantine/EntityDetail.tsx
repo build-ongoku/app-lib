@@ -102,7 +102,7 @@ const EntityAssociationChildren = <E extends IEntityMinimal, E2 extends IEntityM
     // From the entity, get the corresponding other association.
     const otherAssoc = otherEntityInfo.associations.find((a) => {
         console.log('[EntityDetail] [EntityAssociationGeneric] Finding matching association in corresponding entity')
-        const expectedRelationship = assoc.relationship === 'parent_of' ? 'child_of' : 'child_of' ? 'parent_of' : undefined
+        const expectedRelationship = assoc.relationship === 'parent_of' ? 'child_of' : assoc.relationship === 'child_of' ? 'parent_of' : undefined
         if (!expectedRelationship) {
             throw new Error('Could not determine the expected relationship of the corresponding entity association')
         }
@@ -116,14 +116,15 @@ const EntityAssociationChildren = <E extends IEntityMinimal, E2 extends IEntityM
 
     // From the other association, get the field name of the other entity that links to this entity
     // otherEntityFieldName should of type keyof E2
-    const otherEntityFieldName = otherAssoc.name.toFieldName() as keyof E
-    console.debug('[EntityDetail] [EntityAssociationGeneric] Field name for corresponding entity found:', otherEntityFieldName)
+    // const otherEntityFieldName = otherAssoc.name.toFieldName() as keyof E2
+    const otherEntityFilterFieldName = (assoc.type === 'many' ? 'having' + otherAssoc.toFieldName().toPascal() : otherAssoc.toFieldName().toFieldName()) as keyof E2
+    console.debug('[EntityDetail] [EntityAssociationGeneric] Field name for corresponding entity found:', otherEntityFilterFieldName)
 
     const [resp, loading] = useListEntityV2({
         entityInfo: otherEntityInfo,
         data: {
             filter: {
-                [otherEntityFieldName]: {
+                [otherEntityFilterFieldName]: {
                     op: Operator.EQUAL,
                     values: [entityID],
                 },

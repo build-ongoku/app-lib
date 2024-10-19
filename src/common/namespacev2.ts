@@ -22,7 +22,7 @@ interface IName {
 }
 
 export class Name implements IName {
-    raw: string
+    raw: string // always store in snake case
 
     constructor(raw: string) {
         // Convert to snake case

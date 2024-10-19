@@ -449,3 +449,51 @@ export const useListEntityV2 = <E extends IEntityMinimal>(props: {
 
     return [resp, loading]
 }
+
+/* * * * * *
+ * Query by Text V2
+ * * * * * */
+
+export interface QueryByTextDefaultRequest {
+    queryText: string
+}
+
+export interface QueryByTextDefaultResponse<E extends IEntityMinimal> extends DefaultResponseEntityList<E> {}
+
+export const queryByTextV2 = <E extends IEntityMinimal>(props: { entityInfo: EntityInfo<E>; data: QueryByTextDefaultRequest }): Promise<GokuHTTPResponse<QueryByTextDefaultResponse<E>>> => {
+    // Get the path to make the request
+    const path = joinURL('v1/', props.entityInfo.namespace.toURLPath(), 'query_by_text')
+
+    // Make the request
+    return makeRequestV2<QueryByTextDefaultResponse<E>, QueryByTextDefaultRequest>({
+        relativePath: path,
+        method: 'GET',
+        data: props.data,
+    })
+}
+
+// A refetch function that can be called to refetch the data. It updates the already existing state.
+type RefetchFunc = () => void
+
+export const useQueryByTextV2 = <E extends IEntityMinimal>(props: {
+    entityInfo: EntityInfo<E>
+    data: QueryByTextDefaultRequest
+}): [GokuHTTPResponse<QueryByTextDefaultResponse<E>> | undefined, boolean, RefetchFunc] => {
+    const [resp, setResp] = useState<GokuHTTPResponse<QueryByTextDefaultResponse<E>>>()
+    const [loading, setLoading] = useState<boolean>(true)
+
+    const refetch = () => {
+        setLoading(true)
+        console.log('[Provider] [useQueryByTextV2] Fetching query by text list', 'entity', props.entityInfo.getName().toRaw())
+        queryByTextV2(props).then((r) => {
+            setResp(r)
+            setLoading(false)
+        })
+    }
+
+    useEffect(() => {
+        refetch()
+    }, [])
+
+    return [resp, loading, refetch]
+}

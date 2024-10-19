@@ -1,5 +1,6 @@
-import { EnumNamespaceReq, IEnumNamespace, ITypeNamespace, TypeNamespaceReq } from '@/common/namespacev2'
-import { Email } from '@/common/scalars'
+import { Operator } from '@ongoku/app-lib/src/common/Filter'
+import { EntityNamespaceReq, EnumNamespaceReq, IEnumNamespace, ITypeNamespace, Namespace, TypeNamespaceReq } from '@/common/namespacev2'
+
 import {
     ComboboxData,
     ComboboxItem,
@@ -8,6 +9,7 @@ import {
     JsonInputProps,
     FileInput as MantineFileInput,
     NumberInput as MantineNumberInput,
+    MultiSelect,
     NumberInputProps,
     Select,
     SelectProps,
@@ -21,8 +23,8 @@ import { UseFormReturnType } from '@mantine/form'
 import { Field, ITypeMinimal, TypeInfo } from '@ongoku/app-lib/src/common/app_v3'
 import { AppContext } from '@ongoku/app-lib/src/common/AppContextV3'
 import * as fieldkind from '@ongoku/app-lib/src/common/fieldkind'
-import { uploadFile } from '@ongoku/app-lib/src/providers/provider'
-import React, { useContext, useState } from 'react'
+import { queryByTextV2, uploadFile, useQueryByTextV2 } from '@ongoku/app-lib/src/providers/provider'
+import React, { useContext, useEffect, useState } from 'react'
 
 export const TypeAddForm = <T extends ITypeMinimal = any>(props: {
     typeInfo: TypeInfo<T>
@@ -66,7 +68,8 @@ const GenericInput = <T extends ITypeMinimal = any>(props: {
         throw new Error('AppInfo not available')
     }
 
-    if (field.isRepeated) {
+    // We can't process repeated fields yet, except for "select" where we can simply allow multiple selections.
+    if (field.isRepeated && field.dtype.kind !== fieldkind.ForeignEntityKind && field.dtype.kind !== fieldkind.EnumKind) {
         return <DefaultInput label={label} placeholder="{}" identifier={identifier} form={props.form} />
     }
 
@@ -86,7 +89,20 @@ const GenericInput = <T extends ITypeMinimal = any>(props: {
         case fieldkind.IDKind:
             return <StringInput label={label} placeholder={defaultPlaceholder} identifier={identifier} form={props.form} />
         case fieldkind.ForeignEntityKind:
-            return <StringInput label={label} placeholder={defaultPlaceholder} identifier={identifier} form={props.form} />
+            const ns = field.dtype.namespace
+            if (!ns) {
+                throw new Error(`Foreign Entity field [${field.name}] does not have a reference namespace`)
+            }
+            return (
+                <ForeignEntityInput
+                    foreignEntityNs={ns.toRaw() as EntityNamespaceReq}
+                    label={label}
+                    placeholder={`Select ${ns.entity ? ns.entity.toCapital() : ''}`}
+                    identifier={identifier}
+                    form={props.form}
+                    multiple={field.isRepeated}
+                />
+            )
         case fieldkind.EmailKind:
             return <EmailInput label={label} placeholder={defaultPlaceholder} identifier={identifier} form={props.form} />
         case fieldkind.EnumKind: {
@@ -125,6 +141,7 @@ const GenericInput = <T extends ITypeMinimal = any>(props: {
         case fieldkind.ConditionKind:
             return <DefaultConditionInput identifier={identifier} form={props.form} label={label} placeholder={defaultPlaceholder} />
         default:
+            console.warn('Field type not found. Using default input', field.dtype.kind)
             return <DefaultInput label={label} placeholder="{}" identifier={identifier} form={props.form} />
     }
 }
@@ -195,32 +212,18 @@ export const EmailInput = (props: InputProps<TextInputProps>) => {
 
 export const SelectInput = (props: InputProps<SelectProps>) => {
     const { form } = props
+    const Component = props.internalProps?.multiple ? MultiSelect : Select
     return (
-        <Select
+        <Component
             label={props.label}
             description={props.description}
             placeholder={props.placeholder}
             key={props.identifier}
             data={props.internalProps!.data}
             searchable
+            clearable
             {...form.getInputProps(props.identifier)}
         />
-    )
-}
-
-const DefaultConditionInput = (props: InputProps<never>) => {
-    const { form } = props
-
-    const operators = [
-        { value: 'EQUAL' as string, label: 'Equal' },
-        { value: 'NOT_EQUAL' as string, label: 'Not Equal' },
-        { value: 'GREATER_THAN' as string, label: 'Greater Than' },
-    ]
-    return (
-        <Fieldset legend={props.label}>
-            <SelectInput label={'Operator'} placeholder={'Operator'} identifier={props.identifier + '.' + 'operator'} form={props.form} internalProps={{ data: operators }} />
-            <JSONInput label={'Values'} placeholder={'{}'} identifier={props.identifier + '.' + 'values'} form={props.form} />
-        </Fieldset>
     )
 }
 
@@ -237,6 +240,60 @@ export const JSONInput = (props: InputProps<JsonInputProps>) => {
             {...form.getInputProps(props.identifier)}
         />
     )
+}
+
+interface ForeignEntityInputProps extends InputProps<never> {
+    foreignEntityNs: EntityNamespaceReq
+    // Allow multiple selections?
+    multiple?: boolean
+}
+
+const ForeignEntityInput = (props: ForeignEntityInputProps) => {
+    const [data, setData] = useState<ComboboxData | undefined>(undefined)
+    const [searchTerm, setSearchTerm] = useState<string>('')
+
+    // Get the entity info
+    const { appInfo } = useContext(AppContext)
+    if (!appInfo) {
+        throw new Error('AppInfo not available')
+    }
+
+    const entityInfo = appInfo.getEntityInfo(props.foreignEntityNs)
+    if (!entityInfo) {
+        throw new Error(`Entity Info not found for ${props.foreignEntityNs}`)
+    }
+
+    useEffect(() => {
+        queryByTextV2({
+            entityInfo: entityInfo,
+            data: { queryText: searchTerm },
+        }).then((response) => {
+            if (response.error) {
+                console.error('Error fetching data', response.error)
+                return
+            }
+            if (!response.data) {
+                console.error('No data returned')
+                return
+            }
+            if (!response.data.items || response.data.items.length === 0) {
+                console.error('No items returned')
+                return
+            }
+            const options: ComboboxData = response.data.items.map((e): ComboboxItem => {
+                return { value: e.id, label: entityInfo.getEntityNameFriendly(e) }
+            })
+            setData(options)
+        })
+    }, [searchTerm])
+
+    const internalProps: SelectProps = {
+        onSearchChange: setSearchTerm,
+        multiple: props.multiple,
+        data: data,
+    }
+
+    return <SelectInput {...props} internalProps={internalProps} />
 }
 
 export const FileInput = (props: InputProps<never>) => {
@@ -282,5 +339,21 @@ export const FileInput = (props: InputProps<never>) => {
             description={props.description}
             key={props.identifier}
         />
+    )
+}
+
+// Todo: Consider implementing conditions as Goku types, which would allow us to use the TypeAddForm for conditions as well.
+const DefaultConditionInput = (props: InputProps<never>) => {
+    const { form } = props
+
+    // Loop over the operators and create a ComboboxData object
+    const operators: ComboboxData = Object.keys(Operator).map((op) => {
+        return { value: op, label: op }
+    })
+    return (
+        <Fieldset legend={props.label}>
+            <SelectInput label={'Operator'} placeholder={'Operator'} identifier={props.identifier + '.' + 'operator'} form={props.form} internalProps={{ data: operators }} />
+            <JSONInput label={'Values'} placeholder={'{}'} identifier={props.identifier + '.' + 'values'} form={props.form} />
+        </Fieldset>
     )
 }
