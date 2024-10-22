@@ -198,15 +198,6 @@ export const TimestampInput = (props: InputProps<DateTimePickerProps>) => {
 
 export const EmailInput = (props: InputProps<TextInputProps>) => {
     const { form } = props
-    // Update the validate function for a specific field
-
-    // form.validate = (values: any) => {
-    //     return {
-    //         ...form.validate,
-    //         [props.identifier]: /^\S+@\S+$/.test(values.email) ? null : 'Invalid email',
-    //     }
-    // }
-
     return <TextInput label={props.label} description={props.description} placeholder={props.placeholder} key={props.identifier} {...form.getInputProps(props.identifier)} leftSection="@" />
 }
 
