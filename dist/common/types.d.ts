@@ -1,4 +1,4 @@
-import { ITypeMinimal } from '@ongoku/app-lib/src/common/app_v3';
+import { ITypeMinimal } from './app_v3';
 export type Optional<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
 export type RequiredFields<T, K extends keyof T> = T & Required<Pick<T, K>>;
 export type MetaFieldKeys = 'id' | 'createdAt' | 'updatedAt' | 'deletedAt';

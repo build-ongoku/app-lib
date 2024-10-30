@@ -3,7 +3,7 @@ import { UseFormReturnType } from '@mantine/form'
 import { useRouter } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
 import { FiAlertCircle } from 'react-icons/fi'
-import { useMakeRequest } from '@ongoku/app-lib/src/providers/provider'
+import { useMakeRequest } from '../../providers/provider'
 
 export const Form = <FormT extends Record<string, any>, RequestT = FormT, ResponseT = any>(props: {
     form: UseFormReturnType<FormT>

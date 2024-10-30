@@ -1,7 +1,7 @@
 'use client'
 
 import { Container, Image, Title } from '@mantine/core'
-import { useAuth } from '@ongoku/app-lib/src/common/AuthContext'
+import { useAuth } from '../../../common/AuthContext'
 import { useRouter } from 'next/navigation'
 import React, { useEffect } from 'react'
 

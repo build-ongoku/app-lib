@@ -1,6 +1,6 @@
 import { ColorSchemeScript, createTheme, MantineProvider } from '@mantine/core'
 import { Notifications } from '@mantine/notifications'
-import { AuthProvider } from '@ongoku/app-lib/src/common/AuthContext'
+import { AuthProvider } from '../../../common/AuthContext'
 import React from 'react'
 
 const theme = createTheme({

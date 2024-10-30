@@ -1,4 +1,4 @@
-import { Optional } from '@ongoku/app-lib/src/common/types'
+import { Optional } from './types'
 import { NextRequest, NextResponse } from 'next/server'
 
 interface Error {

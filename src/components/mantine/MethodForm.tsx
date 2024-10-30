@@ -1,9 +1,9 @@
 'use client'
 
 import { Title } from '@mantine/core'
-import { ITypeMinimal } from '@ongoku/app-lib/src/common/app_v3'
-import { AppContext } from '@ongoku/app-lib/src/common/AppContextV3'
-import { TypeAddFormWrapper } from '@ongoku/app-lib/src/components/mantine/FormAddTypeWrapper'
+import { ITypeMinimal } from '../../common/app_v3'
+import { AppContext } from '../../common/AppContextV3'
+import { TypeAddFormWrapper } from './FormAddTypeWrapper'
 import React, { useContext } from 'react'
 
 export const MethodForm = <ReqT extends ITypeMinimal = any, RespT extends ITypeMinimal = any>(props: { service: string; entity?: string; method: string }) => {

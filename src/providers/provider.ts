@@ -1,8 +1,8 @@
-import { EntityInfo, IEntityMinimal } from '@ongoku/app-lib/src/common/app_v3'
-import { getSessionCookie } from '@ongoku/app-lib/src/common/AuthContext'
-import { Namespace } from '@ongoku/app-lib/src/common/namespacev2'
-import * as scalars from '@ongoku/app-lib/src/common/scalars'
-import { MetaFieldKeys, RequiredFields } from '@ongoku/app-lib/src/common/types'
+import { EntityInfo, IEntityMinimal } from '../common/app_v3'
+import { getSessionCookie } from '../common/AuthContext'
+import { Namespace } from '../common/namespacev2'
+import * as scalars from '../common/scalars'
+import { MetaFieldKeys, RequiredFields } from '../common/types'
 import axios, { AxiosError, AxiosRequestConfig } from 'axios'
 import { useEffect, useState } from 'react'
 

@@ -1,5 +1,5 @@
-import { EntityInfo, IEntityMinimal } from '@ongoku/app-lib/src/common/app_v3';
-import { MetaFieldKeys } from '@ongoku/app-lib/src/common/types';
+import { EntityInfo, IEntityMinimal } from '../../common/app_v3';
+import { MetaFieldKeys } from '../../common/types';
 import React from 'react';
 interface EntityAddFormProps<E extends IEntityMinimal = any> {
     entityInfo: EntityInfo<E>;

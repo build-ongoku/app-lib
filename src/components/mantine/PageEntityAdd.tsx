@@ -1,7 +1,7 @@
 import { Title } from '@mantine/core'
-import { IEntityMinimal } from '@ongoku/app-lib/src/common/app_v3'
-import { AppContext } from '@ongoku/app-lib/src/common/AppContextV3'
-import { EntityAddForm } from '@ongoku/app-lib/src/components/mantine/EntityAdd'
+import { IEntityMinimal } from '../../common/app_v3'
+import { AppContext } from '../../common/AppContextV3'
+import { EntityAddForm } from './EntityAdd'
 import React, { useContext } from 'react'
 
 export interface Props {

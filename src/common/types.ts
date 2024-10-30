@@ -1,6 +1,6 @@
 // Generic Types
 
-import { ITypeMinimal } from '@ongoku/app-lib/src/common/app_v3'
+import { ITypeMinimal } from './app_v3'
 
 // Optional is a type that takes a type and makes the given keys optional
 export type Optional<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>

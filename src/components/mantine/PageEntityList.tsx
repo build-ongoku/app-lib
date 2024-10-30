@@ -1,6 +1,6 @@
-import { AppContext } from '@ongoku/app-lib/src/common/AppContextV3'
-import { IEntityMinimal } from '@ongoku/app-lib/src/common/app_v3'
-import { EntityListTable } from '@ongoku/app-lib/src/components/mantine/EntityList'
+import { AppContext } from '../../common/AppContextV3'
+import { IEntityMinimal } from '../../common/app_v3'
+import { EntityListTable } from './EntityList'
 import React, { useContext } from 'react'
 
 export interface Props {

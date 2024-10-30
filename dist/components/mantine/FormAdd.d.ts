@@ -1,7 +1,7 @@
 import { JsonInputProps, NumberInputProps, SelectProps, SwitchProps, TextInputProps } from '@mantine/core';
 import { DateInputProps, DateTimePickerProps } from '@mantine/dates';
 import { UseFormReturnType } from '@mantine/form';
-import { ITypeMinimal, TypeInfo } from '@ongoku/app-lib/src/common/app_v3';
+import { ITypeMinimal, TypeInfo } from '../../common/app_v3';
 import React from 'react';
 export declare const TypeAddForm: <T extends ITypeMinimal = any>(props: {
     typeInfo: TypeInfo<T>;

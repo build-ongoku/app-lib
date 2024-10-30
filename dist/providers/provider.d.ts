@@ -1,6 +1,6 @@
-import { EntityInfo, IEntityMinimal } from '@ongoku/app-lib/src/common/app_v3';
-import * as scalars from '@ongoku/app-lib/src/common/scalars';
-import { MetaFieldKeys } from '@ongoku/app-lib/src/common/types';
+import { EntityInfo, IEntityMinimal } from '../common/app_v3';
+import * as scalars from '../common/scalars';
+import { MetaFieldKeys } from '../common/types';
 import { AxiosRequestConfig } from 'axios';
 export declare const joinURL: (...parts: string[]) => string;
 export interface HTTPRequest<D> extends Omit<AxiosRequestConfig<D>, 'method' | 'url'> {

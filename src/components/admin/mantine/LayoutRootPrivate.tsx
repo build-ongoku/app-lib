@@ -1,7 +1,7 @@
 'use client'
 
-import { useAuth } from '@ongoku/app-lib/src/common/AuthContext'
-import { ScreenLoader } from '@ongoku/app-lib/src/components/admin/mantine/Loader'
+import { useAuth } from '../../../common/AuthContext'
+import { ScreenLoader } from './Loader'
 import { useRouter } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
 

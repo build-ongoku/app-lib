@@ -18,11 +18,7 @@
         "incremental": true,
         "baseUrl": ".",
         "outDir": "./dist",
-        "paths": {
-            "@ongoku/app-lib/src/*": [
-                "./src/*"
-            ]
-        }
+        "paths": {}
     },
     "include": [
         "src/**/*.ts",

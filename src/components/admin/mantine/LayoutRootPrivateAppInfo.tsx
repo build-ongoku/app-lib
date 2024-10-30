@@ -2,10 +2,10 @@
 
 import { Anchor, AppShell, Burger, Group, Image, NavLink, Title } from '@mantine/core'
 import { useDisclosure } from '@mantine/hooks'
-import { AppContext, AppProvider } from '@ongoku/app-lib/src/common/AppContextV3'
-import { App, AppReq } from '@ongoku/app-lib/src/common/app_v3'
-import { LogoutButton } from '@ongoku/app-lib/src/components/mantine/module_user/LogoutButton'
-import { joinURL } from '@ongoku/app-lib/src/providers/provider'
+import { AppContext, AppProvider } from '../../../common/AppContextV3'
+import { App, AppReq } from '../../../common/app_v3'
+import { LogoutButton } from '../../mantine/module_user/LogoutButton'
+import { joinURL } from '../../../providers/provider'
 import { useRouter } from 'next/navigation'
 import React, { Suspense, useContext } from 'react'
 

@@ -1,4 +1,4 @@
-import * as scalars from '@ongoku/app-lib/src/common/scalars'
+import * as scalars from './scalars'
 
 export interface MetaFields {
     id: scalars.ID

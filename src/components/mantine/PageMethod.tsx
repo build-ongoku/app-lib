@@ -1,4 +1,4 @@
-import { MethodForm } from '@ongoku/app-lib/src/components/mantine/MethodForm'
+import { MethodForm } from './MethodForm'
 import React from 'react'
 
 export interface PropsService {

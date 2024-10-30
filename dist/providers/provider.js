@@ -1,10 +1,54 @@
-import { __assign, __awaiter, __generator } from '../_virtual/_tslib.js';
-import { getSessionCookie } from '../common/AuthContext.js';
-import { Namespace } from '../common/namespacev2.js';
-import { AxiosError } from '../node_modules/axios/index.js';
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
+var __generator = (this && this.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (g && (g = 0, op[0] && (_ = 0)), _) try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
+};
+import { getSessionCookie } from '../common/AuthContext';
+import { Namespace } from '../common/namespacev2';
+import axios, { AxiosError } from 'axios';
 import { useEffect, useState } from 'react';
-import axios from '../node_modules/axios/lib/axios.js';
-
 // getBaseURL returns the base URL for the backend API
 // It does not add the version number.
 // e.g. for DEV, it may return http://localhost:80/api/
@@ -31,7 +75,7 @@ var addBaseURL = function (path) {
     return getBaseURL() + '/' + path;
 };
 // joinURL takes a list of strings and joins them with a slash
-var joinURL = function () {
+export var joinURL = function () {
     var parts = [];
     for (var _i = 0; _i < arguments.length; _i++) {
         parts[_i] = arguments[_i];
@@ -40,7 +84,7 @@ var joinURL = function () {
     parts = parts.map(function (p) { return p.replace(/^\/|\/$/g, ''); });
     return '/' + parts.join('/');
 };
-var useAddEntity = function (props) {
+export var useAddEntity = function (props) {
     var entityInfo = props.entityInfo;
     console.log('Add Entity: ' + entityInfo.getName());
     var _a = useMakeRequest(__assign(__assign({}, props), { method: 'POST', path: joinURL('v1/', entityInfo.namespace.toURLPath()), data: props.data })), resp = _a[0], fetch = _a[1];
@@ -49,7 +93,7 @@ var useAddEntity = function (props) {
     }, []);
     return [resp];
 };
-var useUpdateEntity = function (props) {
+export var useUpdateEntity = function (props) {
     var _a, _b;
     var entityInfo = props.entityInfo;
     console.log('Update Entity: ' + entityInfo.getName());
@@ -67,7 +111,7 @@ var useUpdateEntity = function (props) {
     }, [props.data]);
     return [resp];
 };
-var useGetEntity = function (props) {
+export var useGetEntity = function (props) {
     var entityInfo = props.entityInfo, data = props.data;
     console.log('[Provider] [Get Entity]', 'Fetching entity', 'entityName', entityInfo.getName().toRaw(), 'id', data === null || data === void 0 ? void 0 : data.id);
     // fetch data from a url endpoint
@@ -81,7 +125,7 @@ var useGetEntity = function (props) {
     }, []);
     return [resp, fetch];
 };
-var useListEntity = function (props) {
+export var useListEntity = function (props) {
     var entityInfo = props.entityInfo;
     console.log('(provider) (List Entity) ' + entityInfo.getName());
     // fetch data from a url endpoint
@@ -96,7 +140,7 @@ var useListEntity = function (props) {
     }, []);
     return [resp];
 };
-var useListEntityByTextQuery = function (props) {
+export var useListEntityByTextQuery = function (props) {
     var entityInfo = props.entityInfo;
     console.log('Query by Text Entity: ' + entityInfo.getName());
     // fetch data from a url endpoint
@@ -106,7 +150,7 @@ var useListEntityByTextQuery = function (props) {
         params: props.params,
     });
 };
-var makeRequest = function (props) { return __awaiter(void 0, void 0, void 0, function () {
+export var makeRequest = function (props) { return __awaiter(void 0, void 0, void 0, function () {
     var path, unauthenticated, config, session, url, result, err_1, errMsg, statusCode;
     var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k;
     return __generator(this, function (_l) {
@@ -168,7 +212,7 @@ var makeRequest = function (props) { return __awaiter(void 0, void 0, void 0, fu
     });
 }); };
 // T is the response type and D is the request data type
-var useMakeRequest = function (props) {
+export var useMakeRequest = function (props) {
     var _a = useState(), data = _a[0], setData = _a[1]; // response body
     var _b = useState(), error = _b[0], setError = _b[1];
     var _c = useState(false), loading = _c[0], setLoading = _c[1];
@@ -210,7 +254,7 @@ var useMakeRequest = function (props) {
     }); };
     return [{ statusCode: statusCode, data: data, error: error, loading: loading, finished: finished }, fetch];
 };
-var uploadFile = function (file, onProgress) { return __awaiter(void 0, void 0, void 0, function () {
+export var uploadFile = function (file, onProgress) { return __awaiter(void 0, void 0, void 0, function () {
     var fileEntityNamespace, relPath, fullUrl, session, headers, formData, response, data;
     return __generator(this, function (_a) {
         switch (_a.label) {
@@ -243,7 +287,7 @@ var uploadFile = function (file, onProgress) { return __awaiter(void 0, void 0, 
     });
 }); };
 // makeRequestV2 makes a vanilla fetch request
-var makeRequestV2 = function (props) { return __awaiter(void 0, void 0, void 0, function () {
+export var makeRequestV2 = function (props) { return __awaiter(void 0, void 0, void 0, function () {
     var fullUrl, headers, session, req, urlParams, httpResp, err_2, errMsg, data, err_3, errMsg;
     return __generator(this, function (_a) {
         switch (_a.label) {
@@ -309,7 +353,7 @@ var makeRequestV2 = function (props) { return __awaiter(void 0, void 0, void 0, 
         }
     });
 }); };
-var listEntityV2 = function (props) {
+export var listEntityV2 = function (props) {
     // Get the path to make the request
     var path = joinURL('v1/', props.entityInfo.namespace.toURLPath(), 'list');
     // Make the request
@@ -319,19 +363,19 @@ var listEntityV2 = function (props) {
         data: props.data,
     });
 };
-var useListEntityV2 = function (props) {
+export var useListEntityV2 = function (props) {
     var _a = useState(), resp = _a[0], setResp = _a[1];
     var _b = useState(true), loading = _b[0], setLoading = _b[1];
     useEffect(function () {
         console.log('[Provider] [useListEntityV2] Fetching list entity', 'entity', props.entityInfo.getName().toRaw());
-        listEntityV2(props).then(function (r) {
+        var resp = listEntityV2(props).then(function (r) {
             setResp(r);
             setLoading(false);
         });
     }, []);
     return [resp, loading];
 };
-var queryByTextV2 = function (props) {
+export var queryByTextV2 = function (props) {
     // Get the path to make the request
     var path = joinURL('v1/', props.entityInfo.namespace.toURLPath(), 'query_by_text');
     // Make the request
@@ -341,7 +385,7 @@ var queryByTextV2 = function (props) {
         data: props.data,
     });
 };
-var useQueryByTextV2 = function (props) {
+export var useQueryByTextV2 = function (props) {
     var _a = useState(), resp = _a[0], setResp = _a[1];
     var _b = useState(true), loading = _b[0], setLoading = _b[1];
     var refetch = function () {
@@ -357,5 +401,3 @@ var useQueryByTextV2 = function (props) {
     }, []);
     return [resp, loading, refetch];
 };
-
-export { joinURL, listEntityV2, makeRequest, makeRequestV2, queryByTextV2, uploadFile, useAddEntity, useGetEntity, useListEntity, useListEntityByTextQuery, useListEntityV2, useMakeRequest, useQueryByTextV2, useUpdateEntity };

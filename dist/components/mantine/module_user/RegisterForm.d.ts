@@ -1,5 +1,5 @@
 import React from 'react';
-import { ITypeMinimal } from '@ongoku/app-lib/src/common/app_v3';
+import { ITypeMinimal } from '../../../common/app_v3';
 type BareMinimumRegisterForm = ITypeMinimal & {
     email: string;
 };

@@ -1,5 +1,5 @@
-import { MetaFields } from '@ongoku/app-lib/src/common/Field'
-import { EnumKind, ForeignEntityKind, IFieldKind, NestedKind } from '@ongoku/app-lib/src/common/fieldkind'
+import { MetaFields } from './Field'
+import { EnumKind, ForeignEntityKind, IFieldKind, NestedKind } from './fieldkind'
 import {
     EntityNamespaceReq,
     EnumNamespaceReq,
@@ -16,9 +16,9 @@ import {
     Namespace,
     ServiceNamespaceReq,
     TypeNamespaceReq,
-} from '@ongoku/app-lib/src/common/namespacev2'
-import { MetaFieldKeys } from '@ongoku/app-lib/src/common/types'
-import { GokuHTTPResponse, joinURL, makeRequestV2 } from '@ongoku/app-lib/src/providers/provider'
+} from './namespacev2'
+import { MetaFieldKeys } from './types'
+import { GokuHTTPResponse, joinURL, makeRequestV2 } from '../providers/provider'
 import { capitalCase } from 'change-case'
 
 /* * * * * *

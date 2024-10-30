@@ -1,8 +1,7 @@
-import { EnumKind, NestedKind, ForeignEntityKind } from './fieldkind.js';
-import { Namespace } from './namespacev2.js';
-import { joinURL, makeRequestV2 } from '../providers/provider.js';
-import { capitalCase } from '../node_modules/change-case/dist/index.js';
-
+import { EnumKind, ForeignEntityKind, NestedKind } from './fieldkind';
+import { Namespace, } from './namespacev2';
+import { joinURL, makeRequestV2 } from '../providers/provider';
+import { capitalCase } from 'change-case';
 var App = /** @class */ (function () {
     function App(req) {
         var _this = this;
@@ -60,7 +59,7 @@ var App = /** @class */ (function () {
     };
     App.prototype.getEntityInfo = function (nsReq) {
         var ns = new Namespace(nsReq);
-        ns.toString();
+        var key = ns.toString();
         var ret = this.entitiesMap[ns.toString()];
         return ret;
     };
@@ -104,6 +103,7 @@ var App = /** @class */ (function () {
     };
     return App;
 }());
+export { App };
 var Service = /** @class */ (function () {
     function Service(req) {
         this.namespace = new Namespace(req.namespace);
@@ -119,6 +119,7 @@ var Service = /** @class */ (function () {
     };
     return Service;
 }());
+export { Service };
 var TypeInfo = /** @class */ (function () {
     function TypeInfo(req) {
         var _this = this;
@@ -147,6 +148,7 @@ var TypeInfo = /** @class */ (function () {
     };
     return TypeInfo;
 }());
+export { TypeInfo };
 var Field = /** @class */ (function () {
     function Field(req) {
         // Default (Overidable)
@@ -170,6 +172,7 @@ var Field = /** @class */ (function () {
     };
     return Field;
 }());
+export { Field };
 var Dtype = /** @class */ (function () {
     function Dtype(req) {
         this.name = req.name;
@@ -263,6 +266,7 @@ var EntityInfo = /** @class */ (function () {
     };
     return EntityInfo;
 }());
+export { EntityInfo };
 var EntityAssociation = /** @class */ (function () {
     function EntityAssociation(req) {
         this.relationship = req.relationship;
@@ -279,6 +283,7 @@ var EntityAssociation = /** @class */ (function () {
     };
     return EntityAssociation;
 }());
+export { EntityAssociation };
 var EntityAction = /** @class */ (function () {
     function EntityAction(req) {
         this.name = req.name;
@@ -303,6 +308,7 @@ var Enum = /** @class */ (function () {
     }
     return Enum;
 }());
+export { Enum };
 var EnumValue = /** @class */ (function () {
     function EnumValue(req) {
         this.id = req.id;
@@ -315,6 +321,7 @@ var EnumValue = /** @class */ (function () {
     };
     return EnumValue;
 }());
+export { EnumValue };
 var Method = /** @class */ (function () {
     function Method(req) {
         this.namespace = new Namespace(req.namespace);
@@ -342,5 +349,4 @@ var Method = /** @class */ (function () {
     };
     return Method;
 }());
-
-export { App, EntityAssociation, EntityInfo, Enum, EnumValue, Field, Method, Service, TypeInfo };
+export { Method };

@@ -2,11 +2,11 @@
 
 import { Anchor, Container, PasswordInput, TextInput } from '@mantine/core'
 import { useForm } from '@mantine/form'
-import { useAuth } from '@ongoku/app-lib/src/common/AuthContext'
-import { Form } from '@ongoku/app-lib/src/components/mantine/Form'
+import { useAuth } from '../../../common/AuthContext'
+import { Form } from '../Form'
 import { useRouter } from 'next/navigation'
 import React from 'react'
-import { ITypeMinimal } from '@ongoku/app-lib/src/common/app_v3'
+import { ITypeMinimal } from '../../../common/app_v3'
 
 type BareMinimumRegisterForm = ITypeMinimal & {
     email: string

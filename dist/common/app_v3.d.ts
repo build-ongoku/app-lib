@@ -1,8 +1,8 @@
-import { MetaFields } from '@ongoku/app-lib/src/common/Field';
-import { IFieldKind } from '@ongoku/app-lib/src/common/fieldkind';
-import { EntityNamespaceReq, EnumNamespaceReq, IEntityNamespace, IEnumNamespace, IMethodEntityNamespace, IMethodNamespace, IServiceNamespace, ITypeEntityNamespace, ITypeNamespace, MethodEntityNamespaceReq, MethodNamespaceReq, Name, ServiceNamespaceReq, TypeNamespaceReq } from '@ongoku/app-lib/src/common/namespacev2';
-import { MetaFieldKeys } from '@ongoku/app-lib/src/common/types';
-import { GokuHTTPResponse } from '@ongoku/app-lib/src/providers/provider';
+import { MetaFields } from './Field';
+import { IFieldKind } from './fieldkind';
+import { EntityNamespaceReq, EnumNamespaceReq, IEntityNamespace, IEnumNamespace, IMethodEntityNamespace, IMethodNamespace, IServiceNamespace, ITypeEntityNamespace, ITypeNamespace, MethodEntityNamespaceReq, MethodNamespaceReq, Name, ServiceNamespaceReq, TypeNamespaceReq } from './namespacev2';
+import { MetaFieldKeys } from './types';
+import { GokuHTTPResponse } from '../providers/provider';
 export interface IApp {
     getName(): Name;
     getNameFriendly(): string;

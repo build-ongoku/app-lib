@@ -1,16 +1,15 @@
-import { AppContext } from '../../common/AppContextV3.js';
-import { Form } from './Form.js';
-import { TypeAddForm } from './FormAdd.js';
-import { joinURL } from '../../providers/provider.js';
-import { n as navigationExports } from '../../_virtual/navigation.js';
-import React__default, { useContext } from 'react';
-import { useForm } from '../../node_modules/@mantine/form/esm/use-form.js';
-
-var EntityAddForm = function (props) {
+import { useForm } from '@mantine/form';
+import { AppContext } from '../../common/AppContextV3';
+import { Form } from './Form';
+import { TypeAddForm } from './FormAdd';
+import { joinURL } from '../../providers/provider';
+import { useRouter } from 'next/navigation';
+import React, { useContext } from 'react';
+export var EntityAddForm = function (props) {
     var entityInfo = props.entityInfo;
     var initialData = props.initialData || {};
     // Todo: remove dependency on next/navigation
-    var router = navigationExports.useRouter();
+    var router = useRouter();
     var form = useForm({
         mode: 'uncontrolled',
         validate: {},
@@ -26,7 +25,7 @@ var EntityAddForm = function (props) {
         throw new Error('TypeInfo not found for ' + typeNs);
     }
     console.log('[EntityAddForm] Rendering...', 'entityInfo', entityInfo);
-    return (React__default.createElement(Form, { form: form, submitButtonText: "Add ".concat(entityInfo.getNameFriendly()), onSubmitTransformValues: function (values) {
+    return (React.createElement(Form, { form: form, submitButtonText: "Add ".concat(entityInfo.getNameFriendly()), onSubmitTransformValues: function (values) {
             return {
                 object: values,
             };
@@ -39,7 +38,5 @@ var EntityAddForm = function (props) {
                 return;
             }
         } },
-        React__default.createElement(TypeAddForm, { typeInfo: typeInfo, form: form })));
+        React.createElement(TypeAddForm, { typeInfo: typeInfo, form: form })));
 };
-
-export { EntityAddForm };
