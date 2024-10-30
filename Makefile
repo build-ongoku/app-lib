@@ -11,6 +11,7 @@ npm-publish:
 	@echo "Pushing to git..."
 	git push
 	@echo "Publishing to npm..."
+	npm version patch
 	npm adduser
 	npm publish
 	@echo "Done."
