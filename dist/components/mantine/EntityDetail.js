@@ -2,7 +2,7 @@ import { Button, ButtonGroup, Title } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 import { AppContext } from '../../common/AppContextV3';
 import { Operator } from '../../common/Filter';
-import { getEntityAddPath } from '@ongoku/app-lib/src/components/EntityLink';
+import { getEntityAddPath } from '../EntityLink';
 import { EntityListTableInner } from './EntityList';
 import { ServerResponseWrapper } from './ServerResponseWrapper';
 import { useGetEntity, useListEntityV2 } from '../../providers/provider';

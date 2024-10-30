@@ -1,5 +1,5 @@
 import { Button, Title } from '@mantine/core';
-import { getEntityAddPath } from '@ongoku/app-lib/src/components/EntityLink';
+import { getEntityAddPath } from '../../components/EntityLink';
 import { ServerResponseWrapper } from './ServerResponseWrapper';
 import { useListEntity } from '../../providers/provider';
 import dayjs from 'dayjs';

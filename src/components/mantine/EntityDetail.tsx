@@ -4,7 +4,7 @@ import { EntityAssociation, EntityInfo, IEntityMinimal } from '../../common/app_
 import { AppContext } from '../../common/AppContextV3'
 import { Operator } from '../../common/Filter'
 import { ID } from '../../common/scalars'
-import { getEntityAddPath } from '@ongoku/app-lib/src/components/EntityLink'
+import { getEntityAddPath } from '../EntityLink'
 import { EntityListTableInner } from './EntityList'
 import { ServerResponseWrapper } from './ServerResponseWrapper'
 import { FetchFunc, useGetEntity, useListEntityV2 } from '../../providers/provider'
