@@ -1,7 +1,8 @@
-import { AppContext } from '@ongoku/app-lib/src/common/AppContextV3';
-import { EntityDetail } from '@ongoku/app-lib/src/components/mantine/EntityDetail';
-import React, { useContext } from 'react';
-export var PageEntityDetail = function (props) {
+import { AppContext } from '../../common/AppContextV3.js';
+import { EntityDetail } from './EntityDetail.js';
+import React__default, { useContext } from 'react';
+
+var PageEntityDetail = function (props) {
     var _a = props.params, serviceName = _a.service, entityName = _a.entity;
     var appInfo = useContext(AppContext).appInfo;
     if (!appInfo) {
@@ -13,6 +14,8 @@ export var PageEntityDetail = function (props) {
     }
     // Get the entity from the server
     var identifier = props.params.identifier;
-    return (React.createElement(React.Fragment, null,
-        React.createElement(EntityDetail, { entityInfo: entityInfo, identifier: identifier })));
+    return (React__default.createElement(React__default.Fragment, null,
+        React__default.createElement(EntityDetail, { entityInfo: entityInfo, identifier: identifier })));
 };
+
+export { PageEntityDetail };

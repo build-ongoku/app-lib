@@ -1,9 +1,10 @@
-import { camelCase, capitalCase, pascalCase, snakeCase } from 'change-case';
+import { snakeCase, capitalCase, pascalCase, camelCase } from '../node_modules/change-case/dist/index.js';
+
 /* * * * * *
  * Name
  * * * * * */
 // TODO: Change AppV3 to use IName for all names e.g. field.name, entity.name etc.
-export var acronyms = ['api', 'dal', 'http', 'https', 'id', 'jwt', 'sha', 'ui', 'url', 'usa', 'uuid'];
+var acronyms = ['api', 'dal', 'http', 'https', 'id', 'jwt', 'sha', 'ui', 'url', 'usa', 'uuid'];
 var Name = /** @class */ (function () {
     function Name(raw) {
         // Convert to snake case
@@ -39,7 +40,6 @@ var Name = /** @class */ (function () {
     };
     return Name;
 }());
-export { Name };
 var capitalizeAcronyms = function (str) {
     acronyms.forEach(function (acronym) {
         str = str.replace(pascalCase(acronym), acronym.toUpperCase());
@@ -157,7 +157,6 @@ var Namespace = /** @class */ (function () {
     };
     return Namespace;
 }());
-export { Namespace };
 // export type NamespaceReqVariant =
 //     | ServiceNamespaceReq
 //     | EntityNamespaceReq
@@ -252,3 +251,5 @@ export { Namespace };
 //         : T extends NamespaceReq
 //         ? INamespace<T>
 //         : never
+
+export { Name, Namespace, acronyms };

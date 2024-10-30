@@ -1,13 +1,15 @@
-import { Button, Title } from '@mantine/core';
-import { getEntityAddPath } from '@ongoku/app-lib/src/components/EntityLink';
-import { ServerResponseWrapper } from '@ongoku/app-lib/src/components/mantine/ServerResponseWrapper';
-import { useListEntity } from '@ongoku/app-lib/src/providers/provider';
-import dayjs from 'dayjs';
-import relativeTime from 'dayjs/plugin/relativeTime';
-import { MantineReactTable, useMantineReactTable } from 'mantine-react-table';
-import 'mantine-react-table/styles.css'; //make sure MRT styles were imported in your app root (once)
-import { useRouter } from 'next/navigation';
-import React, { useMemo } from 'react';
+import { getEntityAddPath } from '../EntityLink.js';
+import { ServerResponseWrapper } from './ServerResponseWrapper.js';
+import { useListEntity } from '../../providers/provider.js';
+import dayjs from '../../_virtual/dayjs.min.js';
+import relativeTime from '../../_virtual/relativeTime.js';
+import { useMantineReactTable, MantineReactTable } from '../../node_modules/mantine-react-table/dist/index.esm.js';
+import '../../node_modules/mantine-react-table/styles.css.js';
+import { n as navigationExports } from '../../_virtual/navigation.js';
+import React__default, { useMemo } from 'react';
+import { Title } from '../../node_modules/@mantine/core/esm/components/Title/Title.js';
+import { Button } from '../../node_modules/@mantine/core/esm/components/Button/Button.js';
+
 dayjs.extend(relativeTime);
 var getDefaultEntityColumns = function (entityInfo) { return [
     {
@@ -17,11 +19,11 @@ var getDefaultEntityColumns = function (entityInfo) { return [
         },
         header: 'Identifier',
         Cell: function (_a) {
-            var cell = _a.cell, row = _a.row;
+            _a.cell; var row = _a.row;
             var entity = row.original;
             var name = entityInfo.getEntityNameFriendly(entity);
             var id = entity.id;
-            return React.createElement("a", { href: "".concat(entityInfo.namespace.toURLPath(), "/").concat(id) }, name);
+            return React__default.createElement("a", { href: "".concat(entityInfo.namespace.toURLPath(), "/").concat(id) }, name);
         },
     },
     {
@@ -31,7 +33,7 @@ var getDefaultEntityColumns = function (entityInfo) { return [
             var cell = _a.cell;
             var value = cell.getValue();
             var displayValue = dayjs(value).fromNow();
-            return React.createElement("span", null, displayValue);
+            return React__default.createElement("span", null, displayValue);
         },
     },
     {
@@ -41,34 +43,34 @@ var getDefaultEntityColumns = function (entityInfo) { return [
             var cell = _a.cell;
             var value = cell.getValue();
             var displayValue = dayjs(value).fromNow();
-            return React.createElement("span", null, displayValue);
+            return React__default.createElement("span", null, displayValue);
         },
     },
 ]; };
 // EntityListTable fetches the list of entities and renders the table
-export var EntityListTable = function (props) {
+var EntityListTable = function (props) {
     var entityInfo = props.entityInfo;
-    var router = useRouter();
+    var router = navigationExports.useRouter();
     // Get the entity from the server
     var resp = useListEntity({
         entityInfo: entityInfo,
         data: {},
     })[0];
-    return (React.createElement("div", null,
-        React.createElement(ServerResponseWrapper, { error: resp.error, loading: resp.loading },
-            React.createElement("div", { className: "flex justify-between my-5" },
-                React.createElement(Title, { order: 2 },
+    return (React__default.createElement("div", null,
+        React__default.createElement(ServerResponseWrapper, { error: resp.error, loading: resp.loading },
+            React__default.createElement("div", { className: "flex justify-between my-5" },
+                React__default.createElement(Title, { order: 2 },
                     "Your ",
                     entityInfo.getNameFriendly()),
-                React.createElement(Button, { onClick: function () {
+                React__default.createElement(Button, { onClick: function () {
                         router.push(getEntityAddPath(entityInfo));
                     } },
                     "Add ",
                     entityInfo.getNameFriendly())),
-            resp.data && React.createElement(EntityListTableInner, { entityInfo: entityInfo, data: resp.data }))));
+            resp.data && React__default.createElement(EntityListTableInner, { entityInfo: entityInfo, data: resp.data }))));
 };
 // EntityListTableInner takes the list response and renders the table
-export var EntityListTableInner = function (props) {
+var EntityListTableInner = function (props) {
     var _a, _b, _c;
     var cols = getDefaultEntityColumns(props.entityInfo);
     var colsMemo = useMemo(function () { return cols; }, []);
@@ -84,5 +86,7 @@ export var EntityListTableInner = function (props) {
             withColumnBorders: false,
         },
     });
-    return React.createElement(MantineReactTable, { table: table });
+    return React__default.createElement(MantineReactTable, { table: table });
 };
+
+export { EntityListTable, EntityListTableInner };

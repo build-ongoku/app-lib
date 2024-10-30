@@ -1,15 +1,16 @@
-import { useForm } from '@mantine/form';
-import { AppContext } from '@ongoku/app-lib/src/common/AppContextV3';
-import { Form } from '@ongoku/app-lib/src/components/mantine/Form';
-import { TypeAddForm } from '@ongoku/app-lib/src/components/mantine/FormAdd';
-import { joinURL } from '@ongoku/app-lib/src/providers/provider';
-import { useRouter } from 'next/navigation';
-import React, { useContext } from 'react';
-export var EntityAddForm = function (props) {
+import { AppContext } from '../../common/AppContextV3.js';
+import { Form } from './Form.js';
+import { TypeAddForm } from './FormAdd.js';
+import { joinURL } from '../../providers/provider.js';
+import { n as navigationExports } from '../../_virtual/navigation.js';
+import React__default, { useContext } from 'react';
+import { useForm } from '../../node_modules/@mantine/form/esm/use-form.js';
+
+var EntityAddForm = function (props) {
     var entityInfo = props.entityInfo;
     var initialData = props.initialData || {};
     // Todo: remove dependency on next/navigation
-    var router = useRouter();
+    var router = navigationExports.useRouter();
     var form = useForm({
         mode: 'uncontrolled',
         validate: {},
@@ -25,7 +26,7 @@ export var EntityAddForm = function (props) {
         throw new Error('TypeInfo not found for ' + typeNs);
     }
     console.log('[EntityAddForm] Rendering...', 'entityInfo', entityInfo);
-    return (React.createElement(Form, { form: form, submitButtonText: "Add ".concat(entityInfo.getNameFriendly()), onSubmitTransformValues: function (values) {
+    return (React__default.createElement(Form, { form: form, submitButtonText: "Add ".concat(entityInfo.getNameFriendly()), onSubmitTransformValues: function (values) {
             return {
                 object: values,
             };
@@ -38,5 +39,7 @@ export var EntityAddForm = function (props) {
                 return;
             }
         } },
-        React.createElement(TypeAddForm, { typeInfo: typeInfo, form: form })));
+        React__default.createElement(TypeAddForm, { typeInfo: typeInfo, form: form })));
 };
+
+export { EntityAddForm };

@@ -1,25 +1,28 @@
-import React from 'react';
-export var Link = function (props) {
-    return React.createElement("a", { href: props.to }, props.children);
+import React__default from 'react';
+
+var Link = function (props) {
+    return React__default.createElement("a", { href: props.to }, props.children);
 };
-export var EntityLink = function (props) {
+var EntityLink = function (props) {
     var entity = props.entity, entityInfo = props.entityInfo, text = props.text;
-    return React.createElement(Link, { to: getEntityDetailPath({ entityInfo: entityInfo, entity: entity }) }, text ? text : entityInfo.getEntityNameFriendly(entity));
+    return React__default.createElement(Link, { to: getEntityDetailPath({ entityInfo: entityInfo, entity: entity }) }, text ? text : entityInfo.getEntityNameFriendly(entity));
 };
-export var EntityListLink = function (props) {
+var EntityListLink = function (props) {
     var entityInfo = props.entityInfo, text = props.text;
-    return React.createElement(Link, { to: getEntityListPath(entityInfo) }, text ? text : entityInfo.getNameFriendly());
+    return React__default.createElement(Link, { to: getEntityListPath(entityInfo) }, text ? text : entityInfo.getNameFriendly());
 };
-export var EntityAddLink = function (props) {
-    return React.createElement(Link, { to: getEntityAddPath(props.entityInfo) }, props.children);
+var EntityAddLink = function (props) {
+    return React__default.createElement(Link, { to: getEntityAddPath(props.entityInfo) }, props.children);
 };
-export var getEntityDetailPath = function (props) {
+var getEntityDetailPath = function (props) {
     var entityInfo = props.entityInfo, entity = props.entity;
     return entityInfo.namespace.toURLPath() + '/' + entity.id;
 };
-export var getEntityListPath = function (entityInfo) {
+var getEntityListPath = function (entityInfo) {
     return entityInfo.namespace.toURLPath() + '/list';
 };
-export var getEntityAddPath = function (entityInfo) {
+var getEntityAddPath = function (entityInfo) {
     return entityInfo.namespace.toURLPath() + '/add';
 };
+
+export { EntityAddLink, EntityLink, EntityListLink, Link, getEntityAddPath, getEntityDetailPath, getEntityListPath };

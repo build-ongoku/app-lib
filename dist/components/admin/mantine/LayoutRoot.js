@@ -1,7 +1,10 @@
-import { ColorSchemeScript, createTheme, MantineProvider } from '@mantine/core';
-import { Notifications } from '@mantine/notifications';
-import { AuthProvider } from '@ongoku/app-lib/src/common/AuthContext';
-import React from 'react';
+import { AuthProvider } from '../../../common/AuthContext.js';
+import React__default from 'react';
+import { ColorSchemeScript } from '../../../node_modules/@mantine/core/esm/core/MantineProvider/ColorSchemeScript/ColorSchemeScript.js';
+import { MantineProvider } from '../../../node_modules/@mantine/core/esm/core/MantineProvider/MantineProvider.js';
+import { Notifications } from '../../../node_modules/@mantine/notifications/esm/Notifications.js';
+import { createTheme } from '../../../node_modules/@mantine/core/esm/core/MantineProvider/create-theme/create-theme.js';
+
 var theme = createTheme({
     colors: {
         primary: [
@@ -62,12 +65,14 @@ var theme = createTheme({
         },
     },
 });
-export var LayoutRoot = function (props) {
-    return (React.createElement("html", { lang: "en" },
-        React.createElement("head", null,
-            React.createElement(ColorSchemeScript, null)),
-        React.createElement("body", null,
-            React.createElement(MantineProvider, { theme: theme },
-                React.createElement(Notifications, { position: "bottom-right", autoClose: false, notificationMaxHeight: 10000, containerWidth: 1000 }),
-                React.createElement(AuthProvider, null, props.children)))));
+var LayoutRoot = function (props) {
+    return (React__default.createElement("html", { lang: "en" },
+        React__default.createElement("head", null,
+            React__default.createElement(ColorSchemeScript, null)),
+        React__default.createElement("body", null,
+            React__default.createElement(MantineProvider, { theme: theme },
+                React__default.createElement(Notifications, { position: "bottom-right", autoClose: false, notificationMaxHeight: 10000, containerWidth: 1000 }),
+                React__default.createElement(AuthProvider, null, props.children)))));
 };
+
+export { LayoutRoot };

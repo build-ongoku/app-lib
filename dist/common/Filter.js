@@ -1,4 +1,4 @@
-export var Operator;
+var Operator;
 (function (Operator) {
     Operator["EQUAL"] = "EQUAL";
     Operator["NOT_EQUAL"] = "NOT_EQUAL";
@@ -13,3 +13,5 @@ export var Operator;
     Operator["IS_NULL"] = "IS_NULL";
     Operator["IS_NOT_NULL"] = "IS_NOT_NULL";
 })(Operator || (Operator = {}));
+
+export { Operator };

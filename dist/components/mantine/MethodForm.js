@@ -1,9 +1,9 @@
-'use client';
-import { Title } from '@mantine/core';
-import { AppContext } from '@ongoku/app-lib/src/common/AppContextV3';
-import { TypeAddFormWrapper } from '@ongoku/app-lib/src/components/mantine/FormAddTypeWrapper';
-import React, { useContext } from 'react';
-export var MethodForm = function (props) {
+import { AppContext } from '../../common/AppContextV3.js';
+import { TypeAddFormWrapper } from './FormAddTypeWrapper.js';
+import React__default, { useContext } from 'react';
+import { Title } from '../../node_modules/@mantine/core/esm/components/Title/Title.js';
+
+var MethodForm = function (props) {
     var service = props.service, entity = props.entity, method = props.method;
     var appInfo = useContext(AppContext).appInfo;
     if (!appInfo) {
@@ -21,9 +21,11 @@ export var MethodForm = function (props) {
         throw new Error('Request type not found');
     }
     var postEndpoint = mthd.getAPIEndpoint();
-    return (React.createElement("div", null,
-        React.createElement(Title, { order: 1 },
+    return (React__default.createElement("div", null,
+        React__default.createElement(Title, { order: 1 },
             "Method: ",
             mthd.namespace.method.toCapital()),
-        React.createElement(TypeAddFormWrapper, { typeInfo: reqTypeInfo, postEndpoint: postEndpoint })));
+        React__default.createElement(TypeAddFormWrapper, { typeInfo: reqTypeInfo, postEndpoint: postEndpoint })));
 };
+
+export { MethodForm };
