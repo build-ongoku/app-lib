@@ -11,7 +11,7 @@ type BareMinimumRegisterForm = TypeMinimal & {
     email: string
 }
 
-export const RegisterForm = <RequestT extends BareMinimumRegisterForm>(props: { typeInfo: TypeInfo<RequestT> }) => {
+export const RegisterForm = <RequestT extends BareMinimumRegisterForm>(props: {}) => {
     const router = useRouter()
     const { authenticate } = useAuth()
 
