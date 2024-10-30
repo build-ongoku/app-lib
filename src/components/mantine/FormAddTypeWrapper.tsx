@@ -1,13 +1,13 @@
 'use client'
 
+import { useForm } from '@mantine/form'
 import { ITypeMinimal, TypeInfo } from '@ongoku/app-lib/src/common/app_v3'
 import { AppContext } from '@ongoku/app-lib/src/common/AppContextV3'
 import { MetaFieldKeys } from '@ongoku/app-lib/src/common/types'
-import { useForm } from '@mantine/form'
+import { Form } from '@ongoku/app-lib/src/components/mantine/Form'
+import { TypeAddForm } from '@ongoku/app-lib/src/components/mantine/FormAdd'
 import { useRouter } from 'next/navigation'
 import React, { useContext } from 'react'
-import { TypeAddForm } from '@ongoku/app-lib/src/components/mantine/FormAdd'
-import { Form } from '@ongoku/app-lib/src/components/mantine/Form'
 
 interface TypeAddFormProps<T extends ITypeMinimal = any> {
     typeInfo: TypeInfo<T>
@@ -21,11 +21,16 @@ interface TypeAddFormProps<T extends ITypeMinimal = any> {
 export const TypeAddFormWrapper = <T extends ITypeMinimal = any, RespT = any>(props: TypeAddFormProps<T>) => {
     type FormT = Omit<T, MetaFieldKeys>
 
-    const { typeInfo, redirectPath } = props
+    const { typeInfo } = props
+
+    const { appInfo } = useContext(AppContext)
+    if (!appInfo) {
+        throw new Error('AppInfo not loaded')
+    }
 
     const [response, setResponse] = React.useState<RespT | null>(null)
 
-    const initialData = props.initialData || typeInfo.getEmptyObject() || ({} as FormT)
+    const initialData = props.initialData || typeInfo.getEmptyObject(appInfo) || ({} as FormT)
 
     // Todo: remove dependency on next/navigation
     const router = useRouter()
@@ -34,10 +39,6 @@ export const TypeAddFormWrapper = <T extends ITypeMinimal = any, RespT = any>(pr
         initialValues: initialData,
     })
 
-    const { appInfo } = useContext(AppContext)
-    if (!appInfo) {
-        throw new Error('AppInfo not loaded')
-    }
     console.log('[TypeAddFormWrapper] Rendering...', 'typeInfo', typeInfo)
 
     return (

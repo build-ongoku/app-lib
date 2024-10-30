@@ -3,7 +3,7 @@
 import { Container, Image, Title } from '@mantine/core'
 import { useAuth } from '@ongoku/app-lib/src/common/AuthContext'
 import { useRouter } from 'next/navigation'
-import { useEffect } from 'react'
+import React, { useEffect } from 'react'
 
 export const LayoutRootPublic = ({ children }: { children: React.ReactNode }) => {
     const { session, loading: loadingSession } = useAuth()

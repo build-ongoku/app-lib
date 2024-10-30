@@ -2,9 +2,9 @@
  * App Context
  * * * * * */
 
-import React, { use, useEffect, useState } from 'react'
-import { App, AppReq, IApp } from './app_v3'
 import { Loader } from '@mantine/core'
+import React, { useEffect, useState } from 'react'
+import { App, AppReq } from './app_v3'
 
 export interface IAppContext {
     appInfo: App | null

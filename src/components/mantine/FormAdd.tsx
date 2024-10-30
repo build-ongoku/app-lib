@@ -1,5 +1,5 @@
+import { EntityNamespaceReq, EnumNamespaceReq, IEnumNamespace, ITypeNamespace, TypeNamespaceReq } from '@ongoku/app-lib/src/common/namespacev2'
 import { Operator } from '@ongoku/app-lib/src/common/Filter'
-import { EntityNamespaceReq, EnumNamespaceReq, IEnumNamespace, ITypeNamespace, Namespace, TypeNamespaceReq } from '@/common/namespacev2'
 
 import {
     ComboboxData,
@@ -23,7 +23,7 @@ import { UseFormReturnType } from '@mantine/form'
 import { Field, ITypeMinimal, TypeInfo } from '@ongoku/app-lib/src/common/app_v3'
 import { AppContext } from '@ongoku/app-lib/src/common/AppContextV3'
 import * as fieldkind from '@ongoku/app-lib/src/common/fieldkind'
-import { queryByTextV2, uploadFile, useQueryByTextV2 } from '@ongoku/app-lib/src/providers/provider'
+import { queryByTextV2, uploadFile } from '@ongoku/app-lib/src/providers/provider'
 import React, { useContext, useEffect, useState } from 'react'
 
 export const TypeAddForm = <T extends ITypeMinimal = any>(props: {

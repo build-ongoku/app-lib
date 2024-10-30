@@ -1,6 +1,6 @@
 // Generic Types
 
-import { TypeMinimal, TypeMinimalWithMeta } from './Type'
+import { ITypeMinimal } from '@ongoku/app-lib/src/common/app_v3'
 
 // Optional is a type that takes a type and makes the given keys optional
 export type Optional<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>
@@ -20,18 +20,18 @@ export interface MetaFields {
     deleted_at: Date | null
 }
 
-export type WithMetaFields<T = TypeMinimal> = T & MetaFields
+export type WithMetaFields<T = ITypeMinimal> = T & MetaFields
 
 // TypeInputFromFull<T> is a type that takes a full type and removes the meta fields
 export type TypeInputFromFull<T> = Omit<T, MetaFieldKeys>
 
-export const convertFullTypeToInput = <T extends TypeMinimal>(fullType: WithMetaFields<T>): T => {
+export const convertFullTypeToInput = <T extends ITypeMinimal>(fullType: WithMetaFields<T>): T => {
     // remove the meta fields
     // const { id, created_at, updated_at, deleted_at, ...rest } = fullType
     return fullType as T
 }
 
-export const convertTypeToWithMeta = <T extends TypeMinimal>(fullType: T): WithMetaFields<T> => {
+export const convertTypeToWithMeta = <T extends ITypeMinimal>(fullType: T): WithMetaFields<T> => {
     // add the meta fields
     const metaFields = {
         id: '',

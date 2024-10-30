@@ -1,15 +1,15 @@
-import { FetchFunc, useGetEntity, useListEntityV2 } from '@ongoku/app-lib/src/providers/provider'
 import { Button, ButtonGroup, Title } from '@mantine/core'
-import { ServerResponseWrapper } from '@ongoku/app-lib/src/components/mantine/ServerResponseWrapper'
+import { notifications } from '@mantine/notifications'
 import { EntityAssociation, EntityInfo, IEntityMinimal } from '@ongoku/app-lib/src/common/app_v3'
-import { useContext, useState } from 'react'
 import { AppContext } from '@ongoku/app-lib/src/common/AppContextV3'
-import { ID } from '@ongoku/app-lib/src/common/scalars'
 import { Operator } from '@ongoku/app-lib/src/common/Filter'
+import { ID } from '@ongoku/app-lib/src/common/scalars'
 import { getEntityAddPath } from '@ongoku/app-lib/src/components/EntityLink'
 import { EntityListTableInner } from '@ongoku/app-lib/src/components/mantine/EntityList'
+import { ServerResponseWrapper } from '@ongoku/app-lib/src/components/mantine/ServerResponseWrapper'
+import { FetchFunc, useGetEntity, useListEntityV2 } from '@ongoku/app-lib/src/providers/provider'
 import { useRouter } from 'next/navigation'
-import { notifications } from '@mantine/notifications'
+import React, { useContext } from 'react'
 
 export const EntityDetail = <E extends IEntityMinimal = any>(props: { entityInfo: EntityInfo<E>; identifier: string }) => {
     const { entityInfo, identifier } = props

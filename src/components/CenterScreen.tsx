@@ -1,6 +1,7 @@
 'use client'
 
 import { Container } from '@mantine/core'
+import React from 'react'
 
 export const CenterScreen = (props: { children: React.ReactNode }) => {
     return (

@@ -1,8 +1,7 @@
 'use client'
 
-import React, { useEffect, useState, useContext } from 'react'
-
 import { makeRequest } from '@ongoku/app-lib/src/providers/provider'
+import React, { useContext, useEffect, useState } from 'react'
 
 export interface AuthenticateResponse {
     token: string

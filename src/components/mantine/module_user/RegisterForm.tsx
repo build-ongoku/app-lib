@@ -1,13 +1,14 @@
 'use client'
 
-import { TypeInfo, TypeMinimal } from '@ongoku/app-lib/src/common/Type'
 import { Anchor, Container, PasswordInput, TextInput } from '@mantine/core'
-import { isEmail, useForm } from '@mantine/form'
+import { useForm } from '@mantine/form'
 import { useAuth } from '@ongoku/app-lib/src/common/AuthContext'
 import { Form } from '@ongoku/app-lib/src/components/mantine/Form'
 import { useRouter } from 'next/navigation'
+import React from 'react'
+import { ITypeMinimal } from '@ongoku/app-lib/src/common/app_v3'
 
-type BareMinimumRegisterForm = TypeMinimal & {
+type BareMinimumRegisterForm = ITypeMinimal & {
     email: string
 }
 

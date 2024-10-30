@@ -1,5 +1,3 @@
-import { PrimaryNamespace, Namespace } from '@ongoku/app-lib/src/common/Namespace'
-import { TypeMinimal, TypeInfo } from '@ongoku/app-lib/src/common/Type'
 import * as scalars from '@ongoku/app-lib/src/common/scalars'
 
 export interface MetaFields {

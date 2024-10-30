@@ -1,14 +1,14 @@
-import { ServerResponseWrapper } from './ServerResponseWrapper'
-import { ListEntityResponse, useListEntity } from '../../providers/provider'
 import { Button, Title } from '@mantine/core'
+import { EntityInfo, IEntityMinimal } from '@ongoku/app-lib/src/common/app_v3'
+import { getEntityAddPath } from '@ongoku/app-lib/src/components/EntityLink'
+import { ServerResponseWrapper } from '@ongoku/app-lib/src/components/mantine/ServerResponseWrapper'
+import { ListEntityResponse, useListEntity } from '@ongoku/app-lib/src/providers/provider'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import { MantineReactTable, useMantineReactTable, type MRT_ColumnDef } from 'mantine-react-table'
 import 'mantine-react-table/styles.css' //make sure MRT styles were imported in your app root (once)
-import { useMemo } from 'react'
 import { useRouter } from 'next/navigation'
-import { getEntityAddPath } from '@ongoku/app-lib/src/components/EntityLink'
-import { EntityInfo, IEntityMinimal } from '@ongoku/app-lib/src/common/app_v3'
+import React, { useMemo } from 'react'
 
 dayjs.extend(relativeTime)
 

@@ -1,9 +1,9 @@
 'use client'
 
-import { ScreenLoader } from '@ongoku/app-lib/src/components/admin/mantine/Loader'
 import { useAuth } from '@ongoku/app-lib/src/common/AuthContext'
+import { ScreenLoader } from '@ongoku/app-lib/src/components/admin/mantine/Loader'
 import { useRouter } from 'next/navigation'
-import { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 // LayoutRootPrivate handles the authentication logic for the private part of the app.
 export const LayoutRootPrivate = (props: { children: React.ReactNode }) => {

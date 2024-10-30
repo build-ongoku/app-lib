@@ -1,28 +1,25 @@
-import { capitalCase } from 'change-case'
-import { MetaFields } from '@ongoku/app-lib/src/common/field'
+import { MetaFields } from '@ongoku/app-lib/src/common/Field'
 import { EnumKind, ForeignEntityKind, IFieldKind, NestedKind } from '@ongoku/app-lib/src/common/fieldkind'
 import {
-    ITypeNamespace,
+    EntityNamespaceReq,
+    EnumNamespaceReq,
+    IEntityNamespace,
     IEnumNamespace,
+    IMethodEntityNamespace,
     IMethodNamespace,
     IServiceNamespace,
-    IEntityNamespace,
-    EntityNamespaceReq,
-    Namespace,
-    // IToReq,
-    INamespace,
-    ServiceNamespaceReq,
     ITypeEntityNamespace,
-    IMethodEntityNamespace,
-    Name,
-    TypeNamespaceReq,
-    EnumNamespaceReq,
-    MethodNamespaceReq,
-    TypeEntityNamespaceReq,
+    ITypeNamespace,
     MethodEntityNamespaceReq,
+    MethodNamespaceReq,
+    Name,
+    Namespace,
+    ServiceNamespaceReq,
+    TypeNamespaceReq,
 } from '@ongoku/app-lib/src/common/namespacev2'
 import { MetaFieldKeys } from '@ongoku/app-lib/src/common/types'
 import { GokuHTTPResponse, joinURL, makeRequestV2 } from '@ongoku/app-lib/src/providers/provider'
+import { capitalCase } from 'change-case'
 
 /* * * * * *
  * App

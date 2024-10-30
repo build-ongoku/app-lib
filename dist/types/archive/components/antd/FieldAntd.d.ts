@@ -1,0 +1,22 @@
+import { FieldInfo, FieldKind } from '@ongoku/app-lib/src/common/Field';
+import { DisplayProps } from '@ongoku/app-lib/src/components/DisplayAttributes/DisplayAttributes';
+import { FieldKindUI, FieldFormProps } from '@ongoku/app-lib/src/archive/components/Field';
+export declare const getFieldForFieldKind: (fieldKind: FieldKind) => FieldKindUI;
+export declare const DefaultField: {
+    name: string;
+    getLabel: (fieldInfo: FieldInfo) => JSX.Element;
+    getLabelString: (fieldInfo: FieldInfo) => string;
+    getDisplayComponent(fieldInfo: FieldInfo): (props: DisplayProps<any>) => import("react").JSX.Element;
+    getDisplayRepeatedComponent(fieldInfo: FieldInfo): (props: DisplayProps) => import("react").JSX.Element;
+    getInputComponent(): (props: FieldFormProps) => import("react").JSX.Element;
+    getInputRepeatedComponent(): any;
+};
+export declare const UUIDField: FieldKindUI;
+export declare const StringField: FieldKindUI;
+export declare const NumberField: FieldKindUI;
+export declare const BooleanField: FieldKindUI;
+export declare const DateField: FieldKindUI;
+export declare const TimestampField: FieldKindUI;
+export declare const EnumField: FieldKindUI;
+export declare const NestedField: FieldKindUI;
+export declare const NestedInput: (props: FieldFormProps) => import("react").JSX.Element;

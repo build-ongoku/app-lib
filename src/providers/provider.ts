@@ -1,11 +1,10 @@
+import { EntityInfo, IEntityMinimal } from '@ongoku/app-lib/src/common/app_v3'
 import { getSessionCookie } from '@ongoku/app-lib/src/common/AuthContext'
+import { Namespace } from '@ongoku/app-lib/src/common/namespacev2'
 import * as scalars from '@ongoku/app-lib/src/common/scalars'
+import { MetaFieldKeys, RequiredFields } from '@ongoku/app-lib/src/common/types'
 import axios, { AxiosError, AxiosRequestConfig } from 'axios'
 import { useEffect, useState } from 'react'
-import { EntityInfo, IEntityMinimal } from '@ongoku/app-lib/src/common/app_v3'
-import { Namespace } from '@ongoku/app-lib/src/common/namespacev2'
-import { MetaFieldKeys, RequiredFields } from '@ongoku/app-lib/src/common/types'
-import { EnumFieldFor } from '@ongoku/app-lib/src/linker'
 
 // getBaseURL returns the base URL for the backend API
 // It does not add the version number.
@@ -81,8 +80,8 @@ export const useAddEntity = <E extends IEntityMinimal = any>(props: EntityHttpRe
 
 export interface UpdateEntityRequest<E extends IEntityMinimal> {
     object: E
-    fields?: EnumFieldFor<E>[]
-    exclude_fields?: EnumFieldFor<E>[]
+    fields?: string[]
+    exclude_fields?: string[]
 }
 
 export const useUpdateEntity = <E extends IEntityMinimal>(props: EntityHttpRequest<E, UpdateEntityRequest<E>>): readonly [HTTPResponse<E>] => {
