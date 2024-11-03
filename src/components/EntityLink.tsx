@@ -1,3 +1,5 @@
+'use client'
+
 import { EntityInfo, IEntityMinimal } from '../common/app_v3'
 import React from 'react'
 

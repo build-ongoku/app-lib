@@ -1,3 +1,4 @@
+'use client';
 import { AppContext } from '../../common/AppContextV3';
 import { EntityListTable } from './EntityList';
 import React, { useContext } from 'react';

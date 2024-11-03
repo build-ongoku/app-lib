@@ -1,3 +1,4 @@
+'use client';
 import { Alert } from '@mantine/core';
 import React from 'react';
 import { ScreenLoader } from '../../components/admin/mantine/Loader';

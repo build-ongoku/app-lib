@@ -1,3 +1,4 @@
+'use client';
 import { useForm } from '@mantine/form';
 import { AppContext } from '../../common/AppContextV3';
 import { Form } from './Form';

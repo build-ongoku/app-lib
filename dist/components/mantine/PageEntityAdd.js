@@ -1,3 +1,4 @@
+'use client';
 import { Title } from '@mantine/core';
 import { AppContext } from '../../common/AppContextV3';
 import { EntityAddForm } from './EntityAdd';

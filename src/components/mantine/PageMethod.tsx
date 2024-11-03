@@ -1,3 +1,5 @@
+'use client'
+
 import { MethodForm } from './MethodForm'
 import React from 'react'
 

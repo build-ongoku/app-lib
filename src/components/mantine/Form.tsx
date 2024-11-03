@@ -1,3 +1,5 @@
+'use client'
+
 import { Alert, Box, Button, Paper, Stack } from '@mantine/core'
 import { UseFormReturnType } from '@mantine/form'
 import { useRouter } from 'next/navigation'

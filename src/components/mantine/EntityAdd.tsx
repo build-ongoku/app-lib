@@ -1,3 +1,5 @@
+'use client'
+
 import { useForm } from '@mantine/form'
 import { EntityInfo, IEntityMinimal } from '../../common/app_v3'
 import { AppContext } from '../../common/AppContextV3'

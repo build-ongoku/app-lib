@@ -1,3 +1,5 @@
+'use client'
+
 import { EntityNamespaceReq, EnumNamespaceReq, IEnumNamespace, ITypeNamespace, TypeNamespaceReq } from '../../common/namespacev2'
 import { Operator } from '../../common/Filter'
 

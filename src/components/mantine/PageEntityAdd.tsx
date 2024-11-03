@@ -1,3 +1,5 @@
+'use client'
+
 import { Title } from '@mantine/core'
 import { IEntityMinimal } from '../../common/app_v3'
 import { AppContext } from '../../common/AppContextV3'

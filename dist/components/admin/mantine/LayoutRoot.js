@@ -1,3 +1,4 @@
+'use client';
 import { ColorSchemeScript, createTheme, MantineProvider } from '@mantine/core';
 import { Notifications } from '@mantine/notifications';
 import { AuthProvider } from '../../../common/AuthContext';

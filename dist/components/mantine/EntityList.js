@@ -1,3 +1,4 @@
+'use client';
 import { Button, Title } from '@mantine/core';
 import { getEntityAddPath } from '../../components/EntityLink';
 import { ServerResponseWrapper } from './ServerResponseWrapper';

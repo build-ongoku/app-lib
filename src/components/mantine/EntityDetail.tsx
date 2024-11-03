@@ -1,3 +1,5 @@
+'use client'
+
 import { Button, ButtonGroup, Title } from '@mantine/core'
 import { notifications } from '@mantine/notifications'
 import { EntityAssociation, EntityInfo, IEntityMinimal } from '../../common/app_v3'

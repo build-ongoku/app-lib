@@ -1,3 +1,4 @@
+'use client';
 import { Alert, Box, Button, Paper, Stack } from '@mantine/core';
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';

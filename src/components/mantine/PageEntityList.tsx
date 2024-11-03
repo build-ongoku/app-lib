@@ -1,3 +1,5 @@
+'use client'
+
 import { AppContext } from '../../common/AppContextV3'
 import { IEntityMinimal } from '../../common/app_v3'
 import { EntityListTable } from './EntityList'

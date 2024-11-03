@@ -1,3 +1,5 @@
+'use client'
+
 import { Button, Title } from '@mantine/core'
 import { EntityInfo, IEntityMinimal } from '../../common/app_v3'
 import { getEntityAddPath } from '../../components/EntityLink'

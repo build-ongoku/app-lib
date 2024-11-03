@@ -1,3 +1,4 @@
+'use client';
 import { Button, ButtonGroup, Title } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 import { AppContext } from '../../common/AppContextV3';

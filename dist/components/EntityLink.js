@@ -1,3 +1,4 @@
+'use client';
 import React from 'react';
 export var Link = function (props) {
     return React.createElement("a", { href: props.to }, props.children);
