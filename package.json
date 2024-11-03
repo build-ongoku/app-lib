@@ -14,18 +14,9 @@
   "types": "dist/types/index.d.ts",
   "type": "module",
   "files": [
-    "dist"
+    "dist",
+    "src"
   ],
-  "exports": {
-    "./*": "./dist/*"
-  },
-  "typesVersions": {
-    "*": {
-      "*": [
-        "dist/*"
-      ]
-    }
-  },
   "scripts": {
     "build": "tsc && cpx \"src/**/*.css\" dist"
   },
