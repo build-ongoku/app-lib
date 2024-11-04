@@ -123,7 +123,7 @@ var Namespace = /** @class */ (function () {
         return str;
     };
     Namespace.prototype.toLabel = function () {
-        var sep = ' > ';
+        var sep = ' - ';
         var str = '';
         if (this.service) {
             str = str + this.service.toCapital();

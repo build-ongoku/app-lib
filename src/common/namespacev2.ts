@@ -207,7 +207,7 @@ export class Namespace<NsReqT extends NamespaceReq> implements INamespace<NsReqT
     }
 
     toLabel(): string {
-        const sep = ' > '
+        const sep = ' - '
         let str = ''
         if (this.service) {
             str = str + this.service.toCapital()

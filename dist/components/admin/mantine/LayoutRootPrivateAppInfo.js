@@ -4,14 +4,12 @@ import { useDisclosure } from '@mantine/hooks';
 import { AppContext, AppProvider } from '../../../common/AppContextV3';
 import { LogoutButton } from '../../mantine/module_user/LogoutButton';
 import { joinURL } from '../../../providers/provider';
-import { useRouter } from 'next/navigation';
 import React, { Suspense, useContext } from 'react';
 export var LayoutRootPrivateAppInfo = function (props) {
     return (React.createElement(AppProvider, { appReq: props.appReq, applyOverrides: props.applyOverrides },
         React.createElement(AppLayout, null, props.children)));
 };
 var AppLayout = function (props) {
-    var router = useRouter();
     var _a = useDisclosure(), opened = _a[0], toggle = _a[1].toggle;
     var appInfo = useContext(AppContext).appInfo;
     if (!appInfo) {

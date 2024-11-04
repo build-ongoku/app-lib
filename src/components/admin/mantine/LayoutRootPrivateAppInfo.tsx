@@ -6,7 +6,6 @@ import { AppContext, AppProvider } from '../../../common/AppContextV3'
 import { App, AppReq } from '../../../common/app_v3'
 import { LogoutButton } from '../../mantine/module_user/LogoutButton'
 import { joinURL } from '../../../providers/provider'
-import { useRouter } from 'next/navigation'
 import React, { Suspense, useContext } from 'react'
 
 export const LayoutRootPrivateAppInfo = (props: { appReq: AppReq; applyOverrides?: (appInfo: App) => Promise<App>; children: React.ReactNode }) => {
@@ -18,7 +17,6 @@ export const LayoutRootPrivateAppInfo = (props: { appReq: AppReq; applyOverrides
 }
 
 const AppLayout = (props: { children: React.ReactNode }) => {
-    const router = useRouter()
     const [opened, { toggle }] = useDisclosure()
 
     const { appInfo } = useContext(AppContext)
