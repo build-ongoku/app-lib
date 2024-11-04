@@ -37,7 +37,7 @@ var theme = createTheme({
         },
         Text: {
             classNames: {
-                root: 'text-lg',
+                root: 'text-lg font-light',
             },
         },
         Alert: {
@@ -53,6 +53,11 @@ var theme = createTheme({
         Fieldset: {
             classNames: {
                 legend: 'text-xl font-light',
+            },
+        },
+        NavLink: {
+            classNames: {
+                root: 'text-xl font-light',
             },
         },
         // Do it for all input components

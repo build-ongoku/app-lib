@@ -1,16 +1,16 @@
 'use client'
 
-import { Button, Title } from '@mantine/core'
-import { EntityInfo, IEntityMinimal } from '../../common/app_v3'
-import { getEntityAddPath } from '../../components/EntityLink'
-import { ServerResponseWrapper } from './ServerResponseWrapper'
-import { ListEntityResponse, useListEntity } from '../../providers/provider'
+import { Anchor, Button, Text, Title } from '@mantine/core'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import { MantineReactTable, useMantineReactTable, type MRT_ColumnDef } from 'mantine-react-table'
 import 'mantine-react-table/styles.css' //make sure MRT styles were imported in your app root (once)
 import { useRouter } from 'next/navigation'
 import React, { useMemo } from 'react'
+import { EntityInfo, IEntityMinimal } from '../../common/app_v3'
+import { getEntityAddPath } from '../../components/EntityLink'
+import { ListEntityResponse, useListEntity } from '../../providers/provider'
+import { ServerResponseWrapper } from './ServerResponseWrapper'
 
 dayjs.extend(relativeTime)
 
@@ -25,7 +25,11 @@ const getDefaultEntityColumns = <E extends IEntityMinimal>(entityInfo: EntityInf
             const entity = row.original
             const name = entityInfo.getEntityNameFriendly(entity)
             const id = entity.id
-            return <a href={`${entityInfo.namespace.toURLPath()}/${id}`}>{name}</a>
+            return (
+                <Anchor key={id} href={`${entityInfo.namespace.toURLPath()}/${id}`}>
+                    {name}
+                </Anchor>
+            )
         },
     },
     {
@@ -34,7 +38,7 @@ const getDefaultEntityColumns = <E extends IEntityMinimal>(entityInfo: EntityInf
         Cell: ({ cell }) => {
             const value = cell.getValue<Date>()
             const displayValue = dayjs(value).fromNow()
-            return <span>{displayValue}</span>
+            return <Text>{displayValue}</Text>
         },
     },
     {
@@ -43,7 +47,7 @@ const getDefaultEntityColumns = <E extends IEntityMinimal>(entityInfo: EntityInf
         Cell: ({ cell }) => {
             const value = cell.getValue<Date>()
             const displayValue = dayjs(value).fromNow()
-            return <span>{displayValue}</span>
+            return <Text>{displayValue}</Text>
         },
     },
 ]

@@ -1,14 +1,14 @@
 'use client';
-import { Button, Title } from '@mantine/core';
-import { getEntityAddPath } from '../../components/EntityLink';
-import { ServerResponseWrapper } from './ServerResponseWrapper';
-import { useListEntity } from '../../providers/provider';
+import { Anchor, Button, Text, Title } from '@mantine/core';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import { MantineReactTable, useMantineReactTable } from 'mantine-react-table';
 import 'mantine-react-table/styles.css'; //make sure MRT styles were imported in your app root (once)
 import { useRouter } from 'next/navigation';
 import React, { useMemo } from 'react';
+import { getEntityAddPath } from '../../components/EntityLink';
+import { useListEntity } from '../../providers/provider';
+import { ServerResponseWrapper } from './ServerResponseWrapper';
 dayjs.extend(relativeTime);
 var getDefaultEntityColumns = function (entityInfo) { return [
     {
@@ -22,7 +22,7 @@ var getDefaultEntityColumns = function (entityInfo) { return [
             var entity = row.original;
             var name = entityInfo.getEntityNameFriendly(entity);
             var id = entity.id;
-            return React.createElement("a", { href: "".concat(entityInfo.namespace.toURLPath(), "/").concat(id) }, name);
+            return (React.createElement(Anchor, { key: id, href: "".concat(entityInfo.namespace.toURLPath(), "/").concat(id) }, name));
         },
     },
     {
@@ -32,7 +32,7 @@ var getDefaultEntityColumns = function (entityInfo) { return [
             var cell = _a.cell;
             var value = cell.getValue();
             var displayValue = dayjs(value).fromNow();
-            return React.createElement("span", null, displayValue);
+            return React.createElement(Text, null, displayValue);
         },
     },
     {
@@ -42,7 +42,7 @@ var getDefaultEntityColumns = function (entityInfo) { return [
             var cell = _a.cell;
             var value = cell.getValue();
             var displayValue = dayjs(value).fromNow();
-            return React.createElement("span", null, displayValue);
+            return React.createElement(Text, null, displayValue);
         },
     },
 ]; };
