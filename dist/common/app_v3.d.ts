@@ -127,6 +127,12 @@ export interface DtypeReq<T = any> {
     kind: IFieldKind;
     namespace?: EntityNamespaceReq | TypeNamespaceReq | EnumNamespaceReq;
 }
+export declare class Dtype<T = any> implements IDtype {
+    name: Name;
+    kind: IFieldKind;
+    namespace?: IEntityNamespace | ITypeNamespace | IEnumNamespace;
+    constructor(req: DtypeReq);
+}
 export interface IEntityMinimal extends ITypeMinimal, MetaFields {
 }
 interface IEntityInfo<E extends IEntityMinimal> {
@@ -232,30 +238,40 @@ export declare class EnumValue implements IEnumValue {
 }
 interface IMethod<reqT = any, resT = any> {
     namespace: IMethodNamespace;
-    apis: IMethodAPI[];
+    apis: MethodAPI[];
+    requestDtype?: IDtype<reqT>;
     requestTypeNamespace?: ITypeNamespace;
     responseTypeNamespace: ITypeNamespace;
-    getAPIEndpoint(): string;
-    makeAPIRequest(req: reqT): Promise<GokuHTTPResponse<resT>>;
+    getAPI(): MethodAPI | undefined;
 }
 export interface MethodReq {
     namespace: MethodNamespaceReq;
+    requestDtype?: DtypeReq;
     requestTypeNamespace?: TypeNamespaceReq;
     responseTypeNamespace: TypeNamespaceReq;
-    apis: IMethodAPI[];
+    apis: MethodAPIReq[];
 }
 export declare class Method<reqT = any, resT = any> implements IMethod<reqT, resT> {
     namespace: IMethodNamespace;
-    requestTypeNamespace?: ITypeNamespace;
+    requestDtype?: Dtype<reqT>;
     responseTypeNamespace: ITypeNamespace;
-    apis: IMethodAPI[];
+    apis: MethodAPI[];
     constructor(req: MethodReq);
-    getAPIEndpoint(): string;
-    makeAPIRequest<ReqT = any, RespT = any>(req: ReqT): Promise<GokuHTTPResponse<RespT>>;
+    getAPI(): MethodAPI | undefined;
 }
-interface IMethodAPI {
-    method: 'GET' | 'POST' | 'PUT' | 'DELETE';
+interface MethodAPIReq {
+    method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
     path: string;
     version: number;
+    methodNamespace: MethodNamespaceReq;
+}
+declare class MethodAPI {
+    method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
+    relPath: string;
+    version: number;
+    methodNamespace: IMethodNamespace;
+    constructor(req: MethodAPIReq);
+    getEndpoint(): string;
+    makeAPIRequest<ReqT = any, RespT = any>(req: ReqT): Promise<GokuHTTPResponse<RespT>>;
 }
 export {};

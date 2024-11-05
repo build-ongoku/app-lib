@@ -41,7 +41,7 @@ export const joinURL = (...parts: string[]): string => {
 }
 
 export interface HTTPRequest<D> extends Omit<AxiosRequestConfig<D>, 'method' | 'url'> {
-    method: 'GET' | 'POST' | 'PUT'
+    method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
     path: string
     unauthenticated?: boolean
     // If set, it will be called in case we get an error
@@ -342,7 +342,7 @@ export const uploadFile = async <FileT extends IDefaultFile = IDefaultFile>(file
  * Make Request V2
  * * * * * */
 
-type HTTPMethod = 'GET' | 'POST' | 'PUT' | 'DELETE'
+type HTTPMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
 
 // makeRequestV2 makes a vanilla fetch request
 export const makeRequestV2 = async <RespT = any, ReqT = any>(props: { relativePath: string; method: HTTPMethod; data: ReqT; unauthenticated?: boolean }): Promise<GokuHTTPResponse<RespT>> => {

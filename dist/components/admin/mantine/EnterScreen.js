@@ -20,11 +20,8 @@ export var EnterScreen = function (props) {
             React.createElement("center", null,
                 React.createElement(Image, { src: "/logo_1.png", alt: "OnGoku Logo", className: "m-auto", w: "auto", fit: "contain", height: 100 }),
                 React.createElement(Title, { order: 1, className: "text-center" },
-                    "Welcome to ",
-                    props.appName,
-                    " ",
                     React.createElement("span", { className: "font-normal" }, "on"),
-                    "goku"),
+                    "goku admin tool"),
                 React.createElement("p", { className: "text-center" },
                     React.createElement(EnterButton, __assign({}, props)))))));
 };

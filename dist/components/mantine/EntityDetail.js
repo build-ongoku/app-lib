@@ -146,13 +146,16 @@ var EntityActions = function (props) {
             console.error('[EntityDetail] [EntityActions] Method not found', 'namespace', action.methodNamespace);
             throw new Error('Method not found');
         }
+        var api = method.getAPI();
+        if (!api) {
+            console.error('[EntityDetail] [EntityActions] API not found', 'method', method.namespace.method);
+            throw new Error('API not found');
+        }
         return (React.createElement(Button, { key: action.name.toRaw(), onClick: function () {
                 console.log('[EntityDetail] [EntityActions] [Button] Calling action', 'action', action.name.toRaw());
-                method
-                    .makeAPIRequest({
+                api.makeAPIRequest({
                     ID: props.id,
-                })
-                    .then(function (resp) {
+                }).then(function (resp) {
                     console.log('[EntityDetail] [EntityActions] [Button] [Response]', 'data', resp.data);
                     // refresh the page only if the action is successful
                     if (resp.error) {

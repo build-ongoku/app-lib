@@ -68,22 +68,26 @@ export var TypeAddForm = function (props) {
         // if we're dealing with a nested form, the keys should be prefixed with the parent key
         var identifier = props.parentIdentifier ? props.parentIdentifier + '.' + f.name.toFieldName() : f.name.toFieldName();
         var value = props.initialData ? f.getFieldValue(props.initialData) : undefined;
-        return React.createElement(GenericInput, { key: identifier, identifier: identifier, label: label, field: f, form: form, initialData: value });
+        return React.createElement(GenericFieldInput, { key: identifier, identifier: identifier, label: label, field: f, form: form, initialData: value });
     });
     return React.createElement(React.Fragment, null, inputElements);
 };
-var GenericInput = function (props) {
-    var field = props.field, identifier = props.identifier, label = props.label;
+var GenericFieldInput = function (props) {
+    var field = props.field;
+    return React.createElement(GenericDtypeInput, __assign({ dtype: field.dtype, isRepeated: field.isRepeated }, props));
+};
+export var GenericDtypeInput = function (props) {
+    var dtype = props.dtype, identifier = props.identifier, label = props.label, isRepeated = props.isRepeated;
     var appInfo = useContext(AppContext).appInfo;
     if (!appInfo) {
         throw new Error('AppInfo not available');
     }
+    var defaultPlaceholder = '';
     // We can't process repeated fields yet, except for "select" where we can simply allow multiple selections.
-    if (field.isRepeated && field.dtype.kind !== fieldkind.ForeignEntityKind && field.dtype.kind !== fieldkind.EnumKind) {
+    if (isRepeated && dtype.kind !== fieldkind.ForeignEntityKind && dtype.kind !== fieldkind.EnumKind) {
         return React.createElement(DefaultInput, { label: label, placeholder: "{}", identifier: identifier, form: props.form });
     }
-    var defaultPlaceholder = '';
-    switch (field.dtype.kind) {
+    switch (dtype.kind) {
         case fieldkind.StringKind:
             return React.createElement(StringInput, { label: label, placeholder: defaultPlaceholder, identifier: identifier, form: props.form });
         case fieldkind.NumberKind:
@@ -97,16 +101,17 @@ var GenericInput = function (props) {
         case fieldkind.IDKind:
             return React.createElement(StringInput, { label: label, placeholder: defaultPlaceholder, identifier: identifier, form: props.form });
         case fieldkind.ForeignEntityKind:
-            var ns = field.dtype.namespace;
+            var ns = dtype.namespace;
             if (!ns) {
-                throw new Error("Foreign Entity field [".concat(field.name, "] does not have a reference namespace"));
+                console.error('Foreign Entity dtype does not have a reference namespace', dtype);
+                throw new Error("Foreign Entity dtype [".concat(dtype.name, "] does not have a reference namespace"));
             }
-            return (React.createElement(ForeignEntityInput, { foreignEntityNs: ns.toRaw(), label: label, placeholder: "Select ".concat(ns.entity ? ns.entity.toCapital() : ''), identifier: identifier, form: props.form, multiple: field.isRepeated }));
+            return (React.createElement(ForeignEntityInput, { foreignEntityNs: ns.toRaw(), label: label, placeholder: "Select ".concat(ns.entity ? ns.entity.toCapital() : ''), identifier: identifier, form: props.form, multiple: isRepeated }));
         case fieldkind.EmailKind:
             return React.createElement(EmailInput, { label: label, placeholder: defaultPlaceholder, identifier: identifier, form: props.form });
         case fieldkind.EnumKind: {
             // Get enum values for the field
-            var ns_1 = field.dtype.namespace;
+            var ns_1 = dtype.namespace;
             if (!ns_1) {
                 throw new Error('Enum field does not have a reference namespace');
             }
@@ -118,7 +123,7 @@ var GenericInput = function (props) {
         }
         case fieldkind.NestedKind: {
             // Get the type info for the nested field
-            var ns_2 = field.dtype.namespace;
+            var ns_2 = dtype.namespace;
             if (!ns_2) {
                 throw new Error('Nested field does not have a reference namespace');
             }
@@ -134,7 +139,7 @@ var GenericInput = function (props) {
         case fieldkind.ConditionKind:
             return React.createElement(DefaultConditionInput, { identifier: identifier, form: props.form, label: label, placeholder: defaultPlaceholder });
         default:
-            console.warn('Field type not found. Using default input', field.dtype.kind);
+            console.warn('Field type not found. Using default input', dtype.kind);
             return React.createElement(DefaultInput, { label: label, placeholder: "{}", identifier: identifier, form: props.form });
     }
 };

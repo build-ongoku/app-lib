@@ -337,7 +337,7 @@ export interface DtypeReq<T = any> {
     namespace?: EntityNamespaceReq | TypeNamespaceReq | EnumNamespaceReq
 }
 
-class Dtype<T = any> implements IDtype {
+export class Dtype<T = any> implements IDtype {
     name: Name
     kind: IFieldKind
     namespace?: IEntityNamespace | ITypeNamespace | IEnumNamespace
@@ -612,61 +612,88 @@ export class EnumValue implements IEnumValue {
 
 interface IMethod<reqT = any, resT = any> {
     namespace: IMethodNamespace
-    apis: IMethodAPI[]
+    apis: MethodAPI[]
+    requestDtype?: IDtype<reqT>
     requestTypeNamespace?: ITypeNamespace
     responseTypeNamespace: ITypeNamespace
-    getAPIEndpoint(): string
-    makeAPIRequest(req: reqT): Promise<GokuHTTPResponse<resT>>
+    getAPI(): MethodAPI | undefined
+    // getAPIEndpoint(): string
+    // makeAPIRequest(req: reqT): Promise<GokuHTTPResponse<resT>>
 }
 
 export interface MethodReq {
     namespace: MethodNamespaceReq
+    requestDtype?: DtypeReq
     requestTypeNamespace?: TypeNamespaceReq
     responseTypeNamespace: TypeNamespaceReq
-    apis: IMethodAPI[]
+    apis: MethodAPIReq[]
 }
 
 export class Method<reqT = any, resT = any> implements IMethod<reqT, resT> {
     namespace: IMethodNamespace
-    requestTypeNamespace?: ITypeNamespace
+    requestDtype?: Dtype<reqT>
     responseTypeNamespace: ITypeNamespace
-    apis: IMethodAPI[]
+    apis: MethodAPI[]
 
     constructor(req: MethodReq) {
         this.namespace = new Namespace(req.namespace) as IMethodNamespace
-        if (req.requestTypeNamespace) {
-            this.requestTypeNamespace = new Namespace(req.requestTypeNamespace)
+        if (req.requestDtype) {
+            this.requestDtype = new Dtype(req.requestDtype)
         }
         this.responseTypeNamespace = new Namespace(req.responseTypeNamespace)
-        this.apis = req.apis
+        this.apis = req.apis.map((api) => new MethodAPI(api))
 
         if (!this.namespace.service || !this.namespace.method) {
             throw new Error('Service and Method name is required')
         }
     }
 
-    getAPIEndpoint(): string {
-        if (this.apis.length === 0) {
-            throw new Error('No API found for method')
+    getAPI(): MethodAPI | undefined {
+        if (this.apis.length > 0) {
+            return this.apis[0]
         }
-        const api = this.apis[0]
-        return joinURL('v' + api.version, this.namespace.toURLPath(), api.path)
     }
 
-    makeAPIRequest<ReqT = any, RespT = any>(req: ReqT): Promise<GokuHTTPResponse<RespT>> {
-        console.debug('[Method] [makeAPIRequest]', 'namespace', this.namespace.toString(), 'req', req)
-        const api = this.apis[0]
-        const relPath = joinURL('v' + api.version, this.namespace.toURLPath(), api.path)
-        return makeRequestV2<RespT>({ relativePath: relPath, method: api.method, data: req })
-    }
+    // getAPIEndpoint(): string {
+    //     if (this.apis.length === 0) {
+    //         throw new Error('No API found for method')
+    //     }
+    //     const api = this.apis[0]
+    //     return joinURL('v' + api.version, this.namespace.toURLPath(), api.path)
+    // }
 }
 
 /* * * * * *
  * Method - API
  * * * * * */
 
-interface IMethodAPI {
-    method: 'GET' | 'POST' | 'PUT' | 'DELETE'
+interface MethodAPIReq {
+    method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
     path: string
     version: number
+    methodNamespace: MethodNamespaceReq
+}
+
+class MethodAPI {
+    method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
+    relPath: string
+    version: number
+    methodNamespace: IMethodNamespace
+
+    constructor(req: MethodAPIReq) {
+        this.method = req.method
+        this.relPath = req.path
+        this.version = req.version
+        this.methodNamespace = new Namespace(req.methodNamespace)
+    }
+
+    getEndpoint(): string {
+        return joinURL('v' + this.version, this.methodNamespace.toURLPath(), this.relPath)
+    }
+
+    makeAPIRequest<ReqT = any, RespT = any>(req: ReqT): Promise<GokuHTTPResponse<RespT>> {
+        console.debug('[MethodAPI] [makeAPIRequest]', 'namespace', this.methodNamespace.toString(), 'req', req)
+        const relPath = this.getEndpoint()
+        return makeRequestV2<RespT>({ relativePath: relPath, method: this.method, data: req })
+    }
 }

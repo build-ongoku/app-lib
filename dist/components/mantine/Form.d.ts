@@ -7,6 +7,7 @@ export declare const Form: <FormT extends Record<string, any>, RequestT = FormT,
     bottomExtra?: React.ReactNode;
     onSubmitTransformValues?: (values: FormT) => RequestT;
     postEndpoint: string;
+    method?: "POST" | "GET" | "PUT" | "PATCH" | "DELETE";
     redirectPath?: string;
     onSuccess?: (data: ResponseT) => void;
     onError?: (error: string) => void;

@@ -5,15 +5,15 @@ import React, { useEffect, useState } from 'react';
 import { FiAlertCircle } from 'react-icons/fi';
 import { useMakeRequest } from '../../providers/provider';
 export var Form = function (props) {
-    var _a;
+    var _a, _b;
     // Todo: remove dependency on next/navigation
     var router = useRouter();
-    var _b = useState(false), processing = _b[0], setProcessing = _b[1];
-    var _c = useState(), errMessage = _c[0], setErrMessage = _c[1];
-    var _d = useMakeRequest({
-        method: 'POST',
+    var _c = useState(false), processing = _c[0], setProcessing = _c[1];
+    var _d = useState(), errMessage = _d[0], setErrMessage = _d[1];
+    var _e = useMakeRequest({
+        method: (_a = props.method) !== null && _a !== void 0 ? _a : 'POST',
         path: props.postEndpoint,
-    }), resp = _d[0], fetch = _d[1];
+    }), resp = _e[0], fetch = _e[1];
     console.log('[Form] Rendering...', 'response?', resp);
     // Default transform function for type assertion
     var dummyTransform = function (values) {
@@ -70,6 +70,6 @@ export var Form = function (props) {
                 React.createElement(Stack, { gap: "lg" },
                     resp.error && React.createElement(Alert, { icon: React.createElement(FiAlertCircle, null) }, errMessage !== null && errMessage !== void 0 ? errMessage : "Our apologies. We could not complete the request. We're looking into it."),
                     props.children,
-                    React.createElement(Button, { type: "submit", loading: resp.loading || processing }, (_a = props.submitButtonText) !== null && _a !== void 0 ? _a : 'Submit'),
+                    React.createElement(Button, { type: "submit", loading: resp.loading || processing }, (_b = props.submitButtonText) !== null && _b !== void 0 ? _b : 'Submit'),
                     props.bottomExtra)))));
 };

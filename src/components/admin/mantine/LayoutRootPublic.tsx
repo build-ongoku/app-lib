@@ -20,9 +20,9 @@ export const LayoutRootPublic = ({ children }: { children: React.ReactNode }) =>
     return (
         <Container className="flex h-screen justify-center">
             <div className="m-auto">
-                <Image src="/logo_1.png" alt="OnGoku Logo" className="m-auto" w="auto" fit="contain" height={100} />
+                <Image src="/logo_1.png" alt="onhoku Logo" className="m-auto" w="auto" fit="contain" height={100} />
                 <Title order={1}>
-                    <span className="font-normal">On</span>Goku
+                    <span className="font-normal">on</span>goku
                 </Title>
             </div>
             <div className="m-auto">{children}</div>

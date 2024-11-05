@@ -1,13 +1,21 @@
 import { JsonInputProps, NumberInputProps, SelectProps, SwitchProps, TextInputProps } from '@mantine/core';
 import { DateInputProps, DateTimePickerProps } from '@mantine/dates';
 import { UseFormReturnType } from '@mantine/form';
-import { ITypeMinimal, TypeInfo } from '../../common/app_v3';
+import { ITypeMinimal, TypeInfo, Dtype } from '../../common/app_v3';
 import React from 'react';
 export declare const TypeAddForm: <T extends ITypeMinimal = any>(props: {
     typeInfo: TypeInfo<T>;
     form: UseFormReturnType<T>;
     parentIdentifier?: string;
     initialData?: T;
+}) => React.JSX.Element;
+export declare const GenericDtypeInput: <T extends ITypeMinimal = any>(props: {
+    dtype: Dtype;
+    identifier: string;
+    label: string;
+    form: UseFormReturnType<T>;
+    initialData?: T;
+    isRepeated?: boolean;
 }) => React.JSX.Element;
 interface InputProps<T = any> {
     internalProps?: Omit<T, 'label' | 'placeholder' | 'description' | 'key'>;

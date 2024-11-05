@@ -207,6 +207,7 @@ var Dtype = /** @class */ (function () {
     }
     return Dtype;
 }());
+export { Dtype };
 var EntityInfo = /** @class */ (function () {
     function EntityInfo(req) {
         var _this = this;
@@ -325,28 +326,37 @@ export { EnumValue };
 var Method = /** @class */ (function () {
     function Method(req) {
         this.namespace = new Namespace(req.namespace);
-        if (req.requestTypeNamespace) {
-            this.requestTypeNamespace = new Namespace(req.requestTypeNamespace);
+        if (req.requestDtype) {
+            this.requestDtype = new Dtype(req.requestDtype);
         }
         this.responseTypeNamespace = new Namespace(req.responseTypeNamespace);
-        this.apis = req.apis;
+        this.apis = req.apis.map(function (api) { return new MethodAPI(api); });
         if (!this.namespace.service || !this.namespace.method) {
             throw new Error('Service and Method name is required');
         }
     }
-    Method.prototype.getAPIEndpoint = function () {
-        if (this.apis.length === 0) {
-            throw new Error('No API found for method');
+    Method.prototype.getAPI = function () {
+        if (this.apis.length > 0) {
+            return this.apis[0];
         }
-        var api = this.apis[0];
-        return joinURL('v' + api.version, this.namespace.toURLPath(), api.path);
-    };
-    Method.prototype.makeAPIRequest = function (req) {
-        console.debug('[Method] [makeAPIRequest]', 'namespace', this.namespace.toString(), 'req', req);
-        var api = this.apis[0];
-        var relPath = joinURL('v' + api.version, this.namespace.toURLPath(), api.path);
-        return makeRequestV2({ relativePath: relPath, method: api.method, data: req });
     };
     return Method;
 }());
 export { Method };
+var MethodAPI = /** @class */ (function () {
+    function MethodAPI(req) {
+        this.method = req.method;
+        this.relPath = req.path;
+        this.version = req.version;
+        this.methodNamespace = new Namespace(req.methodNamespace);
+    }
+    MethodAPI.prototype.getEndpoint = function () {
+        return joinURL('v' + this.version, this.methodNamespace.toURLPath(), this.relPath);
+    };
+    MethodAPI.prototype.makeAPIRequest = function (req) {
+        console.debug('[MethodAPI] [makeAPIRequest]', 'namespace', this.methodNamespace.toString(), 'req', req);
+        var relPath = this.getEndpoint();
+        return makeRequestV2({ relativePath: relPath, method: this.method, data: req });
+    };
+    return MethodAPI;
+}());

@@ -18,7 +18,7 @@ export const EnterScreen = (props: EnterScreenProps) => {
                 <center>
                     <Image src="/logo_1.png" alt="OnGoku Logo" className="m-auto" w="auto" fit="contain" height={100} />
                     <Title order={1} className="text-center">
-                        Welcome to {props.appName} <span className="font-normal">on</span>goku
+                        <span className="font-normal">on</span>goku admin tool
                     </Title>
                     <p className="text-center">
                         <EnterButton {...props} />

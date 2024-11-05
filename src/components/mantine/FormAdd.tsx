@@ -22,7 +22,7 @@ import {
 } from '@mantine/core'
 import { DateInputProps, DateTimePicker, DateTimePickerProps, DateInput as MantineDateInput } from '@mantine/dates'
 import { UseFormReturnType } from '@mantine/form'
-import { Field, ITypeMinimal, TypeInfo } from '../../common/app_v3'
+import { Field, ITypeMinimal, TypeInfo, Dtype } from '../../common/app_v3'
 import { AppContext } from '../../common/AppContextV3'
 import * as fieldkind from '../../common/fieldkind'
 import { queryByTextV2, uploadFile } from '../../providers/provider'
@@ -51,33 +51,47 @@ export const TypeAddForm = <T extends ITypeMinimal = any>(props: {
         const identifier = props.parentIdentifier ? props.parentIdentifier + '.' + f.name.toFieldName() : f.name.toFieldName()
         const value = props.initialData ? f.getFieldValue(props.initialData) : undefined
 
-        return <GenericInput key={identifier} identifier={identifier} label={label} field={f} form={form} initialData={value} />
+        return <GenericFieldInput key={identifier} identifier={identifier} label={label} field={f} form={form} initialData={value} />
     })
 
     return <>{inputElements}</>
 }
 
-const GenericInput = <T extends ITypeMinimal = any>(props: {
+const GenericFieldInput = <T extends ITypeMinimal = any>(props: {
     identifier: string // formIdentifier for the input, e.g. 'email', 'name.firstName' etc.
     label: string
     field: Field
     form: UseFormReturnType<T>
     initialData?: T
 }) => {
-    const { field, identifier, label } = props
+    const { field } = props
+
+    return <GenericDtypeInput dtype={field.dtype} isRepeated={field.isRepeated} {...props} />
+}
+
+export const GenericDtypeInput = <T extends ITypeMinimal = any>(props: {
+    dtype: Dtype
+    identifier: string // formIdentifier for the input, e.g. 'email', 'name.firstName' etc.
+    label: string
+    form: UseFormReturnType<T>
+    initialData?: T
+    isRepeated?: boolean
+}) => {
+    const { dtype, identifier, label, isRepeated } = props
+
     const { appInfo } = useContext(AppContext)
     if (!appInfo) {
         throw new Error('AppInfo not available')
     }
 
+    const defaultPlaceholder = ''
+
     // We can't process repeated fields yet, except for "select" where we can simply allow multiple selections.
-    if (field.isRepeated && field.dtype.kind !== fieldkind.ForeignEntityKind && field.dtype.kind !== fieldkind.EnumKind) {
+    if (isRepeated && dtype.kind !== fieldkind.ForeignEntityKind && dtype.kind !== fieldkind.EnumKind) {
         return <DefaultInput label={label} placeholder="{}" identifier={identifier} form={props.form} />
     }
 
-    const defaultPlaceholder = ''
-
-    switch (field.dtype.kind) {
+    switch (dtype.kind) {
         case fieldkind.StringKind:
             return <StringInput label={label} placeholder={defaultPlaceholder} identifier={identifier} form={props.form} />
         case fieldkind.NumberKind:
@@ -91,9 +105,10 @@ const GenericInput = <T extends ITypeMinimal = any>(props: {
         case fieldkind.IDKind:
             return <StringInput label={label} placeholder={defaultPlaceholder} identifier={identifier} form={props.form} />
         case fieldkind.ForeignEntityKind:
-            const ns = field.dtype.namespace
+            const ns = dtype.namespace
             if (!ns) {
-                throw new Error(`Foreign Entity field [${field.name}] does not have a reference namespace`)
+                console.error('Foreign Entity dtype does not have a reference namespace', dtype)
+                throw new Error(`Foreign Entity dtype [${dtype.name}] does not have a reference namespace`)
             }
             return (
                 <ForeignEntityInput
@@ -102,14 +117,14 @@ const GenericInput = <T extends ITypeMinimal = any>(props: {
                     placeholder={`Select ${ns.entity ? ns.entity.toCapital() : ''}`}
                     identifier={identifier}
                     form={props.form}
-                    multiple={field.isRepeated}
+                    multiple={isRepeated}
                 />
             )
         case fieldkind.EmailKind:
             return <EmailInput label={label} placeholder={defaultPlaceholder} identifier={identifier} form={props.form} />
         case fieldkind.EnumKind: {
             // Get enum values for the field
-            const ns = field.dtype.namespace as IEnumNamespace
+            const ns = dtype.namespace as IEnumNamespace
             if (!ns) {
                 throw new Error('Enum field does not have a reference namespace')
             }
@@ -122,7 +137,7 @@ const GenericInput = <T extends ITypeMinimal = any>(props: {
 
         case fieldkind.NestedKind: {
             // Get the type info for the nested field
-            const ns = field.dtype.namespace as ITypeNamespace
+            const ns = dtype.namespace as ITypeNamespace
             if (!ns) {
                 throw new Error('Nested field does not have a reference namespace')
             }
@@ -143,7 +158,7 @@ const GenericInput = <T extends ITypeMinimal = any>(props: {
         case fieldkind.ConditionKind:
             return <DefaultConditionInput identifier={identifier} form={props.form} label={label} placeholder={defaultPlaceholder} />
         default:
-            console.warn('Field type not found. Using default input', field.dtype.kind)
+            console.warn('Field type not found. Using default input', dtype.kind)
             return <DefaultInput label={label} placeholder="{}" identifier={identifier} form={props.form} />
     }
 }

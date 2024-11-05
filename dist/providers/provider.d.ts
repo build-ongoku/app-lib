@@ -4,7 +4,7 @@ import { MetaFieldKeys } from '../common/types';
 import { AxiosRequestConfig } from 'axios';
 export declare const joinURL: (...parts: string[]) => string;
 export interface HTTPRequest<D> extends Omit<AxiosRequestConfig<D>, 'method' | 'url'> {
-    method: 'GET' | 'POST' | 'PUT';
+    method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
     path: string;
     unauthenticated?: boolean;
     errorCb?: (errMsg: string) => void;
@@ -58,7 +58,7 @@ interface IDefaultFile {
     id: scalars.ID;
 }
 export declare const uploadFile: <FileT extends IDefaultFile = IDefaultFile>(file: File, onProgress: (progress: number) => void) => Promise<GokuHTTPResponse<FileT>>;
-type HTTPMethod = 'GET' | 'POST' | 'PUT' | 'DELETE';
+type HTTPMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 export declare const makeRequestV2: <RespT = any, ReqT = any>(props: {
     relativePath: string;
     method: HTTPMethod;

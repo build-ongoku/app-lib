@@ -217,35 +217,38 @@ const EntityActions = <E extends IEntityMinimal>(props: { entityInfo: EntityInfo
             console.error('[EntityDetail] [EntityActions] Method not found', 'namespace', action.methodNamespace)
             throw new Error('Method not found')
         }
+        const api = method.getAPI()
+        if (!api) {
+            console.error('[EntityDetail] [EntityActions] API not found', 'method', method.namespace.method)
+            throw new Error('API not found')
+        }
         return (
             <Button
                 key={action.name.toRaw()}
                 onClick={() => {
                     console.log('[EntityDetail] [EntityActions] [Button] Calling action', 'action', action.name.toRaw())
-                    method
-                        .makeAPIRequest<DefaultEntityRequest, DefaultEntityResponse<E>>({
-                            ID: props.id,
-                        })
-                        .then((resp) => {
-                            console.log('[EntityDetail] [EntityActions] [Button] [Response]', 'data', resp.data)
-                            // refresh the page only if the action is successful
-                            if (resp.error) {
-                                console.error('[EntityDetail] [EntityActions] [Button] [Response] Error', 'error', resp.error)
-                                notifications.show({
-                                    title: `${action.name.toCapital()} Action: Failed`,
-                                    message: resp.error,
-                                    color: 'red',
-                                    position: 'bottom-right',
-                                })
-                                return
-                            }
+                    api.makeAPIRequest<DefaultEntityRequest, DefaultEntityResponse<E>>({
+                        ID: props.id,
+                    }).then((resp) => {
+                        console.log('[EntityDetail] [EntityActions] [Button] [Response]', 'data', resp.data)
+                        // refresh the page only if the action is successful
+                        if (resp.error) {
+                            console.error('[EntityDetail] [EntityActions] [Button] [Response] Error', 'error', resp.error)
                             notifications.show({
-                                title: `${action.name.toCapital()} Action: Result`,
-                                message: <pre>{JSON.stringify(resp.data, null, 2)}</pre>,
+                                title: `${action.name.toCapital()} Action: Failed`,
+                                message: resp.error,
+                                color: 'red',
                                 position: 'bottom-right',
                             })
-                            props.refetchEntity({})
+                            return
+                        }
+                        notifications.show({
+                            title: `${action.name.toCapital()} Action: Result`,
+                            message: <pre>{JSON.stringify(resp.data, null, 2)}</pre>,
+                            position: 'bottom-right',
                         })
+                        props.refetchEntity({})
+                    })
                 }}
             >
                 {action.name.toCapital()}

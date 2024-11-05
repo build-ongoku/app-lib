@@ -14,6 +14,7 @@ export const Form = <FormT extends Record<string, any>, RequestT = FormT, Respon
     bottomExtra?: React.ReactNode
     onSubmitTransformValues?: (values: FormT) => RequestT
     postEndpoint: string
+    method?: 'POST' | 'GET' | 'PUT' | 'PATCH' | 'DELETE'
     redirectPath?: string
     onSuccess?: (data: ResponseT) => void
     onError?: (error: string) => void
@@ -25,7 +26,7 @@ export const Form = <FormT extends Record<string, any>, RequestT = FormT, Respon
     const [errMessage, setErrMessage] = useState<string>()
 
     const [resp, fetch] = useMakeRequest<ResponseT, RequestT>({
-        method: 'POST',
+        method: props.method ?? 'POST',
         path: props.postEndpoint,
     })
 

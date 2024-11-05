@@ -16,9 +16,9 @@ export var LayoutRootPublic = function (_a) {
     }, [session]);
     return (React.createElement(Container, { className: "flex h-screen justify-center" },
         React.createElement("div", { className: "m-auto" },
-            React.createElement(Image, { src: "/logo_1.png", alt: "OnGoku Logo", className: "m-auto", w: "auto", fit: "contain", height: 100 }),
+            React.createElement(Image, { src: "/logo_1.png", alt: "onhoku Logo", className: "m-auto", w: "auto", fit: "contain", height: 100 }),
             React.createElement(Title, { order: 1 },
-                React.createElement("span", { className: "font-normal" }, "On"),
-                "Goku")),
+                React.createElement("span", { className: "font-normal" }, "on"),
+                "goku")),
         React.createElement("div", { className: "m-auto" }, children)));
 };
