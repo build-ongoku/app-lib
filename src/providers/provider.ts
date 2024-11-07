@@ -2,7 +2,7 @@ import { EntityInfo, IEntityMinimal } from '../common/app_v3'
 import { getSessionCookie } from '../common/AuthContext'
 import { Namespace } from '../common/namespacev2'
 import * as scalars from '../common/scalars'
-import { MetaFieldKeys, RequiredFields } from '../common/types'
+import { MetaFieldKeys, Optional, RequiredFields } from '../common/types'
 import axios, { AxiosError, AxiosRequestConfig } from 'axios'
 import { useEffect, useState } from 'react'
 
@@ -344,8 +344,14 @@ export const uploadFile = async <FileT extends IDefaultFile = IDefaultFile>(file
 
 type HTTPMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'
 
+interface MakeRequestV2Props<ReqT = any> {
+    relativePath: string
+    method: HTTPMethod
+    data: ReqT
+    unauthenticated?: boolean
+}
 // makeRequestV2 makes a vanilla fetch request
-export const makeRequestV2 = async <RespT = any, ReqT = any>(props: { relativePath: string; method: HTTPMethod; data: ReqT; unauthenticated?: boolean }): Promise<GokuHTTPResponse<RespT>> => {
+export const makeRequestV2 = async <RespT = any, ReqT = any>(props: MakeRequestV2Props<ReqT>): Promise<GokuHTTPResponse<RespT>> => {
     console.debug('[Provider] [makeRequestV2]', 'props', props)
     // Get the full path
     let fullUrl = addBaseURL(props.relativePath)
@@ -403,6 +409,65 @@ export const makeRequestV2 = async <RespT = any, ReqT = any>(props: { relativePa
         console.error(errMsg)
         return { error: errMsg, statusCode: httpResp.status }
     }
+}
+
+export type FetchFuncV2<ReqT = any> = (data: ReqT) => void
+
+export const useMakeRequestV2 = <RespT = any, ReqT = any>(
+    props: Optional<MakeRequestV2Props<ReqT>, 'data'> & { skipFetchAtInit?: boolean }
+): {
+    resp: GokuHTTPResponse<RespT> | undefined
+    loading: boolean
+    error: string | undefined
+    fetchDone: boolean
+    fetch: FetchFuncV2<ReqT>
+} => {
+    // Define states
+    const [resp, setResp] = useState<GokuHTTPResponse<RespT>>()
+    const [loading, setLoading] = useState<boolean>(false)
+    const [error, setError] = useState<string>()
+    const [fetchDone, setFetchDone] = useState<boolean>(false)
+
+    // Define a fetch function
+    const fetch = (data?: ReqT) => {
+        console.log('[Provider] [useMakeRequestV2] Fetching', 'relativePath', props.relativePath, 'method', props.method)
+        if (!loading) {
+            setLoading(true)
+        }
+        // Ensure we have data
+        const finalData = data ?? props.data
+        if (!finalData) {
+            console.log('[Provider] [useMakeRequestV2] Data not set')
+            throw new Error('Data not set')
+        }
+        // Create a copy of the props
+        const finalProps: MakeRequestV2Props<ReqT> = { ...props, data: finalData }
+
+        makeRequestV2(finalProps)
+            .then((r) => {
+                setResp(r)
+            })
+            .catch((err) => {
+                setError(err)
+            })
+            .finally(() => {
+                setLoading(false)
+                if (!fetchDone) {
+                    setFetchDone(true)
+                }
+                setFetchDone(true)
+            })
+    }
+
+    // Optionally, fetch at init
+    useEffect(() => {
+        if (props.skipFetchAtInit) {
+            return
+        }
+        fetch(props.data)
+    }, [props])
+
+    return { resp, loading, error, fetchDone, fetch }
 }
 
 /* * * * * *

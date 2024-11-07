@@ -353,6 +353,50 @@ export var makeRequestV2 = function (props) { return __awaiter(void 0, void 0, v
         }
     });
 }); };
+export var useMakeRequestV2 = function (props) {
+    // Define states
+    var _a = useState(), resp = _a[0], setResp = _a[1];
+    var _b = useState(false), loading = _b[0], setLoading = _b[1];
+    var _c = useState(), error = _c[0], setError = _c[1];
+    var _d = useState(false), fetchDone = _d[0], setFetchDone = _d[1];
+    // Define a fetch function
+    var fetch = function (data) {
+        console.log('[Provider] [useMakeRequestV2] Fetching', 'relativePath', props.relativePath, 'method', props.method);
+        if (!loading) {
+            setLoading(true);
+        }
+        // Ensure we have data
+        var finalData = data !== null && data !== void 0 ? data : props.data;
+        if (!finalData) {
+            console.log('[Provider] [useMakeRequestV2] Data not set');
+            throw new Error('Data not set');
+        }
+        // Create a copy of the props
+        var finalProps = __assign(__assign({}, props), { data: finalData });
+        makeRequestV2(finalProps)
+            .then(function (r) {
+            setResp(r);
+        })
+            .catch(function (err) {
+            setError(err);
+        })
+            .finally(function () {
+            setLoading(false);
+            if (!fetchDone) {
+                setFetchDone(true);
+            }
+            setFetchDone(true);
+        });
+    };
+    // Optionally, fetch at init
+    useEffect(function () {
+        if (props.skipFetchAtInit) {
+            return;
+        }
+        fetch(props.data);
+    }, [props]);
+    return { resp: resp, loading: loading, error: error, fetchDone: fetchDone, fetch: fetch };
+};
 export var listEntityV2 = function (props) {
     // Get the path to make the request
     var path = joinURL('v1/', props.entityInfo.namespace.toURLPath(), 'list');

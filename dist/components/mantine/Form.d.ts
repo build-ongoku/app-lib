@@ -1,5 +1,6 @@
 import { UseFormReturnType } from '@mantine/form';
 import React from 'react';
+export declare const discardableInputKey = "__og_discardable";
 export declare const Form: <FormT extends Record<string, any>, RequestT = FormT, ResponseT = any>(props: {
     form: UseFormReturnType<FormT>;
     children: React.ReactNode;

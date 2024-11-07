@@ -1,6 +1,6 @@
 import { EntityInfo, IEntityMinimal } from '../common/app_v3';
 import * as scalars from '../common/scalars';
-import { MetaFieldKeys } from '../common/types';
+import { MetaFieldKeys, Optional } from '../common/types';
 import { AxiosRequestConfig } from 'axios';
 export declare const joinURL: (...parts: string[]) => string;
 export interface HTTPRequest<D> extends Omit<AxiosRequestConfig<D>, 'method' | 'url'> {
@@ -59,12 +59,23 @@ interface IDefaultFile {
 }
 export declare const uploadFile: <FileT extends IDefaultFile = IDefaultFile>(file: File, onProgress: (progress: number) => void) => Promise<GokuHTTPResponse<FileT>>;
 type HTTPMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
-export declare const makeRequestV2: <RespT = any, ReqT = any>(props: {
+interface MakeRequestV2Props<ReqT = any> {
     relativePath: string;
     method: HTTPMethod;
     data: ReqT;
     unauthenticated?: boolean;
-}) => Promise<GokuHTTPResponse<RespT>>;
+}
+export declare const makeRequestV2: <RespT = any, ReqT = any>(props: MakeRequestV2Props<ReqT>) => Promise<GokuHTTPResponse<RespT>>;
+export type FetchFuncV2<ReqT = any> = (data: ReqT) => void;
+export declare const useMakeRequestV2: <RespT = any, ReqT = any>(props: Optional<MakeRequestV2Props<ReqT>, "data"> & {
+    skipFetchAtInit?: boolean;
+}) => {
+    resp: GokuHTTPResponse<RespT> | undefined;
+    loading: boolean;
+    error: string | undefined;
+    fetchDone: boolean;
+    fetch: FetchFuncV2<ReqT>;
+};
 type FilterTypeFor<E extends IEntityMinimal> = any;
 export interface DefaultRequestEntityList<E extends IEntityMinimal> {
     filter?: FilterTypeFor<E>;

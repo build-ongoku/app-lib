@@ -1,5 +1,6 @@
 import { MetaFields } from './Field'
 import { EnumKind, ForeignEntityKind, IFieldKind, NestedKind } from './fieldkind'
+import * as fieldkind from './fieldkind'
 import {
     EntityNamespaceReq,
     EnumNamespaceReq,
@@ -141,7 +142,7 @@ export class App implements IApp {
         return this.enumsMap[ns.toString()]
     }
 
-    getMethod(nsReq: MethodNamespaceReq): Method<IMethodNamespace> {
+    getMethod(nsReq: MethodNamespaceReq): Method {
         const ns = new Namespace(nsReq)
         const searchTerm = ns.toString()
         const mthd = this.methodsMap[searchTerm]
@@ -323,6 +324,7 @@ interface IDtype<T = any> {
     name: Name
     kind: IFieldKind
     namespace?: IEntityNamespace | ITypeNamespace | IEnumNamespace
+    getEmptyValue(appInfo: App): T | undefined | null
 }
 
 // TypeToNamespace is a type that takes a type and returns the namespace type.
@@ -371,6 +373,32 @@ export class Dtype<T = any> implements IDtype {
             if (!this.namespace.entity) {
                 throw new Error('ForeignEntity field does not have a reference entity')
             }
+        }
+    }
+
+    getEmptyValue(appInfo: App): T | undefined | null {
+        switch (this.kind) {
+            case fieldkind.ForeignEntityKind:
+                return undefined
+            case fieldkind.EnumKind: {
+                return undefined
+            }
+            case fieldkind.NestedKind: {
+                // Get the type info for the nested field
+                const ns = this.namespace as ITypeNamespace
+                if (!ns) {
+                    throw new Error('Nested field does not have a reference namespace')
+                }
+                // Assert that T is ITypeMinimal
+                const fieldTypeInfo = appInfo.getTypeInfo<ITypeMinimal>(ns.toRaw() as TypeNamespaceReq)
+                if (!fieldTypeInfo) {
+                    throw new Error('Type Info not found for field')
+                }
+
+                return fieldTypeInfo.getEmptyObject(appInfo) as T
+            }
+            default:
+                return undefined
         }
     }
 }
@@ -610,10 +638,10 @@ export class EnumValue implements IEnumValue {
  * Method
  * * * * * */
 
-interface IMethod<reqT = any, resT = any> {
+interface IMethod<ReqT = any, RespT = any> {
     namespace: IMethodNamespace
     apis: MethodAPI[]
-    requestDtype?: IDtype<reqT>
+    requestDtype?: IDtype<ReqT>
     requestTypeNamespace?: ITypeNamespace
     responseTypeNamespace: ITypeNamespace
     getAPI(): MethodAPI | undefined
@@ -629,7 +657,7 @@ export interface MethodReq {
     apis: MethodAPIReq[]
 }
 
-export class Method<reqT = any, resT = any> implements IMethod<reqT, resT> {
+export class Method<reqT = any, resT = any> implements IMethod<reqT> {
     namespace: IMethodNamespace
     requestDtype?: Dtype<reqT>
     responseTypeNamespace: ITypeNamespace

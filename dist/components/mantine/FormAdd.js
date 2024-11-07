@@ -77,7 +77,7 @@ var GenericFieldInput = function (props) {
     return React.createElement(GenericDtypeInput, __assign({ dtype: field.dtype, isRepeated: field.isRepeated }, props));
 };
 export var GenericDtypeInput = function (props) {
-    var dtype = props.dtype, identifier = props.identifier, label = props.label, isRepeated = props.isRepeated;
+    var dtype = props.dtype, label = props.label, identifier = props.identifier, isRepeated = props.isRepeated;
     var appInfo = useContext(AppContext).appInfo;
     if (!appInfo) {
         throw new Error('AppInfo not available');
@@ -85,7 +85,7 @@ export var GenericDtypeInput = function (props) {
     var defaultPlaceholder = '';
     // We can't process repeated fields yet, except for "select" where we can simply allow multiple selections.
     if (isRepeated && dtype.kind !== fieldkind.ForeignEntityKind && dtype.kind !== fieldkind.EnumKind) {
-        return React.createElement(DefaultInput, { label: label, placeholder: "{}", identifier: identifier, form: props.form });
+        return React.createElement(DefaultInput, { label: label, placeholder: "[]", identifier: identifier, form: props.form });
     }
     switch (dtype.kind) {
         case fieldkind.StringKind:

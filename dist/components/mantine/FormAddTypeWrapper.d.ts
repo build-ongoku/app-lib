@@ -1,7 +1,7 @@
 import { Dtype, ITypeMinimal, TypeInfo } from '../../common/app_v3';
 import { MetaFieldKeys } from '../../common/types';
 import React from 'react';
-export declare const DtypeFormWrapper: <T extends ITypeMinimal = any, RespT = any>(props: {
+export declare const DtypeFormWrapper: <T = any, RespT = any>(props: {
     dtype: Dtype<T>;
     postEndpoint: string;
     method: "POST" | "GET" | "PUT" | "PATCH" | "DELETE";

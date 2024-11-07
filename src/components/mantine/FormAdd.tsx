@@ -77,7 +77,7 @@ export const GenericDtypeInput = <T extends ITypeMinimal = any>(props: {
     initialData?: T
     isRepeated?: boolean
 }) => {
-    const { dtype, identifier, label, isRepeated } = props
+    const { dtype, label, identifier, isRepeated } = props
 
     const { appInfo } = useContext(AppContext)
     if (!appInfo) {
@@ -88,7 +88,7 @@ export const GenericDtypeInput = <T extends ITypeMinimal = any>(props: {
 
     // We can't process repeated fields yet, except for "select" where we can simply allow multiple selections.
     if (isRepeated && dtype.kind !== fieldkind.ForeignEntityKind && dtype.kind !== fieldkind.EnumKind) {
-        return <DefaultInput label={label} placeholder="{}" identifier={identifier} form={props.form} />
+        return <DefaultInput label={label} placeholder="[]" identifier={identifier} form={props.form} />
     }
 
     switch (dtype.kind) {

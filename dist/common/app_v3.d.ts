@@ -47,7 +47,7 @@ export declare class App implements IApp {
     getServiceEntities(nsReq: ServiceNamespaceReq): EntityInfo<any>[];
     getTypeInfo<T extends ITypeMinimal>(nsReq: TypeNamespaceReq): TypeInfo<T>;
     getEnum(nsReq: EnumNamespaceReq): Enum;
-    getMethod(nsReq: MethodNamespaceReq): Method<IMethodNamespace>;
+    getMethod(nsReq: MethodNamespaceReq): Method;
     getEntityMethods(entNs: IEntityNamespace): IMethod[];
 }
 interface IService {
@@ -121,6 +121,7 @@ interface IDtype<T = any> {
     name: Name;
     kind: IFieldKind;
     namespace?: IEntityNamespace | ITypeNamespace | IEnumNamespace;
+    getEmptyValue(appInfo: App): T | undefined | null;
 }
 export interface DtypeReq<T = any> {
     name: Name;
@@ -132,6 +133,7 @@ export declare class Dtype<T = any> implements IDtype {
     kind: IFieldKind;
     namespace?: IEntityNamespace | ITypeNamespace | IEnumNamespace;
     constructor(req: DtypeReq);
+    getEmptyValue(appInfo: App): T | undefined | null;
 }
 export interface IEntityMinimal extends ITypeMinimal, MetaFields {
 }
@@ -236,10 +238,10 @@ export declare class EnumValue implements IEnumValue {
     constructor(req: EnumValueReq);
     getDisplayValue(): string;
 }
-interface IMethod<reqT = any, resT = any> {
+interface IMethod<ReqT = any, RespT = any> {
     namespace: IMethodNamespace;
     apis: MethodAPI[];
-    requestDtype?: IDtype<reqT>;
+    requestDtype?: IDtype<ReqT>;
     requestTypeNamespace?: ITypeNamespace;
     responseTypeNamespace: ITypeNamespace;
     getAPI(): MethodAPI | undefined;
@@ -251,7 +253,7 @@ export interface MethodReq {
     responseTypeNamespace: TypeNamespaceReq;
     apis: MethodAPIReq[];
 }
-export declare class Method<reqT = any, resT = any> implements IMethod<reqT, resT> {
+export declare class Method<reqT = any, resT = any> implements IMethod<reqT> {
     namespace: IMethodNamespace;
     requestDtype?: Dtype<reqT>;
     responseTypeNamespace: ITypeNamespace;

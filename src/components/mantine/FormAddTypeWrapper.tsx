@@ -4,14 +4,12 @@ import { useForm } from '@mantine/form'
 import { Dtype, ITypeMinimal, TypeInfo } from '../../common/app_v3'
 import { AppContext } from '../../common/AppContextV3'
 import { MetaFieldKeys } from '../../common/types'
-import { Form } from './Form'
+import { discardableInputKey, Form } from './Form'
 import { GenericDtypeInput, TypeAddForm } from './FormAdd'
 import { useRouter } from 'next/navigation'
 import React, { useContext } from 'react'
 
-interface DtypeFormWrapperProps<T extends ITypeMinimal = any> {}
-
-export const DtypeFormWrapper = <T extends ITypeMinimal = any, RespT = any>(props: {
+export const DtypeFormWrapper = <T = any, RespT = any>(props: {
     dtype: Dtype<T>
     postEndpoint: string
     method: 'POST' | 'GET' | 'PUT' | 'PATCH' | 'DELETE'
@@ -20,7 +18,7 @@ export const DtypeFormWrapper = <T extends ITypeMinimal = any, RespT = any>(prop
     submitText?: string
     redirectPath?: string
 }) => {
-    type FormT = Omit<T, MetaFieldKeys>
+    type FormT = { [discardableInputKey]: Omit<T, MetaFieldKeys> }
 
     const { dtype } = props
 
@@ -31,10 +29,11 @@ export const DtypeFormWrapper = <T extends ITypeMinimal = any, RespT = any>(prop
 
     const [response, setResponse] = React.useState<RespT | null>(null)
 
-    // Todo: remove dependency on next/navigation
-    const router = useRouter()
     const form = useForm<FormT>({
         mode: 'uncontrolled',
+        initialValues: {
+            [discardableInputKey]: props.initialData || (dtype.getEmptyValue(appInfo) as Omit<T, MetaFieldKeys>) || ({} as Omit<T, MetaFieldKeys>),
+        },
     })
 
     console.log('[DtypeFormWrapper] Rendering...', 'dtype', dtype)
@@ -51,7 +50,7 @@ export const DtypeFormWrapper = <T extends ITypeMinimal = any, RespT = any>(prop
                 setResponse(data)
             }}
         >
-            <GenericDtypeInput dtype={dtype} identifier="req" label="Request" form={form} />
+            <GenericDtypeInput dtype={dtype} label="Request" form={form} identifier={discardableInputKey} />
             {response && <pre>{JSON.stringify(response, null, 2)}</pre>}
         </Form>
     )

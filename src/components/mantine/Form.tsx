@@ -5,7 +5,9 @@ import { UseFormReturnType } from '@mantine/form'
 import { useRouter } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
 import { FiAlertCircle } from 'react-icons/fi'
-import { useMakeRequest } from '../../providers/provider'
+import { useMakeRequest, useMakeRequestV2 } from '../../providers/provider'
+
+export const discardableInputKey = '__og_discardable'
 
 export const Form = <FormT extends Record<string, any>, RequestT = FormT, ResponseT = any>(props: {
     form: UseFormReturnType<FormT>
@@ -25,16 +27,26 @@ export const Form = <FormT extends Record<string, any>, RequestT = FormT, Respon
     const [processing, setProcessing] = useState(false)
     const [errMessage, setErrMessage] = useState<string>()
 
-    const [resp, fetch] = useMakeRequest<ResponseT, RequestT>({
+    const makeResp = useMakeRequestV2<ResponseT, RequestT>({
         method: props.method ?? 'POST',
-        path: props.postEndpoint,
+        relativePath: props.postEndpoint,
+        skipFetchAtInit: true,
     })
 
-    console.log('[Form] Rendering...', 'response?', resp)
+    console.log('[Form] Rendering...', 'response?', makeResp)
 
-    // Default transform function for type assertion
-    const dummyTransform = (values: FormT): RequestT => {
+    // dummyAssert only changes the type
+    const dummyAssert = (values: FormT): RequestT => {
         return values as unknown as RequestT
+    }
+
+    // standard transform that changes the FormT before processing
+    const standardTransform = (values: FormT): FormT => {
+        // if the outside more key in the values is "discardableInputKey", simply return the value of it
+        if (values[discardableInputKey]) {
+            return values[discardableInputKey]
+        }
+        return values
     }
 
     const handleSubmit = (values: FormT) => {
@@ -44,15 +56,16 @@ export const Form = <FormT extends Record<string, any>, RequestT = FormT, Respon
         if (props.onSubmitTransformValues) {
             data = props.onSubmitTransformValues(values)
         } else {
-            data = dummyTransform(values)
+            values = standardTransform(values)
+            data = dummyAssert(values)
         }
-        fetch({ data: data })
+        makeResp.fetch(data)
     }
 
     // Handle the fetch response
     useEffect(() => {
         // if haven't finished fetching,
-        if (!resp.finished || resp.loading) {
+        if (!makeResp.fetchDone || makeResp.loading) {
             return
         }
 
@@ -60,19 +73,20 @@ export const Form = <FormT extends Record<string, any>, RequestT = FormT, Respon
             setProcessing(true)
         }
 
-        // Error
-        if (resp.error) {
-            console.log('[Form] [useEffect] Form submission returned error', resp.error)
-            console.error('Error:', resp.error)
+        // Error (making the request)
+        const err = makeResp.error ?? makeResp.resp?.error
+        if (err) {
+            console.log('[Form] [useEffect] Form submission returned error', err)
+            console.error('Error:', err)
             if (props.onError) {
-                props.onError(resp.error)
+                props.onError(err)
             }
-            setErrMessage(resp.error)
+            setErrMessage(err)
             setProcessing(false)
-        } else if (!resp.error && !resp.loading && resp.data) {
+        } else if (makeResp.resp?.data) {
             // Successful
             if (props.onSuccess) {
-                props.onSuccess(resp.data)
+                props.onSuccess(makeResp.resp.data)
             }
             if (props.redirectPath) {
                 console.log('[Form] [useEffect] props.redirectPath detected: Redirecting to', props.redirectPath)
@@ -81,7 +95,7 @@ export const Form = <FormT extends Record<string, any>, RequestT = FormT, Respon
                 setProcessing(false)
             }
         }
-    }, [resp])
+    }, [makeResp.resp])
 
     return (
         <Box>
@@ -89,10 +103,10 @@ export const Form = <FormT extends Record<string, any>, RequestT = FormT, Respon
                 <form onSubmit={props.form.onSubmit(handleSubmit)}>
                     <Stack gap="lg">
                         {/* Error Message */}
-                        {resp.error && <Alert icon={<FiAlertCircle />}>{errMessage ?? `Our apologies. We could not complete the request. We're looking into it.`}</Alert>}
+                        {errMessage && <Alert icon={<FiAlertCircle />}>{errMessage ?? `Our apologies. We could not complete the request. We're looking into it.`}</Alert>}
                         {/* Actual Form Fields: Passed on as children */}
                         {props.children}
-                        <Button type="submit" loading={resp.loading || processing}>
+                        <Button type="submit" loading={makeResp.loading || processing}>
                             {props.submitButtonText ?? 'Submit'}
                         </Button>
                         {props.bottomExtra}

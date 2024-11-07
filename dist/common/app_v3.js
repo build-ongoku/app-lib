@@ -1,4 +1,5 @@
 import { EnumKind, ForeignEntityKind, NestedKind } from './fieldkind';
+import * as fieldkind from './fieldkind';
 import { Namespace, } from './namespacev2';
 import { joinURL, makeRequestV2 } from '../providers/provider';
 import { capitalCase } from 'change-case';
@@ -205,6 +206,30 @@ var Dtype = /** @class */ (function () {
             }
         }
     }
+    Dtype.prototype.getEmptyValue = function (appInfo) {
+        switch (this.kind) {
+            case fieldkind.ForeignEntityKind:
+                return undefined;
+            case fieldkind.EnumKind: {
+                return undefined;
+            }
+            case fieldkind.NestedKind: {
+                // Get the type info for the nested field
+                var ns = this.namespace;
+                if (!ns) {
+                    throw new Error('Nested field does not have a reference namespace');
+                }
+                // Assert that T is ITypeMinimal
+                var fieldTypeInfo = appInfo.getTypeInfo(ns.toRaw());
+                if (!fieldTypeInfo) {
+                    throw new Error('Type Info not found for field');
+                }
+                return fieldTypeInfo.getEmptyObject(appInfo);
+            }
+            default:
+                return undefined;
+        }
+    };
     return Dtype;
 }());
 export { Dtype };
