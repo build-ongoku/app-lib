@@ -58,7 +58,12 @@ export class Name implements IName {
 
     toCamel(): string {
         let str = camelCase(this.raw)
-        return capitalizeAcronyms(str)
+        // Issue: camelCase handles `line_1` as `line_1` instead of `line1`, so we need to handle it manually
+        // Replace `_<number>` with just the number
+        str = str.replace(/_([0-9]+)/g, '$1')
+        // Capitalize acronyms
+        str = capitalizeAcronyms(str)
+        return str
     }
 
     toFieldName(): string {
