@@ -51,6 +51,25 @@ var capitalizeAcronyms = function (str) {
     });
     return str;
 };
+export var pluralize = function (str) {
+    // Have some overrides
+    var overrides = {
+        person: 'people',
+        child: 'children',
+        foot: 'feet',
+        tooth: 'teeth',
+        goose: 'geese',
+    };
+    // If there is an override, use it
+    if (overrides[str]) {
+        return overrides[str];
+    }
+    // If it ends with 's', 'x', 'z', 'ch', 'sh', add 'es'
+    if (str.endsWith('s') || str.endsWith('x') || str.endsWith('z') || str.endsWith('ch') || str.endsWith('sh')) {
+        return str + 'es';
+    }
+    return str + 's';
+};
 /* * * * * *
  * Classes: Primary Namespace + Namespace
  * * * * * */

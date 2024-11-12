@@ -11,6 +11,7 @@ import { EntityInfo, IEntityMinimal } from '../../common/app_v3'
 import { getEntityAddPath } from '../../components/EntityLink'
 import { ListEntityResponse, useListEntity } from '../../providers/provider'
 import { ServerResponseWrapper } from './ServerResponseWrapper'
+import { pluralize } from '../../common/namespacev2'
 
 dayjs.extend(relativeTime)
 
@@ -67,7 +68,7 @@ export const EntityListTable = <E extends IEntityMinimal>(props: { entityInfo: E
         <div>
             <ServerResponseWrapper error={resp.error} loading={resp.loading}>
                 <div className="flex justify-between my-5">
-                    <Title order={2}>Your {entityInfo.getNameFriendly()}</Title>
+                    <Title order={2}>Your {pluralize(entityInfo.getNameFriendly())}</Title>
                     <Button
                         onClick={() => {
                             router.push(getEntityAddPath(entityInfo))

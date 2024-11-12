@@ -109,6 +109,8 @@ export var GenericDtypeInput = function (props) {
             return (React.createElement(ForeignEntityInput, { foreignEntityNs: ns.toRaw(), label: label, placeholder: "Select ".concat(ns.entity ? ns.entity.toCapital() : ''), identifier: identifier, form: props.form, multiple: isRepeated }));
         case fieldkind.EmailKind:
             return React.createElement(EmailInput, { label: label, placeholder: defaultPlaceholder, identifier: identifier, form: props.form });
+        case fieldkind.MoneyKind:
+            return React.createElement(MoneyInput, { label: label, placeholder: defaultPlaceholder, identifier: identifier, form: props.form });
         case fieldkind.EnumKind: {
             // Get enum values for the field
             var ns_1 = dtype.namespace;
@@ -152,7 +154,7 @@ export var StringInput = function (props) {
 };
 export var NumberInput = function (props) {
     var form = props.form;
-    return React.createElement(MantineNumberInput, __assign({ label: props.label, description: props.description, placeholder: props.placeholder, key: props.identifier }, form.getInputProps(props.identifier)));
+    return (React.createElement(MantineNumberInput, __assign({ label: props.label, description: props.description, placeholder: props.placeholder, key: props.identifier }, form.getInputProps(props.identifier), props.internalProps)));
 };
 export var BooleanInput = function (props) {
     var form = props.form;
@@ -169,6 +171,9 @@ export var TimestampInput = function (props) {
 export var EmailInput = function (props) {
     var form = props.form;
     return React.createElement(TextInput, __assign({ label: props.label, description: props.description, placeholder: props.placeholder, key: props.identifier }, form.getInputProps(props.identifier), { leftSection: "@" }));
+};
+export var MoneyInput = function (props) {
+    return React.createElement(NumberInput, __assign({ internalProps: { prefix: '$', allowNegative: false, decimalScale: 2, fixedDecimalScale: true, thousandSeparator: ',' } }, props));
 };
 export var SelectInput = function (props) {
     var _a;

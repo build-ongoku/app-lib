@@ -22,6 +22,7 @@ export declare class Name implements IName {
     toCamel(): string;
     toFieldName(): string;
 }
+export declare const pluralize: (str: string) => string;
 export interface INamespace<NsReqT extends NamespaceReq> {
     raw: NsReqT;
     service?: Name;

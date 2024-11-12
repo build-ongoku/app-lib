@@ -21,6 +21,7 @@ export var IDKind = __assign(__assign({}, StringKind), { name: 'id' });
 export var EmailKind = __assign(__assign({}, StringKind), { name: 'email' });
 export var SecretDecryptableKind = __assign(__assign({}, StringKind), { name: 'secret_decryptable' });
 export var GenericDataKind = __assign(__assign({}, StringKind), { name: 'generic data' });
+export var MoneyKind = __assign(__assign({}, NumberKind), { name: 'money' });
 export var EnumKind = __assign(__assign({}, DefaultFieldKind), { name: 'enum' });
 // NestedKind refers to fields that represent sub-types or sub-objects. Basically types that are made of other fields.
 export var NestedKind = __assign(__assign({}, DefaultFieldKind), { name: 'nested' });

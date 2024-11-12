@@ -78,6 +78,26 @@ const capitalizeAcronyms = (str: string): string => {
     return str
 }
 
+export const pluralize = (str: string): string => {
+    // Have some overrides
+    const overrides: { [key: string]: string } = {
+        person: 'people',
+        child: 'children',
+        foot: 'feet',
+        tooth: 'teeth',
+        goose: 'geese',
+    }
+    // If there is an override, use it
+    if (overrides[str]) {
+        return overrides[str]
+    }
+    // If it ends with 's', 'x', 'z', 'ch', 'sh', add 'es'
+    if (str.endsWith('s') || str.endsWith('x') || str.endsWith('z') || str.endsWith('ch') || str.endsWith('sh')) {
+        return str + 'es'
+    }
+    return str + 's'
+}
+
 /* * * * * *
  * Interface: Primary Namespace + Namespace
  * * * * * */

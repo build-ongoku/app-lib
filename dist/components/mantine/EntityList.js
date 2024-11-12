@@ -9,6 +9,7 @@ import React, { useMemo } from 'react';
 import { getEntityAddPath } from '../../components/EntityLink';
 import { useListEntity } from '../../providers/provider';
 import { ServerResponseWrapper } from './ServerResponseWrapper';
+import { pluralize } from '../../common/namespacev2';
 dayjs.extend(relativeTime);
 var getDefaultEntityColumns = function (entityInfo) { return [
     {
@@ -60,7 +61,7 @@ export var EntityListTable = function (props) {
             React.createElement("div", { className: "flex justify-between my-5" },
                 React.createElement(Title, { order: 2 },
                     "Your ",
-                    entityInfo.getNameFriendly()),
+                    pluralize(entityInfo.getNameFriendly())),
                 React.createElement(Button, { onClick: function () {
                         router.push(getEntityAddPath(entityInfo));
                     } },

@@ -52,6 +52,11 @@ export const GenericDataKind: IFieldKind = {
     name: 'generic data',
 }
 
+export const MoneyKind: IFieldKind = {
+    ...NumberKind,
+    name: 'money',
+}
+
 export const EnumKind: IFieldKind = {
     ...DefaultFieldKind,
     name: 'enum',

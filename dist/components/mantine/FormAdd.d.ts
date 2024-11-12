@@ -33,6 +33,7 @@ export declare const BooleanInput: (props: InputProps<SwitchProps>) => React.JSX
 export declare const DateInput: (props: InputProps<DateInputProps>) => React.JSX.Element;
 export declare const TimestampInput: (props: InputProps<DateTimePickerProps>) => React.JSX.Element;
 export declare const EmailInput: (props: InputProps<TextInputProps>) => React.JSX.Element;
+export declare const MoneyInput: (props: InputProps<never>) => React.JSX.Element;
 export declare const SelectInput: (props: InputProps<SelectProps>) => React.JSX.Element;
 export declare const JSONInput: (props: InputProps<JsonInputProps>) => React.JSX.Element;
 export declare const FileInput: (props: InputProps<never>) => React.JSX.Element;

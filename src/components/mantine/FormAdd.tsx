@@ -122,6 +122,8 @@ export const GenericDtypeInput = <T extends ITypeMinimal = any>(props: {
             )
         case fieldkind.EmailKind:
             return <EmailInput label={label} placeholder={defaultPlaceholder} identifier={identifier} form={props.form} />
+        case fieldkind.MoneyKind:
+            return <MoneyInput label={label} placeholder={defaultPlaceholder} identifier={identifier} form={props.form} />
         case fieldkind.EnumKind: {
             // Get enum values for the field
             const ns = dtype.namespace as IEnumNamespace
@@ -186,7 +188,16 @@ export const StringInput = (props: InputProps<TextInputProps>) => {
 
 export const NumberInput = (props: InputProps<NumberInputProps>) => {
     const { form } = props
-    return <MantineNumberInput label={props.label} description={props.description} placeholder={props.placeholder} key={props.identifier} {...form.getInputProps(props.identifier)} />
+    return (
+        <MantineNumberInput
+            label={props.label}
+            description={props.description}
+            placeholder={props.placeholder}
+            key={props.identifier}
+            {...form.getInputProps(props.identifier)}
+            {...props.internalProps}
+        />
+    )
 }
 
 export const BooleanInput = (props: InputProps<SwitchProps>) => {
@@ -216,6 +227,10 @@ export const TimestampInput = (props: InputProps<DateTimePickerProps>) => {
 export const EmailInput = (props: InputProps<TextInputProps>) => {
     const { form } = props
     return <TextInput label={props.label} description={props.description} placeholder={props.placeholder} key={props.identifier} {...form.getInputProps(props.identifier)} leftSection="@" />
+}
+
+export const MoneyInput = (props: InputProps<never>) => {
+    return <NumberInput internalProps={{ prefix: '$', allowNegative: false, decimalScale: 2, fixedDecimalScale: true, thousandSeparator: ',' }} {...props} />
 }
 
 export const SelectInput = (props: InputProps<SelectProps>) => {
