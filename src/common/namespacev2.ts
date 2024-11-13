@@ -95,6 +95,11 @@ export const pluralize = (str: string): string => {
     if (str.endsWith('s') || str.endsWith('x') || str.endsWith('z') || str.endsWith('ch') || str.endsWith('sh')) {
         return str + 'es'
     }
+    // If it ends with 'y' and the letter before 'y' is a consonant, replace 'y' with 'ies'
+    if (str.endsWith('y') && !'aeiou'.includes(str[str.length - 2])) {
+        return str.slice(0, -1) + 'ies'
+    }
+    // Otherwise, just add 's'
     return str + 's'
 }
 

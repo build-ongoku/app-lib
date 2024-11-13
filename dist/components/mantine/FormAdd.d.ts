@@ -1,5 +1,6 @@
 import { JsonInputProps, NumberInputProps, SelectProps, SwitchProps, TextInputProps } from '@mantine/core';
 import { DateInputProps, DateTimePickerProps } from '@mantine/dates';
+import '@mantine/dates/styles.css';
 import { UseFormReturnType } from '@mantine/form';
 import { ITypeMinimal, TypeInfo, Dtype } from '../../common/app_v3';
 import React from 'react';

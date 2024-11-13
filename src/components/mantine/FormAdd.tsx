@@ -21,6 +21,7 @@ import {
     TextInputProps,
 } from '@mantine/core'
 import { DateInputProps, DateTimePicker, DateTimePickerProps, DateInput as MantineDateInput } from '@mantine/dates'
+import '@mantine/dates/styles.css'
 import { UseFormReturnType } from '@mantine/form'
 import { Field, ITypeMinimal, TypeInfo, Dtype } from '../../common/app_v3'
 import { AppContext } from '../../common/AppContextV3'
@@ -219,13 +220,13 @@ export const DateInput = (props: InputProps<DateInputProps>) => {
     const { form } = props
     return (
         <MantineDateInput
-            valueFormat="DD/MM/YYYY HH:mm:ss"
+            valueFormat="DD/MM/YYYY"
             label={props.label}
             description={props.description}
             key={props.identifier}
             placeholder={props.placeholder}
+            clearable
             {...form.getInputProps(props.identifier)}
-            data-1p-ignore
         />
     )
 }

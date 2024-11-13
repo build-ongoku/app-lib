@@ -49,6 +49,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 import { Operator } from '../../common/Filter';
 import { Fieldset, JsonInput, FileInput as MantineFileInput, NumberInput as MantineNumberInput, MultiSelect, Select, Switch, TextInput, } from '@mantine/core';
 import { DateTimePicker, DateInput as MantineDateInput } from '@mantine/dates';
+import '@mantine/dates/styles.css';
 import { AppContext } from '../../common/AppContextV3';
 import * as fieldkind from '../../common/fieldkind';
 import { queryByTextV2, uploadFile } from '../../providers/provider';
@@ -162,7 +163,7 @@ export var BooleanInput = function (props) {
 };
 export var DateInput = function (props) {
     var form = props.form;
-    return (React.createElement(MantineDateInput, __assign({ valueFormat: "DD/MM/YYYY HH:mm:ss", label: props.label, description: props.description, key: props.identifier, placeholder: props.placeholder }, form.getInputProps(props.identifier), { "data-1p-ignore": true })));
+    return (React.createElement(MantineDateInput, __assign({ valueFormat: "DD/MM/YYYY", label: props.label, description: props.description, key: props.identifier, placeholder: props.placeholder, clearable: true }, form.getInputProps(props.identifier))));
 };
 export var TimestampInput = function (props) {
     var form = props.form;
