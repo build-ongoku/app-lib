@@ -124,7 +124,9 @@ export const useGetEntity = <E extends IEntityMinimal = any>(props: EntityHttpRe
     })
 
     useEffect(() => {
-        fetch({})
+        if (data?.id) {
+            fetch({})
+        }
     }, [])
 
     return [resp, fetch]

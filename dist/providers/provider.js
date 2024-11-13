@@ -121,7 +121,9 @@ export var useGetEntity = function (props) {
         params: { req: data },
     }), resp = _a[0], fetch = _a[1];
     useEffect(function () {
-        fetch({});
+        if (data === null || data === void 0 ? void 0 : data.id) {
+            fetch({});
+        }
     }, []);
     return [resp, fetch];
 };

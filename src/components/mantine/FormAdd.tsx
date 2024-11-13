@@ -183,7 +183,7 @@ export const DefaultInput = (props: InputProps<never>) => {
 
 export const StringInput = (props: InputProps<TextInputProps>) => {
     const { form } = props
-    return <TextInput label={props.label} description={props.description} placeholder={props.placeholder} key={props.identifier} {...form.getInputProps(props.identifier)} />
+    return <TextInput label={props.label} description={props.description} placeholder={props.placeholder} key={props.identifier} {...form.getInputProps(props.identifier)} data-1p-ignore />
 }
 
 export const NumberInput = (props: InputProps<NumberInputProps>) => {
@@ -196,13 +196,23 @@ export const NumberInput = (props: InputProps<NumberInputProps>) => {
             key={props.identifier}
             {...form.getInputProps(props.identifier)}
             {...props.internalProps}
+            data-1p-ignore
         />
     )
 }
 
 export const BooleanInput = (props: InputProps<SwitchProps>) => {
     const { form } = props
-    return <Switch label={props.label} description={props.description} placeholder={props.placeholder} key={props.identifier} {...form.getInputProps(props.identifier)} />
+    return (
+        <Switch
+            label={props.label}
+            description={props.description}
+            placeholder={props.placeholder}
+            key={props.identifier}
+            {...form.getInputProps(props.identifier)}
+            data-onepassword-title="disabled"
+        />
+    )
 }
 
 export const DateInput = (props: InputProps<DateInputProps>) => {
@@ -215,18 +225,29 @@ export const DateInput = (props: InputProps<DateInputProps>) => {
             key={props.identifier}
             placeholder={props.placeholder}
             {...form.getInputProps(props.identifier)}
+            data-1p-ignore
         />
     )
 }
 
 export const TimestampInput = (props: InputProps<DateTimePickerProps>) => {
     const { form } = props
-    return <DateTimePicker label={props.label} description={props.description} placeholder={props.placeholder} key={props.identifier} {...form.getInputProps(props.identifier)} />
+    return <DateTimePicker label={props.label} description={props.description} placeholder={props.placeholder} key={props.identifier} {...form.getInputProps(props.identifier)} data-1p-ignore />
 }
 
 export const EmailInput = (props: InputProps<TextInputProps>) => {
     const { form } = props
-    return <TextInput label={props.label} description={props.description} placeholder={props.placeholder} key={props.identifier} {...form.getInputProps(props.identifier)} leftSection="@" />
+    return (
+        <TextInput
+            label={props.label}
+            description={props.description}
+            placeholder={props.placeholder}
+            key={props.identifier}
+            {...form.getInputProps(props.identifier)}
+            leftSection="@"
+            data-1p-ignore
+        />
+    )
 }
 
 export const MoneyInput = (props: InputProps<never>) => {
@@ -246,6 +267,7 @@ export const SelectInput = (props: InputProps<SelectProps>) => {
             searchable
             clearable
             {...form.getInputProps(props.identifier)}
+            data-1p-ignore
         />
     )
 }
@@ -261,6 +283,7 @@ export const JSONInput = (props: InputProps<JsonInputProps>) => {
             autosize
             key={props.identifier}
             {...form.getInputProps(props.identifier)}
+            data-1p-ignore
         />
     )
 }

@@ -150,27 +150,27 @@ export var DefaultInput = function (props) {
 };
 export var StringInput = function (props) {
     var form = props.form;
-    return React.createElement(TextInput, __assign({ label: props.label, description: props.description, placeholder: props.placeholder, key: props.identifier }, form.getInputProps(props.identifier)));
+    return React.createElement(TextInput, __assign({ label: props.label, description: props.description, placeholder: props.placeholder, key: props.identifier }, form.getInputProps(props.identifier), { "data-1p-ignore": true }));
 };
 export var NumberInput = function (props) {
     var form = props.form;
-    return (React.createElement(MantineNumberInput, __assign({ label: props.label, description: props.description, placeholder: props.placeholder, key: props.identifier }, form.getInputProps(props.identifier), props.internalProps)));
+    return (React.createElement(MantineNumberInput, __assign({ label: props.label, description: props.description, placeholder: props.placeholder, key: props.identifier }, form.getInputProps(props.identifier), props.internalProps, { "data-1p-ignore": true })));
 };
 export var BooleanInput = function (props) {
     var form = props.form;
-    return React.createElement(Switch, __assign({ label: props.label, description: props.description, placeholder: props.placeholder, key: props.identifier }, form.getInputProps(props.identifier)));
+    return (React.createElement(Switch, __assign({ label: props.label, description: props.description, placeholder: props.placeholder, key: props.identifier }, form.getInputProps(props.identifier), { "data-onepassword-title": "disabled" })));
 };
 export var DateInput = function (props) {
     var form = props.form;
-    return (React.createElement(MantineDateInput, __assign({ valueFormat: "DD/MM/YYYY HH:mm:ss", label: props.label, description: props.description, key: props.identifier, placeholder: props.placeholder }, form.getInputProps(props.identifier))));
+    return (React.createElement(MantineDateInput, __assign({ valueFormat: "DD/MM/YYYY HH:mm:ss", label: props.label, description: props.description, key: props.identifier, placeholder: props.placeholder }, form.getInputProps(props.identifier), { "data-1p-ignore": true })));
 };
 export var TimestampInput = function (props) {
     var form = props.form;
-    return React.createElement(DateTimePicker, __assign({ label: props.label, description: props.description, placeholder: props.placeholder, key: props.identifier }, form.getInputProps(props.identifier)));
+    return React.createElement(DateTimePicker, __assign({ label: props.label, description: props.description, placeholder: props.placeholder, key: props.identifier }, form.getInputProps(props.identifier), { "data-1p-ignore": true }));
 };
 export var EmailInput = function (props) {
     var form = props.form;
-    return React.createElement(TextInput, __assign({ label: props.label, description: props.description, placeholder: props.placeholder, key: props.identifier }, form.getInputProps(props.identifier), { leftSection: "@" }));
+    return (React.createElement(TextInput, __assign({ label: props.label, description: props.description, placeholder: props.placeholder, key: props.identifier }, form.getInputProps(props.identifier), { leftSection: "@", "data-1p-ignore": true })));
 };
 export var MoneyInput = function (props) {
     return React.createElement(NumberInput, __assign({ internalProps: { prefix: '$', allowNegative: false, decimalScale: 2, fixedDecimalScale: true, thousandSeparator: ',' } }, props));
@@ -179,11 +179,11 @@ export var SelectInput = function (props) {
     var _a;
     var form = props.form;
     var Component = ((_a = props.internalProps) === null || _a === void 0 ? void 0 : _a.multiple) ? MultiSelect : Select;
-    return (React.createElement(Component, __assign({ label: props.label, description: props.description, placeholder: props.placeholder, key: props.identifier, data: props.internalProps.data, searchable: true, clearable: true }, form.getInputProps(props.identifier))));
+    return (React.createElement(Component, __assign({ label: props.label, description: props.description, placeholder: props.placeholder, key: props.identifier, data: props.internalProps.data, searchable: true, clearable: true }, form.getInputProps(props.identifier), { "data-1p-ignore": true })));
 };
 export var JSONInput = function (props) {
     var form = props.form;
-    return (React.createElement(JsonInput, __assign({ label: props.label, placeholder: props.placeholder, validationError: "The JSON you have provided looks invalid. Try using an online JSON validator?", formatOnBlur: true, autosize: true, key: props.identifier }, form.getInputProps(props.identifier))));
+    return (React.createElement(JsonInput, __assign({ label: props.label, placeholder: props.placeholder, validationError: "The JSON you have provided looks invalid. Try using an online JSON validator?", formatOnBlur: true, autosize: true, key: props.identifier }, form.getInputProps(props.identifier), { "data-1p-ignore": true })));
 };
 var ForeignEntityInput = function (props) {
     var _a = useState(undefined), data = _a[0], setData = _a[1];
