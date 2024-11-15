@@ -123,6 +123,9 @@ export class App implements IApp {
         const ns = new Namespace(nsReq)
         const key = ns.toString()
         const ret = this.entitiesMap[ns.toString()]
+        if (!ret) {
+            console.error('Entity not found:', key)
+        }
         return ret
     }
 

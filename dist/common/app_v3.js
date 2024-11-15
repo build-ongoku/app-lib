@@ -62,6 +62,9 @@ var App = /** @class */ (function () {
         var ns = new Namespace(nsReq);
         var key = ns.toString();
         var ret = this.entitiesMap[ns.toString()];
+        if (!ret) {
+            console.error('Entity not found:', key);
+        }
         return ret;
     };
     App.prototype.getServiceEntities = function (nsReq) {

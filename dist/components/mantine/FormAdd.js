@@ -196,7 +196,7 @@ var ForeignEntityInput = function (props) {
     }
     var entityInfo = appInfo.getEntityInfo(props.foreignEntityNs);
     if (!entityInfo) {
-        throw new Error("Entity Info not found for ".concat(props.foreignEntityNs));
+        throw new Error("Entity Info not found for request ".concat(JSON.stringify(props.foreignEntityNs)));
     }
     useEffect(function () {
         queryByTextV2({

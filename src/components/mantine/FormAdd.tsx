@@ -307,7 +307,7 @@ const ForeignEntityInput = (props: ForeignEntityInputProps) => {
 
     const entityInfo = appInfo.getEntityInfo(props.foreignEntityNs)
     if (!entityInfo) {
-        throw new Error(`Entity Info not found for ${props.foreignEntityNs}`)
+        throw new Error(`Entity Info not found for request ${JSON.stringify(props.foreignEntityNs)}`)
     }
 
     useEffect(() => {
