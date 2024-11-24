@@ -17,6 +17,7 @@ export const DtypeFormWrapper = <T = any, RespT = any>(props: {
     initialData?: Omit<T, MetaFieldKeys>
     submitText?: string
     redirectPath?: string
+    label?: string
 }) => {
     type FormT = { [discardableInputKey]: Omit<T, MetaFieldKeys> }
 
@@ -32,7 +33,7 @@ export const DtypeFormWrapper = <T = any, RespT = any>(props: {
     const form = useForm<FormT>({
         mode: 'uncontrolled',
         initialValues: {
-            [discardableInputKey]: props.initialData || (dtype.getEmptyValue(appInfo) as Omit<T, MetaFieldKeys>) || ({} as Omit<T, MetaFieldKeys>),
+            [discardableInputKey]: props.initialData || (dtype.getEmptyValue(appInfo) as Omit<T, MetaFieldKeys>) || undefined,
         },
     })
 
@@ -50,7 +51,7 @@ export const DtypeFormWrapper = <T = any, RespT = any>(props: {
                 setResponse(data)
             }}
         >
-            <GenericDtypeInput dtype={dtype} label="Request" form={form} identifier={discardableInputKey} />
+            <GenericDtypeInput dtype={dtype} label={props.label ?? 'Request'} form={form} identifier={discardableInputKey} />
             {response && <pre>{JSON.stringify(response, null, 2)}</pre>}
         </Form>
     )

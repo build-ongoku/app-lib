@@ -380,6 +380,7 @@ export class Dtype<T = any> implements IDtype {
     }
 
     getEmptyValue(appInfo: App): T | undefined | null {
+        // Only point in getting the empty value is for nested fields
         switch (this.kind) {
             case fieldkind.ForeignEntityKind:
                 return undefined
@@ -645,8 +646,9 @@ interface IMethod<ReqT = any, RespT = any> {
     namespace: IMethodNamespace
     apis: MethodAPI[]
     requestDtype?: IDtype<ReqT>
-    requestTypeNamespace?: ITypeNamespace
-    responseTypeNamespace: ITypeNamespace
+    responseDtype?: IDtype<RespT>
+    // requestTypeNamespace?: ITypeNamespace
+    // responseTypeNamespace: ITypeNamespace
     getAPI(): MethodAPI | undefined
     // getAPIEndpoint(): string
     // makeAPIRequest(req: reqT): Promise<GokuHTTPResponse<resT>>
@@ -655,15 +657,17 @@ interface IMethod<ReqT = any, RespT = any> {
 export interface MethodReq {
     namespace: MethodNamespaceReq
     requestDtype?: DtypeReq
-    requestTypeNamespace?: TypeNamespaceReq
-    responseTypeNamespace: TypeNamespaceReq
+    responseDtype: DtypeReq
+    // requestTypeNamespace?: TypeNamespaceReq
+    // responseTypeNamespace: TypeNamespaceReq
     apis: MethodAPIReq[]
 }
 
 export class Method<reqT = any, resT = any> implements IMethod<reqT> {
     namespace: IMethodNamespace
     requestDtype?: Dtype<reqT>
-    responseTypeNamespace: ITypeNamespace
+    responseDtype?: Dtype<reqT>
+    // responseTypeNamespace: ITypeNamespace
     apis: MethodAPI[]
 
     constructor(req: MethodReq) {
@@ -671,7 +675,9 @@ export class Method<reqT = any, resT = any> implements IMethod<reqT> {
         if (req.requestDtype) {
             this.requestDtype = new Dtype(req.requestDtype)
         }
-        this.responseTypeNamespace = new Namespace(req.responseTypeNamespace)
+        if (req.responseDtype) {
+            this.responseDtype = new Dtype(req.responseDtype)
+        }
         this.apis = req.apis.map((api) => new MethodAPI(api))
 
         if (!this.namespace.service || !this.namespace.method) {

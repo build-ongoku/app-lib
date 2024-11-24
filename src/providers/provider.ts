@@ -394,7 +394,7 @@ export const makeRequestV2 = async <RespT = any, ReqT = any>(props: MakeRequestV
     try {
         httpResp = await fetch(fullUrl, req)
     } catch (err) {
-        const errMsg = 'Could not make the HTTP request: ' + err
+        const errMsg = 'Are you sure the backend is running? Admin Tool could not communicate with the backend. Please see the logs for more information.'
         console.error(errMsg)
         return { error: errMsg, statusCode: 0 } // We don't know the status code because the request itself failed
     }
