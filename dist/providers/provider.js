@@ -332,7 +332,7 @@ export var makeRequestV2 = function (props) { return __awaiter(void 0, void 0, v
                 return [3 /*break*/, 4];
             case 3:
                 err_2 = _a.sent();
-                errMsg = 'Could not make the HTTP request: ' + err_2;
+                errMsg = 'Are you sure the backend is running? Admin Tool could not communicate with the backend. Please see the logs for more information.';
                 console.error(errMsg);
                 return [2 /*return*/, { error: errMsg, statusCode: 0 }]; // We don't know the status code because the request itself failed
             case 4:

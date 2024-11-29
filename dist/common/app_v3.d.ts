@@ -242,21 +242,19 @@ interface IMethod<ReqT = any, RespT = any> {
     namespace: IMethodNamespace;
     apis: MethodAPI[];
     requestDtype?: IDtype<ReqT>;
-    requestTypeNamespace?: ITypeNamespace;
-    responseTypeNamespace: ITypeNamespace;
+    responseDtype?: IDtype<RespT>;
     getAPI(): MethodAPI | undefined;
 }
 export interface MethodReq {
     namespace: MethodNamespaceReq;
     requestDtype?: DtypeReq;
-    requestTypeNamespace?: TypeNamespaceReq;
-    responseTypeNamespace: TypeNamespaceReq;
+    responseDtype: DtypeReq;
     apis: MethodAPIReq[];
 }
 export declare class Method<reqT = any, resT = any> implements IMethod<reqT> {
     namespace: IMethodNamespace;
     requestDtype?: Dtype<reqT>;
-    responseTypeNamespace: ITypeNamespace;
+    responseDtype?: Dtype<reqT>;
     apis: MethodAPI[];
     constructor(req: MethodReq);
     getAPI(): MethodAPI | undefined;

@@ -210,6 +210,7 @@ var Dtype = /** @class */ (function () {
         }
     }
     Dtype.prototype.getEmptyValue = function (appInfo) {
+        // Only point in getting the empty value is for nested fields
         switch (this.kind) {
             case fieldkind.ForeignEntityKind:
                 return undefined;
@@ -357,7 +358,9 @@ var Method = /** @class */ (function () {
         if (req.requestDtype) {
             this.requestDtype = new Dtype(req.requestDtype);
         }
-        this.responseTypeNamespace = new Namespace(req.responseTypeNamespace);
+        if (req.responseDtype) {
+            this.responseDtype = new Dtype(req.responseDtype);
+        }
         this.apis = req.apis.map(function (api) { return new MethodAPI(api); });
         if (!this.namespace.service || !this.namespace.method) {
             throw new Error('Service and Method name is required');

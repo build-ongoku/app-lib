@@ -9,6 +9,7 @@ export declare const DtypeFormWrapper: <T = any, RespT = any>(props: {
     initialData?: Omit<T, MetaFieldKeys>;
     submitText?: string;
     redirectPath?: string;
+    label?: string;
 }) => React.JSX.Element;
 interface TypeAddFormProps<T extends ITypeMinimal = any> {
     typeInfo: TypeInfo<T>;

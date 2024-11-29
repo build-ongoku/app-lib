@@ -7,16 +7,17 @@ import { useRouter } from 'next/navigation';
 import React, { useContext } from 'react';
 export var DtypeFormWrapper = function (props) {
     var _a;
+    var _b;
     var dtype = props.dtype;
     var appInfo = useContext(AppContext).appInfo;
     if (!appInfo) {
         throw new Error('AppInfo not loaded');
     }
-    var _b = React.useState(null), response = _b[0], setResponse = _b[1];
+    var _c = React.useState(null), response = _c[0], setResponse = _c[1];
     var form = useForm({
         mode: 'uncontrolled',
         initialValues: (_a = {},
-            _a[discardableInputKey] = props.initialData || dtype.getEmptyValue(appInfo) || {},
+            _a[discardableInputKey] = props.initialData || dtype.getEmptyValue(appInfo) || undefined,
             _a),
     });
     console.log('[DtypeFormWrapper] Rendering...', 'dtype', dtype);
@@ -24,7 +25,7 @@ export var DtypeFormWrapper = function (props) {
             console.log('[TypeAddFormWrapper] [onSuccess]', 'data', data);
             setResponse(data);
         } },
-        React.createElement(GenericDtypeInput, { dtype: dtype, label: "Request", form: form, identifier: discardableInputKey }),
+        React.createElement(GenericDtypeInput, { dtype: dtype, label: (_b = props.label) !== null && _b !== void 0 ? _b : 'Request', form: form, identifier: discardableInputKey }),
         response && React.createElement("pre", null, JSON.stringify(response, null, 2))));
 };
 export var TypeAddFormWrapper = function (props) {
