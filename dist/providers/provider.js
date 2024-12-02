@@ -19,8 +19,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 var __generator = (this && this.__generator) || function (thisArg, body) {
-    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
-    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g = Object.create((typeof Iterator === "function" ? Iterator : Object).prototype);
+    return g.next = verb(0), g["throw"] = verb(1), g["return"] = verb(2), typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
     function verb(n) { return function (v) { return step([n, v]); }; }
     function step(op) {
         if (f) throw new TypeError("Generator is already executing.");
@@ -56,15 +56,27 @@ var getBaseURL = function () {
     console.log('[Provider] [getBaseURL]', 'envVariables', process.env);
     var host = process.env.NEXT_PUBLIC_GOKU_BACKEND_HOST;
     var port = process.env.NEXT_PUBLIC_GOKU_BACKEND_PORT;
+    var protocol = process.env.NEXT_PUBLIC_GOKU_BACKEND_PROTOCOL;
+    if (!protocol) {
+        // use the same protocol as the frontend
+        protocol = window.location.protocol;
+        console.warn("[Provider] [getBaseURL] Protocol not set. Defaulting to frontend protocol [".concat(protocol, "]"));
+    }
+    if (protocol !== 'http:' && protocol !== 'https:') {
+        console.warn("[Provider] [getBaseURL] Invalid protocol [".concat(protocol, "] (not \"http:\" or \"https:\"). Setting to window's protocol [").concat(window.location.protocol, "]"));
+        protocol = window.location.protocol;
+    }
     if (!host) {
-        console.error('[Provider] [getBaseURL] Host not set. Defaulting to localhost');
+        console.warn('[Provider] [getBaseURL] Host not set. Defaulting to localhost');
         host = 'localhost';
     }
     if (!port) {
-        console.error('[Provider] [getBaseURL] Port not set. Defaulting to 80');
-        port = '80';
+        port = protocol === 'https:' ? '443' : '80';
+        console.warn('[Provider] [getBaseURL] Port not set. Defaulting to [${port}]');
     }
-    return "http://".concat(host, ":").concat(port, "/api");
+    var url = "".concat(protocol, "//").concat(host, ":").concat(port, "/api");
+    console.log('[Provider] [getBaseURL]', 'url: ', url);
+    return url;
 };
 // addBaseURL adds the base URL to the path
 var addBaseURL = function (path) {

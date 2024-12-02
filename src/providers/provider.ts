@@ -13,15 +13,28 @@ const getBaseURL = (): string => {
     console.log('[Provider] [getBaseURL]', 'envVariables', process.env)
     let host = process.env.NEXT_PUBLIC_GOKU_BACKEND_HOST
     let port = process.env.NEXT_PUBLIC_GOKU_BACKEND_PORT
+    let protocol = process.env.NEXT_PUBLIC_GOKU_BACKEND_PROTOCOL
+    if (!protocol) {
+        // use the same protocol as the frontend
+        protocol = window.location.protocol
+        console.warn(`[Provider] [getBaseURL] Protocol not set. Defaulting to frontend protocol [${protocol}]`)
+    }
+    if (protocol !== 'http:' && protocol !== 'https:') {
+        console.warn(`[Provider] [getBaseURL] Invalid protocol [${protocol}] (not "http:" or "https:"). Setting to window's protocol [${window.location.protocol}]`)
+        protocol = window.location.protocol
+    }
     if (!host) {
-        console.error('[Provider] [getBaseURL] Host not set. Defaulting to localhost')
+        console.warn('[Provider] [getBaseURL] Host not set. Defaulting to localhost')
         host = 'localhost'
     }
     if (!port) {
-        console.error('[Provider] [getBaseURL] Port not set. Defaulting to 80')
-        port = '80'
+        port = protocol === 'https:' ? '443' : '80'
+        console.warn('[Provider] [getBaseURL] Port not set. Defaulting to [${port}]')
     }
-    return `http://${host}:${port}/api`
+
+    const url = `${protocol}//${host}:${port}/api`
+    console.log('[Provider] [getBaseURL]', 'url: ', url)
+    return url
 }
 
 // addBaseURL adds the base URL to the path
