@@ -6,11 +6,21 @@ import { useAuth } from '../../../common/AuthContext'
 import { Form } from '../Form'
 import { useRouter } from 'next/navigation'
 import React from 'react'
-import { ITypeMinimal } from '../../../common/app_v3'
+import { ITypeMinimal, TypeInfo } from '../../../common/app_v3'
 
 type BareMinimumRegisterForm = ITypeMinimal & {
     email: string
 }
+
+/*
+interface IRegisterForm {
+    email: string
+    password: string
+    name: {
+        firstName: string
+        lastName: string
+    }
+}*/
 
 export const RegisterForm = <RequestT extends BareMinimumRegisterForm>(props: {}) => {
     const router = useRouter()
@@ -18,7 +28,15 @@ export const RegisterForm = <RequestT extends BareMinimumRegisterForm>(props: {}
 
     const form = useForm({
         mode: 'uncontrolled',
-        // initialValues: props.typeInfo.getEmptyInstance(),
+        initialValues: {
+            email: undefined,
+            password: undefined,
+            name: {
+                firstName: undefined,
+                lastName: undefined,
+            },
+        },
+        // skip type check for now
         validate: {
             // Commented out for DEV purposes
             email: (value: string) => (/^\S+@\S+$/.test(value) ? null : ('Invalid email' as React.ReactNode)),
@@ -29,7 +47,7 @@ export const RegisterForm = <RequestT extends BareMinimumRegisterForm>(props: {}
         <Container className="w-96">
             <Form
                 form={form}
-                postEndpoint="/v1/register"
+                postEndpoint="/v1/auth/register"
                 submitButtonText="Create Account"
                 bottomExtra={
                     <Anchor
@@ -52,8 +70,8 @@ export const RegisterForm = <RequestT extends BareMinimumRegisterForm>(props: {}
             >
                 <TextInput label="Email" placeholder="you@email.com" key={form.key('email')} {...form.getInputProps('email')} />
                 <PasswordInput className="" label="Password" placeholder="super-secret-password" key={form.key('password')} mt="md" {...form.getInputProps('password')} />
-                <TextInput label="First Name" placeholder="John" key={form.key('name.first_name')} {...form.getInputProps('name.first_name')} />
-                <TextInput label="Last Name" placeholder="Doe" key={form.key('name.last_name')} {...form.getInputProps('name.last_name')} />
+                <TextInput label="First Name" placeholder="John" key={form.key('name.firstName')} {...form.getInputProps('name.firstName')} />
+                <TextInput label="Last Name" placeholder="Doe" key={form.key('name.lastName')} {...form.getInputProps('name.lastName')} />
             </Form>
         </Container>
     )

@@ -16,19 +16,36 @@ import { useAuth } from '../../../common/AuthContext';
 import { Form } from '../Form';
 import { useRouter } from 'next/navigation';
 import React from 'react';
+/*
+interface IRegisterForm {
+    email: string
+    password: string
+    name: {
+        firstName: string
+        lastName: string
+    }
+}*/
 export var RegisterForm = function (props) {
     var router = useRouter();
     var authenticate = useAuth().authenticate;
     var form = useForm({
         mode: 'uncontrolled',
-        // initialValues: props.typeInfo.getEmptyInstance(),
+        initialValues: {
+            email: undefined,
+            password: undefined,
+            name: {
+                firstName: undefined,
+                lastName: undefined,
+            },
+        },
+        // skip type check for now
         validate: {
             // Commented out for DEV purposes
             email: function (value) { return (/^\S+@\S+$/.test(value) ? null : 'Invalid email'); },
         },
     });
     return (React.createElement(Container, { className: "w-96" },
-        React.createElement(Form, { form: form, postEndpoint: "/v1/register", submitButtonText: "Create Account", bottomExtra: React.createElement(Anchor, { className: "text-sm font-light", onClick: function () {
+        React.createElement(Form, { form: form, postEndpoint: "/v1/auth/register", submitButtonText: "Create Account", bottomExtra: React.createElement(Anchor, { className: "text-sm font-light", onClick: function () {
                     router.push('/login');
                 } }, "Existing account?"), onSuccess: function (data) {
                 if (data.token) {
@@ -39,6 +56,6 @@ export var RegisterForm = function (props) {
             }, redirectPath: "/dashboard" },
             React.createElement(TextInput, __assign({ label: "Email", placeholder: "you@email.com", key: form.key('email') }, form.getInputProps('email'))),
             React.createElement(PasswordInput, __assign({ className: "", label: "Password", placeholder: "super-secret-password", key: form.key('password'), mt: "md" }, form.getInputProps('password'))),
-            React.createElement(TextInput, __assign({ label: "First Name", placeholder: "John", key: form.key('name.first_name') }, form.getInputProps('name.first_name'))),
-            React.createElement(TextInput, __assign({ label: "Last Name", placeholder: "Doe", key: form.key('name.last_name') }, form.getInputProps('name.last_name'))))));
+            React.createElement(TextInput, __assign({ label: "First Name", placeholder: "John", key: form.key('name.firstName') }, form.getInputProps('name.firstName'))),
+            React.createElement(TextInput, __assign({ label: "Last Name", placeholder: "Doe", key: form.key('name.lastName') }, form.getInputProps('name.lastName'))))));
 };

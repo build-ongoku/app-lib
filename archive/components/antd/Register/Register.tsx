@@ -5,7 +5,6 @@ import React, { useEffect } from 'react'
 
 import { useAuth } from '@ongoku/app-lib/src/common/AuthContext'
 import { Email } from '@ongoku/app-lib/src/common/Primitives'
-import { Link } from 'react-router-dom'
 import { useMakeRequest } from '@ongoku/app-lib/src/providers/provider'
 
 interface RegisterUserRequest {
@@ -24,8 +23,7 @@ export const RegisterForm = (props: {}) => {
 
     const [{ data, loading }, fetch] = useMakeRequest<RegisterUserResponse, RegisterUserRequest>({
         method: 'POST',
-        path: 'users/register',
-        notifyOnError: true,
+        path: 'auth/register',
     })
 
     useEffect(() => {

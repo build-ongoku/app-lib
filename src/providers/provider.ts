@@ -29,7 +29,7 @@ const getBaseURL = (): string => {
     }
     if (!port) {
         port = protocol === 'https:' ? '443' : '80'
-        console.warn('[Provider] [getBaseURL] Port not set. Defaulting to [${port}]')
+        console.warn(`[Provider] [getBaseURL] Port not set. Defaulting to [${port}]`)
     }
 
     const url = `${protocol}//${host}:${port}/api`
