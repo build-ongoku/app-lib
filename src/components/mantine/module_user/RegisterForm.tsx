@@ -66,7 +66,7 @@ export const RegisterForm = <RequestT extends BareMinimumRegisterForm>(props: {}
                     }
                     throw new Error('Login call succeeded but no token was returned.')
                 }}
-                redirectPath="/dashboard"
+                redirectPath="/home"
             >
                 <TextInput label="Email" placeholder="you@email.com" key={form.key('email')} {...form.getInputProps('email')} />
                 <PasswordInput className="" label="Password" placeholder="super-secret-password" key={form.key('password')} mt="md" {...form.getInputProps('password')} />

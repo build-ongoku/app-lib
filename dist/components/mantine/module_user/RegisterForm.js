@@ -53,7 +53,7 @@ export var RegisterForm = function (props) {
                     return;
                 }
                 throw new Error('Login call succeeded but no token was returned.');
-            }, redirectPath: "/dashboard" },
+            }, redirectPath: "/home" },
             React.createElement(TextInput, __assign({ label: "Email", placeholder: "you@email.com", key: form.key('email') }, form.getInputProps('email'))),
             React.createElement(PasswordInput, __assign({ className: "", label: "Password", placeholder: "super-secret-password", key: form.key('password'), mt: "md" }, form.getInputProps('password'))),
             React.createElement(TextInput, __assign({ label: "First Name", placeholder: "John", key: form.key('name.firstName') }, form.getInputProps('name.firstName'))),
