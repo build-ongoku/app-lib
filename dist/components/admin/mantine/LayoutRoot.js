@@ -71,7 +71,8 @@ var theme = createTheme({
 export var LayoutRoot = function (props) {
     return (React.createElement("html", { lang: "en" },
         React.createElement("head", null,
-            React.createElement(ColorSchemeScript, null)),
+            React.createElement(ColorSchemeScript, null),
+            React.createElement("link", { rel: "icon", href: "/icon.ico", sizes: "any" })),
         React.createElement("body", null,
             React.createElement(MantineProvider, { theme: theme },
                 React.createElement(Notifications, { position: "bottom-right", autoClose: false, notificationMaxHeight: 10000, containerWidth: 1000 }),

@@ -76,6 +76,7 @@ export const LayoutRoot = (props: { children: React.ReactNode }) => {
         <html lang="en">
             <head>
                 <ColorSchemeScript />
+                <link rel="icon" href="/icon.ico" sizes="any" />
             </head>
             <body>
                 <MantineProvider theme={theme}>
