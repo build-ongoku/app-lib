@@ -114,6 +114,7 @@ var Service = /** @class */ (function () {
         if (!this.namespace.service) {
             throw new Error('Service name is required');
         }
+        this.source = req.source;
     }
     Service.prototype.getName = function () {
         return this.namespace.service;

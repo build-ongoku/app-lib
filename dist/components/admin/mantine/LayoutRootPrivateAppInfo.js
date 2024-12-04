@@ -43,7 +43,9 @@ var AppLayout = function (props) {
                 if (!entities || entities.length === 0) {
                     return null;
                 }
-                return (React.createElement(NavLink, { key: svc.getName().toRaw(), href: "svc-".concat(svc.getName().toRaw()), label: svc.getNameFriendly() }, entities.map(function (ent) {
+                var isBuiltIn = svc.source === 'mod';
+                var svcLabel = isBuiltIn ? '[Builtin] ' + svc.getNameFriendly() : svc.getNameFriendly();
+                return (React.createElement(NavLink, { key: svc.getName().toRaw(), href: "svc-".concat(svc.getName().toRaw()), label: svcLabel }, entities.map(function (ent) {
                     return React.createElement(NavLink, { key: ent.namespace.toString(), href: "".concat(ent.namespace.toURLPath(), "/list"), label: ent.getNameFriendly() });
                 })));
             })),

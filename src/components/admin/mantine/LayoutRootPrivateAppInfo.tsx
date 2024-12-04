@@ -67,8 +67,10 @@ const AppLayout = (props: { children: React.ReactNode }) => {
                         if (!entities || entities.length === 0) {
                             return null
                         }
+                        const isBuiltIn = svc.source === 'mod'
+                        const svcLabel = isBuiltIn ? '[Builtin] ' + svc.getNameFriendly() : svc.getNameFriendly()
                         return (
-                            <NavLink key={svc.getName().toRaw()} href={`svc-${svc.getName().toRaw()}`} label={svc.getNameFriendly()}>
+                            <NavLink key={svc.getName().toRaw()} href={`svc-${svc.getName().toRaw()}`} label={svcLabel}>
                                 {entities.map((ent) => {
                                     return <NavLink key={ent.namespace.toString()} href={`${ent.namespace.toURLPath()}/list`} label={ent.getNameFriendly()} />
                                 })}

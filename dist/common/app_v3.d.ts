@@ -50,16 +50,20 @@ export declare class App implements IApp {
     getMethod(nsReq: MethodNamespaceReq): Method;
     getEntityMethods(entNs: IEntityNamespace): IMethod[];
 }
+type Source = 'mod' | 'user';
 interface IService {
     namespace: IServiceNamespace;
+    source?: Source;
     getName(): Name;
     getNameFriendly(): string;
 }
 export interface ServiceReq {
     namespace: ServiceNamespaceReq;
+    source?: Source;
 }
 export declare class Service implements IService {
     namespace: IServiceNamespace;
+    source?: Source;
     constructor(req: ServiceReq);
     getName(): Name;
     getNameFriendly(): string;

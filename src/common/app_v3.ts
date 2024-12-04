@@ -178,24 +178,30 @@ export class App implements IApp {
  * Service
  * * * * * */
 
+type Source = 'mod' | 'user'
+
 interface IService {
     namespace: IServiceNamespace
+    source?: Source
     getName(): Name
     getNameFriendly(): string
 }
 
 export interface ServiceReq {
     namespace: ServiceNamespaceReq
+    source?: Source
 }
 
 export class Service implements IService {
     namespace: IServiceNamespace
+    source?: Source
 
     constructor(req: ServiceReq) {
         this.namespace = new Namespace(req.namespace)
         if (!this.namespace.service) {
             throw new Error('Service name is required')
         }
+        this.source = req.source
     }
 
     getName(): Name {
