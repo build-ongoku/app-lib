@@ -71,6 +71,10 @@ var App = /** @class */ (function () {
         var ns = new Namespace(nsReq);
         return this.entityInfos.filter(function (ent) { return ent.namespace.service.equal(ns.service); });
     };
+    App.prototype.getServiceMethods = function (nsReq) {
+        var ns = new Namespace(nsReq);
+        return this.methods.filter(function (m) { return m.namespace.service.equal(ns.service) && !m.namespace.entity; });
+    };
     App.prototype.getTypeInfo = function (nsReq) {
         var ns = new Namespace(nsReq);
         console.log('[App] [getTypeInfo] [ns]', 'namespace', ns.toString(), 'typesMap', this.typesMap);
@@ -114,6 +118,7 @@ var Service = /** @class */ (function () {
         if (!this.namespace.service) {
             throw new Error('Service name is required');
         }
+        this.description = req.description;
         this.source = req.source;
     }
     Service.prototype.getName = function () {

@@ -53,14 +53,21 @@ import { useEffect, useState } from 'react';
 // It does not add the version number.
 // e.g. for DEV, it may return http://localhost:80/api/
 var getBaseURL = function () {
+    var _a, _b;
     console.log('[Provider] [getBaseURL]', 'envVariables', process.env);
     var host = process.env.NEXT_PUBLIC_GOKU_BACKEND_HOST;
     var port = process.env.NEXT_PUBLIC_GOKU_BACKEND_PORT;
     var protocol = process.env.NEXT_PUBLIC_GOKU_BACKEND_PROTOCOL;
     if (!protocol) {
         // use the same protocol as the frontend
-        protocol = window.location.protocol;
-        console.warn("[Provider] [getBaseURL] Protocol not set. Defaulting to frontend protocol [".concat(protocol, "]"));
+        if (typeof window === 'undefined') {
+            console.warn('[Provider] [getBaseURL] Protocol not set. Defaulting to https:');
+            protocol = 'https:';
+        }
+        else {
+            protocol = (_b = (_a = window === null || window === void 0 ? void 0 : window.location) === null || _a === void 0 ? void 0 : _a.protocol) !== null && _b !== void 0 ? _b : 'https:';
+            console.warn("[Provider] [getBaseURL] Protocol not set. Defaulting to window's protocol [".concat(protocol, "]"));
+        }
     }
     if (protocol !== 'http:' && protocol !== 'https:') {
         console.warn("[Provider] [getBaseURL] Invalid protocol [".concat(protocol, "] (not \"http:\" or \"https:\"). Setting to window's protocol [").concat(window.location.protocol, "]"));
@@ -79,7 +86,7 @@ var getBaseURL = function () {
     return url;
 };
 // addBaseURL adds the base URL to the path
-var addBaseURL = function (path) {
+export var addBaseURL = function (path) {
     // remove any leading slash from the path
     if (path.startsWith('/')) {
         path = path.slice(1);

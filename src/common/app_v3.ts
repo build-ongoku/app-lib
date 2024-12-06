@@ -134,6 +134,11 @@ export class App implements IApp {
         return this.entityInfos.filter((ent) => ent.namespace.service!.equal(ns.service!))
     }
 
+    getServiceMethods(nsReq: ServiceNamespaceReq): IMethod[] {
+        const ns = new Namespace(nsReq)
+        return this.methods.filter((m) => m.namespace.service!.equal(ns.service!) && !m.namespace.entity)
+    }
+
     getTypeInfo<T extends ITypeMinimal>(nsReq: TypeNamespaceReq): TypeInfo<T> {
         const ns = new Namespace(nsReq)
         console.log('[App] [getTypeInfo] [ns]', 'namespace', ns.toString(), 'typesMap', this.typesMap)
@@ -182,6 +187,7 @@ type Source = 'mod' | 'user'
 
 interface IService {
     namespace: IServiceNamespace
+    description?: string
     source?: Source
     getName(): Name
     getNameFriendly(): string
@@ -189,11 +195,13 @@ interface IService {
 
 export interface ServiceReq {
     namespace: ServiceNamespaceReq
+    description?: string
     source?: Source
 }
 
 export class Service implements IService {
     namespace: IServiceNamespace
+    description?: string
     source?: Source
 
     constructor(req: ServiceReq) {
@@ -201,6 +209,7 @@ export class Service implements IService {
         if (!this.namespace.service) {
             throw new Error('Service name is required')
         }
+        this.description = req.description
         this.source = req.source
     }
 

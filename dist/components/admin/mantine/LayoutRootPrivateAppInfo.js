@@ -1,10 +1,11 @@
 'use client';
-import { Anchor, AppShell, Burger, Group, Image, NavLink, Title } from '@mantine/core';
+import { Anchor, AppShell, Burger, Group, Image, NavLink, Title, Tooltip } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { AppContext, AppProvider } from '../../../common/AppContextV3';
 import { LogoutButton } from '../../mantine/module_user/LogoutButton';
-import { joinURL } from '../../../providers/provider';
+import { addBaseURL } from '../../../providers/provider';
 import React, { Suspense, useContext } from 'react';
+import { FiExternalLink } from 'react-icons/fi';
 export var LayoutRootPrivateAppInfo = function (props) {
     return (React.createElement(AppProvider, { appReq: props.appReq, applyOverrides: props.applyOverrides },
         React.createElement(AppLayout, null, props.children)));
@@ -37,25 +38,41 @@ var AppLayout = function (props) {
                 React.createElement("div", { className: "flex-grow" }),
                 React.createElement(LogoutButton, null))),
         React.createElement(AppShell.Navbar, null,
-            React.createElement(React.Fragment, null, appInfo.services.map(function (svc) {
-                var entities = appInfo.getServiceEntities(svc.namespace.toRaw());
-                // If service has no entities, don't show it in the navbar
-                if (!entities || entities.length === 0) {
-                    return null;
-                }
-                var isBuiltIn = svc.source === 'mod';
-                var svcLabel = isBuiltIn ? '[Builtin] ' + svc.getNameFriendly() : svc.getNameFriendly();
-                return (React.createElement(NavLink, { key: svc.getName().toRaw(), href: "svc-".concat(svc.getName().toRaw()), label: svcLabel }, entities.map(function (ent) {
-                    return React.createElement(NavLink, { key: ent.namespace.toString(), href: "".concat(ent.namespace.toURLPath(), "/list"), label: ent.getNameFriendly() });
-                })));
-            })),
-            React.createElement(NavLink, { key: 'methods', href: "methods", label: 'Methods' }, appInfo.methods.map(function (mth) {
-                if (!mth.namespace.entity) {
-                    // Do not show entity methods for now
-                    return (React.createElement(NavLink, { key: mth.namespace.toString(), href: joinURL(mth.namespace.service.toSnake(), 'method', mth.namespace.method.toSnake()), label: mth.namespace.toLabel() }));
-                }
-            }))),
+            React.createElement(NavLink, { key: 'services', label: 'Application' },
+                React.createElement(NavLinksInnerForServices, { appInfo: appInfo, svcs: appInfo.services.filter(function (svc) { return svc.source !== 'mod'; }) })),
+            React.createElement(NavLink, { key: 'services-builtin', label: 'Built In' },
+                React.createElement(NavLinksInnerForServices, { appInfo: appInfo, svcs: appInfo.services.filter(function (svc) { return svc.source === 'mod'; }) })),
+            React.createElement(NavLink, { key: 'api-docs', target: "_blank", href: addBaseURL('/v1/docs'), label: React.createElement(React.Fragment, null,
+                    'API Documentation',
+                    " ",
+                    React.createElement(FiExternalLink, null)) })),
         React.createElement(AppShell.Main, null,
             React.createElement("div", { className: "p-10" },
                 React.createElement(Suspense, null, props.children)))));
+};
+var NavLinksInnerForServices = function (props) {
+    var appInfo = props.appInfo, svcs = props.svcs;
+    return (React.createElement(React.Fragment, null, svcs.map(function (svc) {
+        return React.createElement(NavLinksForService, { key: svc.getName().toRaw(), appInfo: appInfo, svc: svc });
+    })));
+};
+var NavLinksForService = function (props) {
+    var appInfo = props.appInfo, svc = props.svc;
+    var entities = appInfo.getServiceEntities(svc.namespace.toRaw());
+    var methods = appInfo.getServiceMethods(svc.namespace.toRaw());
+    // If service has no entities, don't show it in the navbar
+    if (!entities || entities.length === 0) {
+        return null;
+    }
+    var svcLabel = svc.description ? (React.createElement(Tooltip, { label: svc.description },
+        React.createElement("span", null, svc.getNameFriendly()))) : (svc.getNameFriendly());
+    return (React.createElement(NavLink, { key: svc.getName().toRaw(), href: "svc-".concat(svc.getName().toRaw()), label: svcLabel },
+        (entities.length > 0 &&
+            entities.map(function (ent) {
+                return React.createElement(NavLink, { key: ent.namespace.toString(), href: "".concat(ent.namespace.toURLPath(), "/list"), label: ent.getNameFriendly() });
+            })) || React.createElement(NavLink, { key: svc.getName().toRaw() + '-entities-none', label: 'No entities' }),
+        React.createElement(NavLink, { key: svc.getName().toRaw() + '-methods', href: svc.getName().toRaw() + '-methods', label: 'Methods' }, (methods.length > 0 &&
+            methods.map(function (mth) {
+                return React.createElement(NavLink, { key: mth.namespace.toString(), href: mth.namespace.toURLPath(), label: mth.namespace.toLabel() });
+            })) || (React.createElement(NavLink, { key: svc.getName().toRaw() + '-methods-none', label: 'No methods' }, ' ')))));
 };

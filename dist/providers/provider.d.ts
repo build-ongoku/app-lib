@@ -2,6 +2,7 @@ import { EntityInfo, IEntityMinimal } from '../common/app_v3';
 import * as scalars from '../common/scalars';
 import { MetaFieldKeys, Optional } from '../common/types';
 import { AxiosRequestConfig } from 'axios';
+export declare const addBaseURL: (path: string) => string;
 export declare const joinURL: (...parts: string[]) => string;
 export interface HTTPRequest<D> extends Omit<AxiosRequestConfig<D>, 'method' | 'url'> {
     method: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';

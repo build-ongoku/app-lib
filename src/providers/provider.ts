@@ -16,8 +16,13 @@ const getBaseURL = (): string => {
     let protocol = process.env.NEXT_PUBLIC_GOKU_BACKEND_PROTOCOL
     if (!protocol) {
         // use the same protocol as the frontend
-        protocol = window.location.protocol
-        console.warn(`[Provider] [getBaseURL] Protocol not set. Defaulting to frontend protocol [${protocol}]`)
+        if (typeof window === 'undefined') {
+            console.warn('[Provider] [getBaseURL] Protocol not set. Defaulting to https:')
+            protocol = 'https:'
+        } else {
+            protocol = window?.location?.protocol ?? 'https:'
+            console.warn(`[Provider] [getBaseURL] Protocol not set. Defaulting to window's protocol [${protocol}]`)
+        }
     }
     if (protocol !== 'http:' && protocol !== 'https:') {
         console.warn(`[Provider] [getBaseURL] Invalid protocol [${protocol}] (not "http:" or "https:"). Setting to window's protocol [${window.location.protocol}]`)
@@ -38,7 +43,7 @@ const getBaseURL = (): string => {
 }
 
 // addBaseURL adds the base URL to the path
-const addBaseURL = (path: string): string => {
+export const addBaseURL = (path: string): string => {
     // remove any leading slash from the path
     if (path.startsWith('/')) {
         path = path.slice(1)

@@ -45,6 +45,7 @@ export declare class App implements IApp {
     getService(nsReq: ServiceNamespaceReq): Service;
     getEntityInfo<E extends IEntityMinimal>(nsReq: EntityNamespaceReq): EntityInfo<E> | undefined;
     getServiceEntities(nsReq: ServiceNamespaceReq): EntityInfo<any>[];
+    getServiceMethods(nsReq: ServiceNamespaceReq): IMethod[];
     getTypeInfo<T extends ITypeMinimal>(nsReq: TypeNamespaceReq): TypeInfo<T>;
     getEnum(nsReq: EnumNamespaceReq): Enum;
     getMethod(nsReq: MethodNamespaceReq): Method;
@@ -53,16 +54,19 @@ export declare class App implements IApp {
 type Source = 'mod' | 'user';
 interface IService {
     namespace: IServiceNamespace;
+    description?: string;
     source?: Source;
     getName(): Name;
     getNameFriendly(): string;
 }
 export interface ServiceReq {
     namespace: ServiceNamespaceReq;
+    description?: string;
     source?: Source;
 }
 export declare class Service implements IService {
     namespace: IServiceNamespace;
+    description?: string;
     source?: Source;
     constructor(req: ServiceReq);
     getName(): Name;
