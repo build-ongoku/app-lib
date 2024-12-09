@@ -44,9 +44,12 @@ const getBaseURL = (): string => {
 
 // addBaseURL adds the base URL to the path
 export const addBaseURL = (path: string): string => {
-    // remove any leading slash from the path
+    // remove any leading or trailing slashes
     if (path.startsWith('/')) {
         path = path.slice(1)
+    }
+    if (path.endsWith('/')) {
+        path = path.slice(0, -1)
     }
     return getBaseURL() + '/' + path
 }
@@ -393,7 +396,7 @@ export const makeRequestV2 = async <RespT = any, ReqT = any>(props: MakeRequestV
     }
 
     // For GET, add the req as URL param
-    if (props.method == 'GET') {
+    if (props.method == 'GET' || props.method == 'DELETE') {
         // Add the data as query params
         const urlParams = new URLSearchParams()
         // Convert the data object to JSON and add it to the URL as 'req' param
@@ -418,7 +421,12 @@ export const makeRequestV2 = async <RespT = any, ReqT = any>(props: MakeRequestV
     }
 
     if (!httpResp.ok) {
-        return { error: 'Got a non-OK HTTP response', statusCode: httpResp.status }
+        try {
+            const data = (await httpResp.json()) as GokuHTTPResponse<RespT>
+            return data
+        } catch {
+            return { error: 'Got a non-OK HTTP response', statusCode: httpResp.status }
+        }
     }
 
     try {
