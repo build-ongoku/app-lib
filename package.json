@@ -1,6 +1,6 @@
 {
     "name": "@ongoku/app-lib",
-    "version": "1.0.29",
+    "version": "1.0.30",
     "author": "Talha Ansari <github@teejay.me>",
     "description": "Typescript util functions and React components that can be accessed by all ongoku apps.",
     "repository": {
