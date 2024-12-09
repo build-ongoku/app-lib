@@ -87,9 +87,12 @@ var getBaseURL = function () {
 };
 // addBaseURL adds the base URL to the path
 export var addBaseURL = function (path) {
-    // remove any leading slash from the path
+    // remove any leading or trailing slashes
     if (path.startsWith('/')) {
         path = path.slice(1);
+    }
+    if (path.endsWith('/')) {
+        path = path.slice(0, -1);
     }
     return getBaseURL() + '/' + path;
 };
@@ -309,9 +312,9 @@ export var uploadFile = function (file, onProgress) { return __awaiter(void 0, v
 }); };
 // makeRequestV2 makes a vanilla fetch request
 export var makeRequestV2 = function (props) { return __awaiter(void 0, void 0, void 0, function () {
-    var fullUrl, headers, session, req, urlParams, httpResp, err_2, errMsg, data, err_3, errMsg;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
+    var fullUrl, headers, session, req, urlParams, httpResp, err_2, errMsg, data, _a, data, err_3, errMsg;
+    return __generator(this, function (_b) {
+        switch (_b.label) {
             case 0:
                 console.debug('[Provider] [makeRequestV2]', 'props', props);
                 fullUrl = addBaseURL(props.relativePath);
@@ -328,7 +331,7 @@ export var makeRequestV2 = function (props) { return __awaiter(void 0, void 0, v
                     headers: headers,
                 };
                 // For GET, add the req as URL param
-                if (props.method == 'GET') {
+                if (props.method == 'GET' || props.method == 'DELETE') {
                     urlParams = new URLSearchParams();
                     // Convert the data object to JSON and add it to the URL as 'req' param
                     urlParams.append('req', JSON.stringify(props.data));
@@ -342,35 +345,42 @@ export var makeRequestV2 = function (props) { return __awaiter(void 0, void 0, v
                     // Unsupported method
                     throw new Error('Unsupported method: ' + props.method);
                 }
-                _a.label = 1;
+                _b.label = 1;
             case 1:
-                _a.trys.push([1, 3, , 4]);
+                _b.trys.push([1, 3, , 4]);
                 return [4 /*yield*/, fetch(fullUrl, req)];
             case 2:
-                httpResp = _a.sent();
+                httpResp = _b.sent();
                 return [3 /*break*/, 4];
             case 3:
-                err_2 = _a.sent();
+                err_2 = _b.sent();
                 errMsg = 'Are you sure the backend is running? Admin Tool could not communicate with the backend. Please see the logs for more information.';
                 console.error(errMsg);
                 return [2 /*return*/, { error: errMsg, statusCode: 0 }]; // We don't know the status code because the request itself failed
             case 4:
-                if (!httpResp.ok) {
-                    return [2 /*return*/, { error: 'Got a non-OK HTTP response', statusCode: httpResp.status }];
-                }
-                _a.label = 5;
+                if (!!httpResp.ok) return [3 /*break*/, 8];
+                _b.label = 5;
             case 5:
-                _a.trys.push([5, 7, , 8]);
+                _b.trys.push([5, 7, , 8]);
                 return [4 /*yield*/, httpResp.json()];
             case 6:
-                data = (_a.sent());
+                data = (_b.sent());
                 return [2 /*return*/, data];
             case 7:
-                err_3 = _a.sent();
+                _a = _b.sent();
+                return [2 /*return*/, { error: 'Got a non-OK HTTP response', statusCode: httpResp.status }];
+            case 8:
+                _b.trys.push([8, 10, , 11]);
+                return [4 /*yield*/, httpResp.json()];
+            case 9:
+                data = (_b.sent());
+                return [2 /*return*/, data];
+            case 10:
+                err_3 = _b.sent();
                 errMsg = 'Could not parse HTTP response to JSON: ' + err_3;
                 console.error(errMsg);
                 return [2 /*return*/, { error: errMsg, statusCode: httpResp.status }];
-            case 8: return [2 /*return*/];
+            case 11: return [2 /*return*/];
         }
     });
 }); };
