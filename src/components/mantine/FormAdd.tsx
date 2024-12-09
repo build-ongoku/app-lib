@@ -26,7 +26,7 @@ import { UseFormReturnType } from '@mantine/form'
 import { Field, ITypeMinimal, TypeInfo, Dtype } from '../../common/app_v3'
 import { AppContext } from '../../common/AppContextV3'
 import * as fieldkind from '../../common/fieldkind'
-import { queryByTextV2, uploadFile } from '../../providers/provider'
+import { queryByTextEntity, uploadFile } from '../../providers/httpV2'
 import React, { useContext, useEffect, useState } from 'react'
 
 export const TypeAddForm = <T extends ITypeMinimal = any>(props: {
@@ -311,8 +311,8 @@ const ForeignEntityInput = (props: ForeignEntityInputProps) => {
     }
 
     useEffect(() => {
-        queryByTextV2({
-            entityInfo: entityInfo,
+        queryByTextEntity({
+            entityNamespace: props.foreignEntityNs,
             data: { queryText: searchTerm },
         }).then((response) => {
             if (response.error) {

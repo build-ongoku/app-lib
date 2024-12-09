@@ -1,6 +1,7 @@
 'use client'
 
-import { makeRequest } from '../providers/provider'
+import { joinURL } from '../providers/provider'
+import { makeRequest } from '../providers/httpV2'
 import React, { useContext, useEffect, useState } from 'react'
 
 export interface AuthenticateResponse {
@@ -48,7 +49,7 @@ export const verifySessionCookie = async (): Promise<boolean> => {
 
 export const verifyToken = async (props: { token: string }): Promise<boolean> => {
     const response = await makeRequest<AuthenticateResponse, AuthenticateTokenRequest>({
-        path: 'v1/auth/authenticate_token',
+        relativePath: joinURL('v1', 'auth', 'authenticate_token'),
         method: 'POST',
         data: {
             token: props.token,

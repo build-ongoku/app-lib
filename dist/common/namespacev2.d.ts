@@ -36,6 +36,11 @@ export interface INamespace<NsReqT extends NamespaceReq> {
     toLabel(): string;
     toURLPath(): string;
     equal(other: INamespace<NsReqT>): boolean;
+    isService(): boolean;
+    isEntity(): boolean;
+    isType(): boolean;
+    isEnum(): boolean;
+    isMethod(): boolean;
 }
 export interface NamespaceReq {
     service?: string;
@@ -58,6 +63,11 @@ export declare class Namespace<NsReqT extends NamespaceReq> implements INamespac
     toLabel(): string;
     toURLPath(): string;
     equal(other: INamespace<NsReqT>): boolean;
+    isService(): boolean;
+    isEntity(): boolean;
+    isType(): boolean;
+    isEnum(): boolean;
+    isMethod(): boolean;
 }
 export interface IServiceNamespace extends INamespace<ServiceNamespaceReq> {
 }

@@ -127,6 +127,12 @@ export interface INamespace<NsReqT extends NamespaceReq> {
     toLabel(): string
     toURLPath(): string
     equal(other: INamespace<NsReqT>): boolean
+
+    isService(): boolean
+    isEntity(): boolean
+    isType(): boolean
+    isEnum(): boolean
+    isMethod(): boolean
 }
 
 type NamespaceMethodKeys = 'toRaw' | 'toString' | 'toURLPath'
@@ -270,6 +276,27 @@ export class Namespace<NsReqT extends NamespaceReq> implements INamespace<NsReqT
 
     equal(other: INamespace<NsReqT>): boolean {
         return this.toString() === other.toString()
+    }
+
+    isService(): boolean {
+        // only service is defined
+        return !!this.service && !this.entity && (!this.types || this.types.length == 0) && !this.enum && !this.method
+    }
+    isEntity(): boolean {
+        // only service && entity is defined
+        return !!this.service && !!this.entity && (!this.types || this.types.length == 0) && !this.enum && !this.method
+    }
+    isType(): boolean {
+        // type is defined & no enum or method is defined (service & entity can be defined optionally)
+        return !!this.types && this.types.length > 0 && !this.enum && !this.method
+    }
+    isEnum(): boolean {
+        // enum is defined, and no method is defined (service, entity & types can be defined optionally)
+        return !!this.enum && !this.method
+    }
+    isMethod(): boolean {
+        // method is defined, no enum or type defined,  (service, entity can be defined optionally)
+        return !!this.method && !this.enum && (!this.types || this.types.length == 0)
     }
 }
 

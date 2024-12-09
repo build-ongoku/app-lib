@@ -145,6 +145,7 @@ export declare class Dtype<T = any> implements IDtype {
 }
 export interface IEntityMinimal extends ITypeMinimal, MetaFields {
 }
+export type IEntityMinimalInput<E extends IEntityMinimal> = Omit<E, MetaFieldKeys>;
 interface IEntityInfo<E extends IEntityMinimal> {
     namespace: IEntityNamespace;
     actions: IEntityAction[];

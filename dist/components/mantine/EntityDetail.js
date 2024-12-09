@@ -6,22 +6,21 @@ import { Operator } from '../../common/Filter';
 import { getEntityAddPath } from '../EntityLink';
 import { EntityListTableInner } from './EntityList';
 import { ServerResponseWrapper } from './ServerResponseWrapper';
-import { useGetEntity, useListEntityV2 } from '../../providers/provider';
+import { useGetEntity, useListEntity } from '../../providers/httpV2';
 import { useRouter } from 'next/navigation';
 import React, { useContext } from 'react';
 export var EntityDetail = function (props) {
     var entityInfo = props.entityInfo, identifier = props.identifier;
     var router = useRouter();
     // Todo: Assume that the identifier is the id for now but this could include any other human readable identifier
-    // Fetch the entity from the server
     var _a = useGetEntity({
-        entityInfo: entityInfo,
+        entityNamespace: entityInfo.namespace.toRaw(),
         data: {
             id: identifier,
         },
-    }), resp = _a[0], refetch = _a[1];
+    }), resp = _a.resp, loading = _a.loading, error = _a.error, fetchDone = _a.fetchDone, fetch = _a.fetch;
     return (React.createElement("div", null,
-        React.createElement(ServerResponseWrapper, { error: resp.error, loading: resp.loading }, resp.data && (React.createElement("div", { className: "flex flex-col gap-4" },
+        React.createElement(ServerResponseWrapper, { error: error || (resp === null || resp === void 0 ? void 0 : resp.error), loading: loading }, (resp === null || resp === void 0 ? void 0 : resp.data) && (React.createElement("div", { className: "flex flex-col gap-4" },
             React.createElement("div", { className: "flex justify-between my-5" },
                 React.createElement(Title, { order: 2 }, "".concat(entityInfo.getNameFriendly(), ": ").concat(entityInfo.getEntityNameFriendly(resp.data))),
                 React.createElement(Button, { onClick: function () {
@@ -29,7 +28,7 @@ export var EntityDetail = function (props) {
                     } },
                     "Add New ",
                     entityInfo.getNameFriendly())),
-            React.createElement(EntityActions, { entityInfo: entityInfo, id: identifier, refetchEntity: refetch }),
+            React.createElement(EntityActions, { entityInfo: entityInfo, id: identifier, refetchEntity: fetch }),
             React.createElement("pre", null, JSON.stringify(resp.data, null, 2)),
             React.createElement(EntityAssociations, { entityInfo: entityInfo, entityID: identifier, entityData: resp.data }))))));
 };
@@ -88,8 +87,8 @@ var EntityAssociationChildren = function (props) {
     // const otherEntityFieldName = otherAssoc.name.toFieldName() as keyof E2
     var otherEntityFilterFieldName = (assoc.type === 'many' ? 'having' + otherAssoc.toFieldName().toPascal() : otherAssoc.toFieldName().toFieldName());
     console.debug('[EntityDetail] [EntityAssociationGeneric] Field name for corresponding entity found:', otherEntityFilterFieldName);
-    var _c = useListEntityV2({
-        entityInfo: otherEntityInfo,
+    var _c = useListEntity({
+        entityNamespace: otherEntityInfo.namespace.toRaw(),
         data: {
             filter: (_a = {},
                 _a[otherEntityFilterFieldName] = {
@@ -98,7 +97,7 @@ var EntityAssociationChildren = function (props) {
                 },
                 _a),
         },
-    }), resp = _c[0], loading = _c[1];
+    }), resp = _c.resp, loading = _c.loading, error = _c.error, fetchDone = _c.fetchDone, fetch = _c.fetch;
     return (React.createElement(ServerResponseWrapper, { error: resp === null || resp === void 0 ? void 0 : resp.error, loading: loading }, (resp === null || resp === void 0 ? void 0 : resp.data) && (React.createElement("div", null,
         React.createElement(Title, { order: 3 }, assoc.name.toCapital()),
         React.createElement(EntityListTableInner, { entityInfo: otherEntityInfo, data: resp.data })))));
@@ -115,8 +114,8 @@ var EntityAssociationParents = function (props) {
     }
     // If the parent IDs are an array, we need to fetch all the parents
     var values = Array.isArray(parentIDs) ? parentIDs : [parentIDs];
-    var _a = useListEntityV2({
-        entityInfo: otherEntityInfo,
+    var _a = useListEntity({
+        entityNamespace: otherEntityInfo.namespace.toRaw(),
         data: {
             filter: {
                 id: {
@@ -125,8 +124,8 @@ var EntityAssociationParents = function (props) {
                 },
             },
         },
-    }), resp = _a[0], loading = _a[1];
-    return (React.createElement(ServerResponseWrapper, { error: resp === null || resp === void 0 ? void 0 : resp.error, loading: loading }, (resp === null || resp === void 0 ? void 0 : resp.data) && (React.createElement("div", null,
+    }), resp = _a.resp, loading = _a.loading, error = _a.error, fetchDone = _a.fetchDone, fetch = _a.fetch;
+    return (React.createElement(ServerResponseWrapper, { error: error || (resp === null || resp === void 0 ? void 0 : resp.error), loading: loading }, (resp === null || resp === void 0 ? void 0 : resp.data) && (React.createElement("div", null,
         React.createElement(Title, { order: 3 }, assoc.name.toCapital()),
         React.createElement(EntityListTableInner, { entityInfo: otherEntityInfo, data: resp.data })))));
 };
@@ -173,7 +172,7 @@ var EntityActions = function (props) {
                         message: React.createElement("pre", null, JSON.stringify(resp.data, null, 2)),
                         position: 'bottom-right',
                     });
-                    props.refetchEntity({});
+                    props.refetchEntity();
                 });
             } }, action.name.toCapital()));
     });

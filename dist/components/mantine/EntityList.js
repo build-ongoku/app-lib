@@ -7,7 +7,7 @@ import 'mantine-react-table/styles.css'; //make sure MRT styles were imported in
 import { useRouter } from 'next/navigation';
 import React, { useMemo } from 'react';
 import { getEntityAddPath } from '../../components/EntityLink';
-import { useListEntity } from '../../providers/provider';
+import { useListEntity } from '../../providers/httpV2';
 import { ServerResponseWrapper } from './ServerResponseWrapper';
 import { pluralize } from '../../common/namespacev2';
 dayjs.extend(relativeTime);
@@ -52,12 +52,12 @@ export var EntityListTable = function (props) {
     var entityInfo = props.entityInfo;
     var router = useRouter();
     // Get the entity from the server
-    var resp = useListEntity({
-        entityInfo: entityInfo,
+    var _a = useListEntity({
+        entityNamespace: entityInfo.namespace.toRaw(),
         data: {},
-    })[0];
+    }), resp = _a.resp, error = _a.error, loading = _a.loading, fetchDone = _a.fetchDone, fetch = _a.fetch;
     return (React.createElement("div", null,
-        React.createElement(ServerResponseWrapper, { error: resp.error, loading: resp.loading },
+        React.createElement(ServerResponseWrapper, { error: error || (resp === null || resp === void 0 ? void 0 : resp.error), loading: loading },
             React.createElement("div", { className: "flex justify-between my-5" },
                 React.createElement(Title, { order: 2 },
                     "Your ",
@@ -67,7 +67,7 @@ export var EntityListTable = function (props) {
                     } },
                     "Add ",
                     entityInfo.getNameFriendly())),
-            resp.data && React.createElement(EntityListTableInner, { entityInfo: entityInfo, data: resp.data }))));
+            (resp === null || resp === void 0 ? void 0 : resp.data) && React.createElement(EntityListTableInner, { entityInfo: entityInfo, data: resp.data }))));
 };
 // EntityListTableInner takes the list response and renders the table
 export var EntityListTableInner = function (props) {

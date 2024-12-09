@@ -6,6 +6,7 @@ import { TypeAddForm } from './FormAdd';
 import { joinURL } from '../../providers/provider';
 import { useRouter } from 'next/navigation';
 import React, { useContext } from 'react';
+import { getAddEntityMethodAndPath } from '../../providers/httpV2';
 export var EntityAddForm = function (props) {
     var entityInfo = props.entityInfo;
     var initialData = props.initialData || {};
@@ -26,11 +27,12 @@ export var EntityAddForm = function (props) {
         throw new Error('TypeInfo not found for ' + typeNs);
     }
     console.log('[EntityAddForm] Rendering...', 'entityInfo', entityInfo);
+    var relPath = getAddEntityMethodAndPath(entityInfo.namespace.toRaw()).relPath;
     return (React.createElement(Form, { form: form, submitButtonText: "Add ".concat(entityInfo.getNameFriendly()), onSubmitTransformValues: function (values) {
             return {
                 object: values,
             };
-        }, postEndpoint: joinURL('v1', entityInfo.namespace.toURLPath()), onSuccess: function (data) {
+        }, postEndpoint: relPath, onSuccess: function (data) {
             console.log('[EntityAddForm] [onSuccess]', 'data', data);
             if (data.id) {
                 var redirectURL = joinURL(entityInfo.namespace.toURLPath(), data.id);

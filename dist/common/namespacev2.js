@@ -184,6 +184,26 @@ var Namespace = /** @class */ (function () {
     Namespace.prototype.equal = function (other) {
         return this.toString() === other.toString();
     };
+    Namespace.prototype.isService = function () {
+        // only service is defined
+        return !!this.service && !this.entity && (!this.types || this.types.length == 0) && !this.enum && !this.method;
+    };
+    Namespace.prototype.isEntity = function () {
+        // only service && entity is defined
+        return !!this.service && !!this.entity && (!this.types || this.types.length == 0) && !this.enum && !this.method;
+    };
+    Namespace.prototype.isType = function () {
+        // type is defined & no enum or method is defined (service & entity can be defined optionally)
+        return !!this.types && this.types.length > 0 && !this.enum && !this.method;
+    };
+    Namespace.prototype.isEnum = function () {
+        // enum is defined, and no method is defined (service, entity & types can be defined optionally)
+        return !!this.enum && !this.method;
+    };
+    Namespace.prototype.isMethod = function () {
+        // method is defined, no enum or type defined,  (service, entity can be defined optionally)
+        return !!this.method && !this.enum && (!this.types || this.types.length == 0);
+    };
     return Namespace;
 }());
 export { Namespace };

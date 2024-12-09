@@ -1,7 +1,8 @@
 import { EnumKind, ForeignEntityKind, NestedKind } from './fieldkind';
 import * as fieldkind from './fieldkind';
 import { Namespace, } from './namespacev2';
-import { joinURL, makeRequestV2 } from '../providers/provider';
+import { joinURL } from '../providers/provider';
+import { makeRequest } from '../providers/httpV2';
 import { capitalCase } from 'change-case';
 var App = /** @class */ (function () {
     function App(req) {
@@ -256,17 +257,21 @@ var EntityInfo = /** @class */ (function () {
         // Default (Overidable)
         this.funcGetEntityName = function (r, info) {
             var _r = r;
+            var name = r.id;
             if (_r.name) {
                 // Simple string name
                 if (typeof _r.name === 'string') {
-                    return _r.name;
+                    name = _r.name;
                 }
-                // Person Name (First + Last)
-                if (_r.name.firstName && _r.name.lastName) {
-                    return "".concat(_r.name.firstName, " ").concat(_r.name.lastName);
+                else if (_r.name.firstName && _r.name.lastName) {
+                    // Person Name (First + Last)
+                    name = "".concat(_r.name.firstName, " ").concat(_r.name.lastName);
                 }
             }
-            return r.id;
+            if (r.deletedAt) {
+                name += ' (Deleted)';
+            }
+            return name;
         };
         // Default (Overidable)
         this.funcGetEntityNameFriendly = function (r, info) {
@@ -393,7 +398,7 @@ var MethodAPI = /** @class */ (function () {
     MethodAPI.prototype.makeAPIRequest = function (req) {
         console.debug('[MethodAPI] [makeAPIRequest]', 'namespace', this.methodNamespace.toString(), 'req', req);
         var relPath = this.getEndpoint();
-        return makeRequestV2({ relativePath: relPath, method: this.method, data: req });
+        return makeRequest({ relativePath: relPath, method: this.method, data: req });
     };
     return MethodAPI;
 }());

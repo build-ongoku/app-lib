@@ -9,7 +9,7 @@ import { ID } from '../../common/scalars'
 import { getEntityAddPath } from '../EntityLink'
 import { EntityListTableInner } from './EntityList'
 import { ServerResponseWrapper } from './ServerResponseWrapper'
-import { FetchFunc, useGetEntity, useListEntityV2 } from '../../providers/provider'
+import { FetchFunc, useGetEntity, useListEntity } from '../../providers/httpV2'
 import { useRouter } from 'next/navigation'
 import React, { useContext } from 'react'
 
@@ -20,9 +20,8 @@ export const EntityDetail = <E extends IEntityMinimal = any>(props: { entityInfo
 
     // Todo: Assume that the identifier is the id for now but this could include any other human readable identifier
 
-    // Fetch the entity from the server
-    const [resp, refetch] = useGetEntity<E>({
-        entityInfo,
+    const { resp, loading, error, fetchDone, fetch } = useGetEntity<E>({
+        entityNamespace: entityInfo.namespace.toRaw(),
         data: {
             id: identifier,
         },
@@ -30,8 +29,8 @@ export const EntityDetail = <E extends IEntityMinimal = any>(props: { entityInfo
 
     return (
         <div>
-            <ServerResponseWrapper error={resp.error} loading={resp.loading}>
-                {resp.data && (
+            <ServerResponseWrapper error={error || resp?.error} loading={loading}>
+                {resp?.data && (
                     <div className="flex flex-col gap-4">
                         <div className="flex justify-between my-5">
                             <Title order={2}>{`${entityInfo.getNameFriendly()}: ${entityInfo.getEntityNameFriendly(resp.data)}`}</Title>
@@ -43,7 +42,7 @@ export const EntityDetail = <E extends IEntityMinimal = any>(props: { entityInfo
                                 Add New {entityInfo.getNameFriendly()}
                             </Button>
                         </div>
-                        <EntityActions entityInfo={entityInfo} id={identifier} refetchEntity={refetch} />
+                        <EntityActions entityInfo={entityInfo} id={identifier} refetchEntity={fetch} />
                         <pre>{JSON.stringify(resp.data, null, 2)}</pre>
                         <EntityAssociations entityInfo={entityInfo} entityID={identifier} entityData={resp.data} />
                     </div>
@@ -122,8 +121,8 @@ const EntityAssociationChildren = <E extends IEntityMinimal, E2 extends IEntityM
     const otherEntityFilterFieldName = (assoc.type === 'many' ? 'having' + otherAssoc.toFieldName().toPascal() : otherAssoc.toFieldName().toFieldName()) as keyof E2
     console.debug('[EntityDetail] [EntityAssociationGeneric] Field name for corresponding entity found:', otherEntityFilterFieldName)
 
-    const [resp, loading] = useListEntityV2({
-        entityInfo: otherEntityInfo,
+    const { resp, loading, error, fetchDone, fetch } = useListEntity<E2>({
+        entityNamespace: otherEntityInfo.namespace.toRaw(),
         data: {
             filter: {
                 [otherEntityFilterFieldName]: {
@@ -167,8 +166,8 @@ const EntityAssociationParents = <E extends IEntityMinimal, E2 extends IEntityMi
     // If the parent IDs are an array, we need to fetch all the parents
     const values = Array.isArray(parentIDs) ? parentIDs : [parentIDs]
 
-    const [resp, loading] = useListEntityV2({
-        entityInfo: otherEntityInfo,
+    const { resp, loading, error, fetchDone, fetch } = useListEntity<E2>({
+        entityNamespace: otherEntityInfo.namespace.toRaw(),
         data: {
             filter: {
                 id: {
@@ -180,7 +179,7 @@ const EntityAssociationParents = <E extends IEntityMinimal, E2 extends IEntityMi
     })
 
     return (
-        <ServerResponseWrapper error={resp?.error} loading={loading}>
+        <ServerResponseWrapper error={error || resp?.error} loading={loading}>
             {resp?.data && (
                 <div>
                     <Title order={3}>{assoc.name.toCapital()}</Title>
@@ -247,7 +246,7 @@ const EntityActions = <E extends IEntityMinimal>(props: { entityInfo: EntityInfo
                             message: <pre>{JSON.stringify(resp.data, null, 2)}</pre>,
                             position: 'bottom-right',
                         })
-                        props.refetchEntity({})
+                        props.refetchEntity()
                     })
                 }}
             >

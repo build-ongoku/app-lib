@@ -35,7 +35,8 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-import { makeRequest } from '../providers/provider';
+import { joinURL } from '../providers/provider';
+import { makeRequest } from '../providers/httpV2';
 import React, { useContext, useEffect, useState } from 'react';
 var _cookieKey = 'session';
 export var getSessionCookie = function () {
@@ -76,7 +77,7 @@ export var verifyToken = function (props) { return __awaiter(void 0, void 0, voi
     return __generator(this, function (_b) {
         switch (_b.label) {
             case 0: return [4 /*yield*/, makeRequest({
-                    path: 'v1/auth/authenticate_token',
+                    relativePath: joinURL('v1', 'auth', 'authenticate_token'),
                     method: 'POST',
                     data: {
                         token: props.token,

@@ -19,7 +19,8 @@ import {
     TypeNamespaceReq,
 } from './namespacev2'
 import { MetaFieldKeys } from './types'
-import { GokuHTTPResponse, joinURL, makeRequestV2 } from '../providers/provider'
+import { GokuHTTPResponse, joinURL } from '../providers/provider'
+import { makeRequest } from '../providers/httpV2'
 import { capitalCase } from 'change-case'
 
 /* * * * * *
@@ -427,6 +428,7 @@ export class Dtype<T = any> implements IDtype {
  * * * * * */
 
 export interface IEntityMinimal extends ITypeMinimal, MetaFields {}
+export type IEntityMinimalInput<E extends IEntityMinimal> = Omit<E, MetaFieldKeys>
 
 /* * * * * *
  * Entity Info
@@ -492,17 +494,20 @@ export class EntityInfo<E extends IEntityMinimal> implements IEntityInfo<E> {
     // Default (Overidable)
     funcGetEntityName = function (r: E, info: EntityInfo<E>): string {
         const _r: any = r
+        let name: string = r.id
         if (_r.name) {
             // Simple string name
             if (typeof _r.name === 'string') {
-                return _r.name
-            }
-            // Person Name (First + Last)
-            if (_r.name.firstName && _r.name.lastName) {
-                return `${_r.name.firstName} ${_r.name.lastName}`
+                name = _r.name
+            } else if (_r.name.firstName && _r.name.lastName) {
+                // Person Name (First + Last)
+                name = `${_r.name.firstName} ${_r.name.lastName}`
             }
         }
-        return r.id
+        if (r.deletedAt) {
+            name += ' (Deleted)'
+        }
+        return name
     }
 
     getEntityNameFriendly(r: E): string {
@@ -746,6 +751,6 @@ class MethodAPI {
     makeAPIRequest<ReqT = any, RespT = any>(req: ReqT): Promise<GokuHTTPResponse<RespT>> {
         console.debug('[MethodAPI] [makeAPIRequest]', 'namespace', this.methodNamespace.toString(), 'req', req)
         const relPath = this.getEndpoint()
-        return makeRequestV2<RespT>({ relativePath: relPath, method: this.method, data: req })
+        return makeRequest<RespT>({ relativePath: relPath, method: this.method, data: req })
     }
 }

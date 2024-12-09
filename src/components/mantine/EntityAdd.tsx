@@ -6,9 +6,10 @@ import { AppContext } from '../../common/AppContextV3'
 import { MetaFieldKeys } from '../../common/types'
 import { Form } from './Form'
 import { TypeAddForm } from './FormAdd'
-import { AddEntityRequest, joinURL } from '../../providers/provider'
+import { joinURL } from '../../providers/provider'
 import { useRouter } from 'next/navigation'
 import React, { useContext } from 'react'
+import { AddEntityRequestData, getAddEntityMethodAndPath } from '../../providers/httpV2'
 
 interface EntityAddFormProps<E extends IEntityMinimal = any> {
     entityInfo: EntityInfo<E>
@@ -44,16 +45,18 @@ export const EntityAddForm = <E extends IEntityMinimal = any>(props: EntityAddFo
 
     console.log('[EntityAddForm] Rendering...', 'entityInfo', entityInfo)
 
+    const { relPath } = getAddEntityMethodAndPath(entityInfo.namespace.toRaw())
+
     return (
-        <Form<FormT, AddEntityRequest<E>, E>
+        <Form<FormT, AddEntityRequestData<E>, E>
             form={form}
             submitButtonText={`Add ${entityInfo.getNameFriendly()}`}
-            onSubmitTransformValues={(values: FormT): AddEntityRequest<E> => {
+            onSubmitTransformValues={(values: FormT): AddEntityRequestData<E> => {
                 return {
                     object: values,
                 }
             }}
-            postEndpoint={joinURL('v1', entityInfo.namespace.toURLPath())}
+            postEndpoint={relPath}
             onSuccess={(data: E) => {
                 console.log('[EntityAddForm] [onSuccess]', 'data', data)
                 if (data.id) {

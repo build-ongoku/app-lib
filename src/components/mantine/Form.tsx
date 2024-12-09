@@ -5,7 +5,7 @@ import { UseFormReturnType } from '@mantine/form'
 import { useRouter } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
 import { FiAlertCircle } from 'react-icons/fi'
-import { useMakeRequest, useMakeRequestV2 } from '../../providers/provider'
+import { useMakeRequest } from '../../providers/httpV2'
 
 export const discardableInputKey = '__og_discardable'
 
@@ -27,7 +27,7 @@ export const Form = <FormT extends Record<string, any>, RequestT = FormT, Respon
     const [processing, setProcessing] = useState(false)
     const [errMessage, setErrMessage] = useState<string>()
 
-    const makeResp = useMakeRequestV2<ResponseT, RequestT>({
+    const makeResp = useMakeRequest<ResponseT, RequestT>({
         method: props.method ?? 'POST',
         relativePath: props.postEndpoint,
         skipFetchAtInit: true,

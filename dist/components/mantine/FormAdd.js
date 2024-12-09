@@ -52,7 +52,7 @@ import { DateTimePicker, DateInput as MantineDateInput } from '@mantine/dates';
 import '@mantine/dates/styles.css';
 import { AppContext } from '../../common/AppContextV3';
 import * as fieldkind from '../../common/fieldkind';
-import { queryByTextV2, uploadFile } from '../../providers/provider';
+import { queryByTextEntity, uploadFile } from '../../providers/httpV2';
 import React, { useContext, useEffect, useState } from 'react';
 export var TypeAddForm = function (props) {
     var form = props.form, typeInfo = props.typeInfo;
@@ -199,8 +199,8 @@ var ForeignEntityInput = function (props) {
         throw new Error("Entity Info not found for request ".concat(JSON.stringify(props.foreignEntityNs)));
     }
     useEffect(function () {
-        queryByTextV2({
-            entityInfo: entityInfo,
+        queryByTextEntity({
+            entityNamespace: props.foreignEntityNs,
             data: { queryText: searchTerm },
         }).then(function (response) {
             if (response.error) {

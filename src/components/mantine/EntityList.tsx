@@ -9,7 +9,7 @@ import { useRouter } from 'next/navigation'
 import React, { useMemo } from 'react'
 import { EntityInfo, IEntityMinimal } from '../../common/app_v3'
 import { getEntityAddPath } from '../../components/EntityLink'
-import { ListEntityResponse, useListEntity } from '../../providers/provider'
+import { ListEntityResponseData, useListEntity } from '../../providers/httpV2'
 import { ServerResponseWrapper } from './ServerResponseWrapper'
 import { pluralize } from '../../common/namespacev2'
 
@@ -59,14 +59,14 @@ export const EntityListTable = <E extends IEntityMinimal>(props: { entityInfo: E
     const router = useRouter()
 
     // Get the entity from the server
-    const [resp] = useListEntity<E>({
-        entityInfo: entityInfo,
+    const { resp, error, loading, fetchDone, fetch } = useListEntity<E>({
+        entityNamespace: entityInfo.namespace.toRaw(),
         data: {},
     })
 
     return (
         <div>
-            <ServerResponseWrapper error={resp.error} loading={resp.loading}>
+            <ServerResponseWrapper error={error || resp?.error} loading={loading}>
                 <div className="flex justify-between my-5">
                     <Title order={2}>Your {pluralize(entityInfo.getNameFriendly())}</Title>
                     <Button
@@ -77,14 +77,14 @@ export const EntityListTable = <E extends IEntityMinimal>(props: { entityInfo: E
                         Add {entityInfo.getNameFriendly()}
                     </Button>
                 </div>
-                {resp.data && <EntityListTableInner entityInfo={entityInfo} data={resp.data} />}
+                {resp?.data && <EntityListTableInner entityInfo={entityInfo} data={resp.data} />}
             </ServerResponseWrapper>
         </div>
     )
 }
 
 // EntityListTableInner takes the list response and renders the table
-export const EntityListTableInner = <E extends IEntityMinimal>(props: { entityInfo: EntityInfo<E>; data: ListEntityResponse<E> }) => {
+export const EntityListTableInner = <E extends IEntityMinimal>(props: { entityInfo: EntityInfo<E>; data: ListEntityResponseData<E> }) => {
     const cols = getDefaultEntityColumns<E>(props.entityInfo)
     const colsMemo = useMemo<MRT_ColumnDef<E>[]>(() => cols, [])
 

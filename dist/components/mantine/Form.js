@@ -3,7 +3,7 @@ import { Alert, Box, Button, Paper, Stack } from '@mantine/core';
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { FiAlertCircle } from 'react-icons/fi';
-import { useMakeRequestV2 } from '../../providers/provider';
+import { useMakeRequest } from '../../providers/httpV2';
 export var discardableInputKey = '__og_discardable';
 export var Form = function (props) {
     var _a, _b;
@@ -11,7 +11,7 @@ export var Form = function (props) {
     var router = useRouter();
     var _c = useState(false), processing = _c[0], setProcessing = _c[1];
     var _d = useState(), errMessage = _d[0], setErrMessage = _d[1];
-    var makeResp = useMakeRequestV2({
+    var makeResp = useMakeRequest({
         method: (_a = props.method) !== null && _a !== void 0 ? _a : 'POST',
         relativePath: props.postEndpoint,
         skipFetchAtInit: true,
