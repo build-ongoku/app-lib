@@ -23,7 +23,7 @@ export const LoginForm = () => {
         mode: 'uncontrolled',
         validate: {
             // Commented out for DEV purposes
-            email: isEmail('Please enter a valid email'),
+            email: (value: string) => (isEmail(value) ? null : ('Invalid email' as React.ReactNode)),
         },
     })
 
