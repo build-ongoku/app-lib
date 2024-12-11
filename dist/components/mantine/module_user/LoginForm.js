@@ -59,7 +59,7 @@ export var LoginForm = function () {
         mode: 'uncontrolled',
         validate: {
             // Commented out for DEV purposes
-            email: isEmail('Please enter a valid email'),
+            email: function (value) { return (isEmail(value) ? null : 'Invalid email'); },
         },
     });
     return (React.createElement(Container, { className: "w-96" },
