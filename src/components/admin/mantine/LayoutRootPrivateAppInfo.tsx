@@ -107,10 +107,10 @@ const NavLinksForService = (props: { appInfo: App; svc: Service }) => {
 
     const entities = appInfo.getServiceEntities(svc.namespace.toRaw())
     const methods = appInfo.getServiceMethods(svc.namespace.toRaw())
-    // If service has no entities, don't show it in the navbar
-    if (!entities || entities.length === 0) {
-        return null
+    if (methods.length > 0) {
+        console.log('[NavLinksForService] svc', svc.getName().toRaw(), 'methods', methods, 'mthdToString', methods[0].namespace.toString(), 'mthdToURLPath', methods[0].namespace.toURLPath())
     }
+
     let svcLabel = svc.description ? (
         <Tooltip label={svc.description}>
             <span>{svc.getNameFriendly()}</span>
@@ -131,7 +131,7 @@ const NavLinksForService = (props: { appInfo: App; svc: Service }) => {
             <NavLink key={svc.getName().toRaw() + '-methods'} href={svc.getName().toRaw() + '-methods'} label={'Methods'}>
                 {(methods.length > 0 &&
                     methods.map((mth) => {
-                        return <NavLink key={mth.namespace.toString()} href={mth.namespace.toURLPath()} label={mth.namespace.toLabel()} />
+                        return <NavLink key={mth.namespace.toString()} href={`/${mth.namespace.service?.toRaw()}/method/${mth.namespace.method?.toRaw()}`} label={mth.namespace.toLabel()} />
                     })) || (
                     <NavLink key={svc.getName().toRaw() + '-methods-none'} label={'No methods'}>
                         {' '}
