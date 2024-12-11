@@ -60,9 +60,8 @@ var NavLinksForService = function (props) {
     var appInfo = props.appInfo, svc = props.svc;
     var entities = appInfo.getServiceEntities(svc.namespace.toRaw());
     var methods = appInfo.getServiceMethods(svc.namespace.toRaw());
-    // If service has no entities, don't show it in the navbar
-    if (!entities || entities.length === 0) {
-        return null;
+    if (methods.length > 0) {
+        console.log('[NavLinksForService] svc', svc.getName().toRaw(), 'methods', methods, 'mthdToString', methods[0].namespace.toString(), 'mthdToURLPath', methods[0].namespace.toURLPath());
     }
     var svcLabel = svc.description ? (React.createElement(Tooltip, { label: svc.description },
         React.createElement("span", null, svc.getNameFriendly()))) : (svc.getNameFriendly());
@@ -73,6 +72,7 @@ var NavLinksForService = function (props) {
             })) || React.createElement(NavLink, { key: svc.getName().toRaw() + '-entities-none', label: 'No entities' }),
         React.createElement(NavLink, { key: svc.getName().toRaw() + '-methods', href: svc.getName().toRaw() + '-methods', label: 'Methods' }, (methods.length > 0 &&
             methods.map(function (mth) {
-                return React.createElement(NavLink, { key: mth.namespace.toString(), href: mth.namespace.toURLPath(), label: mth.namespace.toLabel() });
+                var _a, _b;
+                return React.createElement(NavLink, { key: mth.namespace.toString(), href: "/".concat((_a = mth.namespace.service) === null || _a === void 0 ? void 0 : _a.toRaw(), "/method/").concat((_b = mth.namespace.method) === null || _b === void 0 ? void 0 : _b.toRaw()), label: mth.namespace.toLabel() });
             })) || (React.createElement(NavLink, { key: svc.getName().toRaw() + '-methods-none', label: 'No methods' }, ' ')))));
 };
