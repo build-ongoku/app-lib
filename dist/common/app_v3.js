@@ -78,7 +78,7 @@ var App = /** @class */ (function () {
     };
     App.prototype.getTypeInfo = function (nsReq) {
         var ns = new Namespace(nsReq);
-        console.log('[App] [getTypeInfo] [ns]', 'namespace', ns.toString(), 'typesMap', this.typesMap);
+        console.debug('[App] [getTypeInfo] [ns]', 'namespace', ns.toString(), 'typesMap', this.typesMap);
         return this.typesMap[ns.toString()];
     };
     App.prototype.getEnum = function (nsReq) {
@@ -251,7 +251,6 @@ var EntityInfo = /** @class */ (function () {
         this.actions = [];
         // Default (Overidable)
         this.funcGetNameFriendly = function (info) {
-            console.log('[EntityInfo] [funcGetNameFriendly] [default] called');
             return info.getName().toCapital();
         };
         // Default (Overidable)

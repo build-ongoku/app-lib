@@ -142,7 +142,7 @@ export class App implements IApp {
 
     getTypeInfo<T extends ITypeMinimal>(nsReq: TypeNamespaceReq): TypeInfo<T> {
         const ns = new Namespace(nsReq)
-        console.log('[App] [getTypeInfo] [ns]', 'namespace', ns.toString(), 'typesMap', this.typesMap)
+        console.debug('[App] [getTypeInfo] [ns]', 'namespace', ns.toString(), 'typesMap', this.typesMap)
         return this.typesMap[ns.toString()]
     }
 
@@ -484,7 +484,6 @@ export class EntityInfo<E extends IEntityMinimal> implements IEntityInfo<E> {
     }
     // Default (Overidable)
     funcGetNameFriendly = (info: EntityInfo<E>): string => {
-        console.log('[EntityInfo] [funcGetNameFriendly] [default] called')
         return info.getName().toCapital()
     }
 

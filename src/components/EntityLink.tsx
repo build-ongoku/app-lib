@@ -41,6 +41,11 @@ export const getEntityListPath = <E extends IEntityMinimal>(entityInfo: EntityIn
     return entityInfo.namespace.toURLPath() + '/list'
 }
 
-export const getEntityAddPath = <E extends IEntityMinimal>(entityInfo: EntityInfo<E>): string => {
+export const getEntityAddPath = <E extends IEntityMinimal = IEntityMinimal>(entityInfo: EntityInfo<E>): string => {
     return entityInfo.namespace.toURLPath() + '/add'
+}
+
+export const getEntityEditPath = <E extends IEntityMinimal = IEntityMinimal>(props: { entityInfo: EntityInfo<E>; entity: E }): string => {
+    const { entityInfo, entity } = props
+    return entityInfo.namespace.toURLPath() + '/' + entity.id + '/edit'
 }

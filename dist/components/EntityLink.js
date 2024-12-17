@@ -24,3 +24,7 @@ export var getEntityListPath = function (entityInfo) {
 export var getEntityAddPath = function (entityInfo) {
     return entityInfo.namespace.toURLPath() + '/add';
 };
+export var getEntityEditPath = function (props) {
+    var entityInfo = props.entityInfo, entity = props.entity;
+    return entityInfo.namespace.toURLPath() + '/' + entity.id + '/edit';
+};

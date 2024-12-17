@@ -24,5 +24,9 @@ export declare const getEntityDetailPath: <E extends IEntityMinimal>(props: {
     entity: E;
 }) => string;
 export declare const getEntityListPath: <E extends IEntityMinimal>(entityInfo: EntityInfo<E>) => string;
-export declare const getEntityAddPath: <E extends IEntityMinimal>(entityInfo: EntityInfo<E>) => string;
+export declare const getEntityAddPath: <E extends IEntityMinimal = IEntityMinimal>(entityInfo: EntityInfo<E>) => string;
+export declare const getEntityEditPath: <E extends IEntityMinimal = IEntityMinimal>(props: {
+    entityInfo: EntityInfo<E>;
+    entity: E;
+}) => string;
 export {};

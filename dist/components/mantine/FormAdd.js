@@ -47,12 +47,12 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 import { Operator } from '../../common/Filter';
-import { Fieldset, JsonInput, FileInput as MantineFileInput, NumberInput as MantineNumberInput, MultiSelect, Select, Switch, TextInput, } from '@mantine/core';
+import { Fieldset, JsonInput as MantineJSONInput, FileInput as MantineFileInput, NumberInput as MantineNumberInput, MultiSelect, Select, Switch, TextInput, } from '@mantine/core';
 import { DateTimePicker, DateInput as MantineDateInput } from '@mantine/dates';
 import '@mantine/dates/styles.css';
 import { AppContext } from '../../common/AppContextV3';
 import * as fieldkind from '../../common/fieldkind';
-import { queryByTextEntity, uploadFile } from '../../providers/httpV2';
+import { listEntity, queryByTextEntity, uploadFile } from '../../providers/httpV2';
 import React, { useContext, useEffect, useState } from 'react';
 export var TypeAddForm = function (props) {
     var form = props.form, typeInfo = props.typeInfo;
@@ -78,7 +78,7 @@ var GenericFieldInput = function (props) {
     return React.createElement(GenericDtypeInput, __assign({ dtype: field.dtype, isRepeated: field.isRepeated }, props));
 };
 export var GenericDtypeInput = function (props) {
-    var dtype = props.dtype, label = props.label, identifier = props.identifier, isRepeated = props.isRepeated;
+    var dtype = props.dtype, label = props.label, identifier = props.identifier, isRepeated = props.isRepeated, initialData = props.initialData;
     var appInfo = useContext(AppContext).appInfo;
     if (!appInfo) {
         throw new Error('AppInfo not available');
@@ -90,28 +90,30 @@ export var GenericDtypeInput = function (props) {
     }
     switch (dtype.kind) {
         case fieldkind.StringKind:
-            return React.createElement(StringInput, { label: label, placeholder: defaultPlaceholder, identifier: identifier, form: props.form });
+            return React.createElement(StringInput, { label: label, placeholder: defaultPlaceholder, identifier: identifier, initialValue: initialData, form: props.form });
         case fieldkind.NumberKind:
-            return React.createElement(NumberInput, { label: label, placeholder: defaultPlaceholder, identifier: identifier, form: props.form });
+            return React.createElement(NumberInput, { label: label, placeholder: defaultPlaceholder, identifier: identifier, initialValue: initialData, form: props.form });
         case fieldkind.BoolKind:
-            return React.createElement(BooleanInput, { label: label, placeholder: defaultPlaceholder, identifier: identifier, form: props.form });
+            return React.createElement(BooleanInput, { label: label, placeholder: defaultPlaceholder, identifier: identifier, initialValue: initialData, form: props.form });
         case fieldkind.DateKind:
-            return React.createElement(DateInput, { label: label, placeholder: defaultPlaceholder, identifier: identifier, form: props.form });
+            return React.createElement(DateInput, { label: label, placeholder: defaultPlaceholder, identifier: identifier, initialValue: initialData, form: props.form });
         case fieldkind.TimestampKind:
-            return React.createElement(TimestampInput, { label: label, placeholder: defaultPlaceholder, identifier: identifier, form: props.form });
+            return React.createElement(TimestampInput, { label: label, placeholder: defaultPlaceholder, identifier: identifier, initialValue: initialData, form: props.form });
         case fieldkind.IDKind:
-            return React.createElement(StringInput, { label: label, placeholder: defaultPlaceholder, identifier: identifier, form: props.form });
+            return React.createElement(StringInput, { label: label, placeholder: defaultPlaceholder, identifier: identifier, initialValue: initialData, form: props.form });
         case fieldkind.ForeignEntityKind:
             var ns = dtype.namespace;
             if (!ns) {
                 console.error('Foreign Entity dtype does not have a reference namespace', dtype);
                 throw new Error("Foreign Entity dtype [".concat(dtype.name, "] does not have a reference namespace"));
             }
-            return (React.createElement(ForeignEntityInput, { foreignEntityNs: ns.toRaw(), label: label, placeholder: "Select ".concat(ns.entity ? ns.entity.toCapital() : ''), identifier: identifier, form: props.form, multiple: isRepeated }));
+            return (React.createElement(ForeignEntityInput, { foreignEntityNs: ns.toRaw(), label: label, placeholder: "Select ".concat(ns.entity ? ns.entity.toCapital() : ''), identifier: identifier, initialValue: initialData, form: props.form, multiple: isRepeated }));
         case fieldkind.EmailKind:
-            return React.createElement(EmailInput, { label: label, placeholder: defaultPlaceholder, identifier: identifier, form: props.form });
+            return React.createElement(EmailInput, { label: label, placeholder: defaultPlaceholder, identifier: identifier, initialValue: initialData, form: props.form });
         case fieldkind.MoneyKind:
-            return React.createElement(MoneyInput, { label: label, placeholder: defaultPlaceholder, identifier: identifier, form: props.form });
+            return React.createElement(MoneyInput, { label: label, placeholder: defaultPlaceholder, identifier: identifier, initialValue: initialData, form: props.form });
+        case fieldkind.GenericDataKind:
+            return React.createElement(GenericDataInput, { label: label, placeholder: defaultPlaceholder, identifier: identifier, initialValue: initialData, form: props.form });
         case fieldkind.EnumKind: {
             // Get enum values for the field
             var ns_1 = dtype.namespace;
@@ -122,7 +124,7 @@ export var GenericDtypeInput = function (props) {
             var options = enumInfo === null || enumInfo === void 0 ? void 0 : enumInfo.values.map(function (enumVal) {
                 return { value: enumVal.value, label: enumVal.getDisplayValue() };
             });
-            return React.createElement(SelectInput, { label: label, placeholder: defaultPlaceholder, identifier: identifier, form: props.form, internalProps: { data: options } });
+            return (React.createElement(SelectOrMultiSelectInput, { label: label, placeholder: defaultPlaceholder, identifier: identifier, initialValue: initialData, form: props.form, internalProps: { data: options } }));
         }
         case fieldkind.NestedKind: {
             // Get the type info for the nested field
@@ -135,7 +137,7 @@ export var GenericDtypeInput = function (props) {
                 throw new Error('Type Info not found for field');
             }
             return (React.createElement(Fieldset, { legend: label },
-                React.createElement(TypeAddForm, { parentIdentifier: identifier, typeInfo: fieldTypeInfo, form: props.form })));
+                React.createElement(TypeAddForm, { parentIdentifier: identifier, typeInfo: fieldTypeInfo, initialData: initialData, form: props.form })));
         }
         case fieldkind.FileKind:
             return React.createElement(FileInput, { identifier: identifier, form: props.form, label: label, placeholder: defaultPlaceholder });
@@ -143,51 +145,112 @@ export var GenericDtypeInput = function (props) {
             return React.createElement(DefaultConditionInput, { identifier: identifier, form: props.form, label: label, placeholder: defaultPlaceholder });
         default:
             console.warn('Field type not found. Using default input', dtype.kind);
-            return React.createElement(DefaultInput, { label: label, placeholder: "{}", identifier: identifier, form: props.form });
+            return React.createElement(JSONInput, { label: label, placeholder: defaultPlaceholder, identifier: identifier, initialValue: initialData, form: props.form });
     }
 };
 export var DefaultInput = function (props) {
     return React.createElement(JSONInput, __assign({}, props));
 };
 export var StringInput = function (props) {
+    var _a;
     var form = props.form;
-    return React.createElement(TextInput, __assign({ label: props.label, description: props.description, placeholder: props.placeholder, key: props.identifier }, form.getInputProps(props.identifier), { "data-1p-ignore": true }));
+    // Get the form input props so we can change the "null" default value to "undefined"
+    var formInputProps = form.getInputProps(props.identifier);
+    formInputProps.defaultValue = (_a = formInputProps.defaultValue) !== null && _a !== void 0 ? _a : undefined;
+    return React.createElement(TextInput, __assign({ key: props.identifier, label: props.label, description: props.description, placeholder: props.placeholder }, formInputProps, props.internalProps, { "data-1p-ignore": true }));
 };
 export var NumberInput = function (props) {
+    var _a;
     var form = props.form;
-    return (React.createElement(MantineNumberInput, __assign({ label: props.label, description: props.description, placeholder: props.placeholder, key: props.identifier }, form.getInputProps(props.identifier), props.internalProps, { "data-1p-ignore": true })));
+    // Get the form input props so we can change the "null" default value to "undefined"
+    var formInputProps = form.getInputProps(props.identifier);
+    formInputProps.defaultValue = (_a = formInputProps.defaultValue) !== null && _a !== void 0 ? _a : undefined;
+    return React.createElement(MantineNumberInput, __assign({ key: props.identifier, label: props.label, description: props.description, placeholder: props.placeholder }, formInputProps, props.internalProps, { "data-1p-ignore": true }));
 };
 export var BooleanInput = function (props) {
+    var _a;
     var form = props.form;
-    return (React.createElement(Switch, __assign({ label: props.label, description: props.description, placeholder: props.placeholder, key: props.identifier }, form.getInputProps(props.identifier), { "data-onepassword-title": "disabled" })));
+    // Get the form input props so we can change the "null" default value to "undefined"
+    var formInputProps = form.getInputProps(props.identifier);
+    formInputProps.defaultValue = (_a = formInputProps.defaultValue) !== null && _a !== void 0 ? _a : undefined;
+    return (React.createElement(Switch, __assign({ key: props.identifier, label: props.label, description: props.description, placeholder: props.placeholder }, formInputProps, props.internalProps, { defaultChecked: props.initialValue, "data-onepassword-title": "disabled" })));
 };
 export var DateInput = function (props) {
+    var _a;
     var form = props.form;
-    return (React.createElement(MantineDateInput, __assign({ valueFormat: "DD/MM/YYYY", label: props.label, description: props.description, key: props.identifier, placeholder: props.placeholder, clearable: true }, form.getInputProps(props.identifier))));
+    // Get the form input props so we can change the "null" default value to "undefined"
+    var formInputProps = form.getInputProps(props.identifier);
+    formInputProps.defaultValue = (_a = formInputProps.defaultValue) !== null && _a !== void 0 ? _a : undefined;
+    return (React.createElement(MantineDateInput, __assign({ key: props.identifier, valueFormat: "DD/MM/YYYY", label: props.label, description: props.description, placeholder: props.placeholder, clearable: true }, formInputProps, props.internalProps)));
 };
 export var TimestampInput = function (props) {
+    var _a;
     var form = props.form;
-    return React.createElement(DateTimePicker, __assign({ label: props.label, description: props.description, placeholder: props.placeholder, key: props.identifier }, form.getInputProps(props.identifier), { "data-1p-ignore": true }));
+    // Get the form input props so we can change the "null" default value to "undefined"
+    var formInputProps = form.getInputProps(props.identifier);
+    formInputProps.defaultValue = (_a = formInputProps.defaultValue) !== null && _a !== void 0 ? _a : undefined;
+    return React.createElement(DateTimePicker, __assign({ key: props.identifier, label: props.label, description: props.description, placeholder: props.placeholder }, formInputProps, props.internalProps, { "data-1p-ignore": true }));
 };
 export var EmailInput = function (props) {
+    var _a;
     var form = props.form;
-    return (React.createElement(TextInput, __assign({ label: props.label, description: props.description, placeholder: props.placeholder, key: props.identifier }, form.getInputProps(props.identifier), { leftSection: "@", "data-1p-ignore": true })));
+    // Get the form input props so we can change the "null" default value to "undefined"
+    var formInputProps = form.getInputProps(props.identifier);
+    formInputProps.defaultValue = (_a = formInputProps.defaultValue) !== null && _a !== void 0 ? _a : undefined;
+    return (React.createElement(TextInput, __assign({ key: props.identifier, label: props.label, description: props.description, placeholder: props.placeholder }, formInputProps, props.internalProps, { leftSection: "@", "data-1p-ignore": true })));
+};
+export var SelectOrMultiSelectInput = function (props) {
+    var _a, _b;
+    var form = props.form;
+    console.log('SelectOrMultiSelectInput', props);
+    // Make common props from the props.internalProps.
+    var commonPropValues = {
+        label: props.label,
+        description: props.description,
+        placeholder: props.placeholder,
+        searchable: true,
+        clearable: true,
+        'data-1p-ignore': true,
+    };
+    if (props.initialValue) {
+        commonPropValues.placeholder = 'Selected: ' + props.initialValue;
+    }
+    // Get the form input props so we can change the "null" default value to "undefined"
+    var formInputProps = form.getInputProps(props.identifier);
+    formInputProps.defaultValue = (_a = formInputProps.defaultValue) !== null && _a !== void 0 ? _a : undefined;
+    if ((_b = props.internalProps) === null || _b === void 0 ? void 0 : _b.multiple) {
+        return React.createElement(MultiSelect, __assign({ key: props.identifier }, formInputProps, commonPropValues, props.internalProps));
+    }
+    return React.createElement(Select, __assign({ key: props.identifier }, form.getInputProps(props.identifier), commonPropValues, props.internalProps));
 };
 export var MoneyInput = function (props) {
     return React.createElement(NumberInput, __assign({ internalProps: { prefix: '$', allowNegative: false, decimalScale: 2, fixedDecimalScale: true, thousandSeparator: ',' } }, props));
 };
-export var SelectInput = function (props) {
-    var _a;
+export var GenericDataInput = function (props) {
     var form = props.form;
-    var Component = ((_a = props.internalProps) === null || _a === void 0 ? void 0 : _a.multiple) ? MultiSelect : Select;
-    return (React.createElement(Component, __assign({ label: props.label, description: props.description, placeholder: props.placeholder, key: props.identifier, data: props.internalProps.data, searchable: true, clearable: true }, form.getInputProps(props.identifier), { "data-1p-ignore": true })));
+    var formProps = form.getInputProps(props.identifier);
+    var newOnChange = function (e) {
+        console.log('Generic Data Change', e);
+        // deserialize the JSON string
+        try {
+            e = JSON.parse(e);
+            console.log('Deserialized', e);
+        }
+        catch (error) { }
+        formProps.onChange(e);
+    };
+    return (React.createElement(MantineJSONInput, __assign({ key: props.identifier, label: props.label, placeholder: props.placeholder, validationError: "The JSON you have provided looks invalid. Try using an online JSON validator?", formatOnBlur: true, autosize: true }, formProps, { onChange: newOnChange, "data-1p-ignore": true })));
 };
 export var JSONInput = function (props) {
+    var _a;
     var form = props.form;
-    return (React.createElement(JsonInput, __assign({ label: props.label, placeholder: props.placeholder, validationError: "The JSON you have provided looks invalid. Try using an online JSON validator?", formatOnBlur: true, autosize: true, key: props.identifier }, form.getInputProps(props.identifier), { "data-1p-ignore": true })));
+    // Get the form input props so we can change the "null" default value to "undefined"
+    var formInputProps = form.getInputProps(props.identifier);
+    formInputProps.defaultValue = (_a = formInputProps.defaultValue) !== null && _a !== void 0 ? _a : undefined;
+    return (React.createElement(MantineJSONInput, __assign({ key: props.identifier, label: props.label, placeholder: props.placeholder, validationError: "The JSON you have provided looks invalid. Try using an online JSON validator?", formatOnBlur: true, autosize: true }, formInputProps, props.internalProps, { "data-1p-ignore": true })));
 };
 var ForeignEntityInput = function (props) {
-    var _a = useState(undefined), data = _a[0], setData = _a[1];
+    var _a = useState(undefined), options = _a[0], setOptions = _a[1];
     var _b = useState(''), searchTerm = _b[0], setSearchTerm = _b[1];
     // Get the entity info
     var appInfo = useContext(AppContext).appInfo;
@@ -199,6 +262,11 @@ var ForeignEntityInput = function (props) {
         throw new Error("Entity Info not found for request ".concat(JSON.stringify(props.foreignEntityNs)));
     }
     useEffect(function () {
+        // Only search if there is a search term
+        if (!searchTerm) {
+            return;
+        }
+        // Search for options
         queryByTextEntity({
             entityNamespace: props.foreignEntityNs,
             data: { queryText: searchTerm },
@@ -218,19 +286,69 @@ var ForeignEntityInput = function (props) {
             var options = response.data.items.map(function (e) {
                 return { value: e.id, label: entityInfo.getEntityNameFriendly(e) };
             });
-            setData(options);
+            setOptions(options);
         });
     }, [searchTerm]);
+    // If there is initial data, we need to fetch the entity and set the initial values
+    useEffect(function () {
+        // No initial data
+        if (!props.initialValue || props.initialValue.length === 0) {
+            return;
+        }
+        // List by the ids
+        listEntity({
+            entityNamespace: props.foreignEntityNs,
+            data: {
+                filter: {
+                    id: {
+                        op: Operator.IN,
+                        // if initial values is array, use as is, other wise make it into an array
+                        values: typeof props.initialValue === 'string' ? [props.initialValue] : props.initialValue,
+                    },
+                },
+            },
+        }).then(function (response) {
+            if (response.error) {
+                console.error('Error fetching data', response.error);
+                return;
+            }
+            if (!response.data) {
+                console.error('No data returned');
+                return;
+            }
+            if (!response.data.items || response.data.items.length === 0) {
+                console.error('No items returned');
+                return;
+            }
+            // Set the initially selected values
+            var options = response.data.items.map(function (e) {
+                return { value: e.id, label: entityInfo.getEntityNameFriendly(e) };
+            });
+            if (options.length > 0) {
+                setOptions(options);
+                console.log('[ForeignEntityInput] Setting initial values', props.initialValue);
+            }
+            // const ids = response.data.items.map((e) => e.id)
+            // if (props.multiple) {
+            //     props.form.setFieldValue(props.identifier, ids)
+            //     return
+            // }
+            // props.form.setFieldValue(props.identifier, ids[0])
+        });
+    }, [props.initialValue]);
+    // Overwrite the label to remove the ID or IDs suffix
+    var label = props.label.replace(/(ids?)$/i, '');
     var internalProps = {
         onSearchChange: setSearchTerm,
         multiple: props.multiple,
-        data: data,
+        data: options,
     };
-    return React.createElement(SelectInput, __assign({}, props, { internalProps: internalProps }));
+    return React.createElement(SelectOrMultiSelectInput, __assign({}, props, { label: label, internalProps: internalProps }));
 };
 export var FileInput = function (props) {
     var form = props.form;
     var _a = useState(null), file = _a[0], setFile = _a[1];
+    // Todo: If initial value is set, fetch the file and set the file state
     // If the label has suffix ID, Id, id etc. then remove it
     var label = props.label.replace(/(id)$/i, '');
     var onChange = function (val) { return __awaiter(void 0, void 0, void 0, function () {
@@ -265,7 +383,7 @@ export var FileInput = function (props) {
             return [2 /*return*/];
         });
     }); };
-    return (React.createElement(MantineFileInput, __assign({}, form.getInputProps(props.identifier), { value: file, onChange: onChange, label: label, placeholder: props.placeholder, description: props.description, key: props.identifier })));
+    return React.createElement(MantineFileInput, __assign({}, form.getInputProps(props.identifier), { onChange: onChange, label: label, placeholder: props.placeholder, description: props.description, key: props.identifier }));
 };
 // Todo: Consider implementing conditions as Goku types, which would allow us to use the TypeAddForm for conditions as well.
 var DefaultConditionInput = function (props) {
@@ -275,6 +393,6 @@ var DefaultConditionInput = function (props) {
         return { value: op, label: op };
     });
     return (React.createElement(Fieldset, { legend: props.label },
-        React.createElement(SelectInput, { label: 'Operator', placeholder: 'Operator', identifier: props.identifier + '.' + 'operator', form: props.form, internalProps: { data: operators } }),
+        React.createElement(SelectOrMultiSelectInput, { label: 'Operator', placeholder: 'Operator', identifier: props.identifier + '.' + 'operator', form: props.form, internalProps: { data: operators } }),
         React.createElement(JSONInput, { label: 'Values', placeholder: '{}', identifier: props.identifier + '.' + 'values', form: props.form })));
 };

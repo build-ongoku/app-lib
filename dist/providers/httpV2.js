@@ -201,6 +201,21 @@ export var useAddEntity = function (props) {
     return useMakeRequest(__assign(__assign({}, props), { method: method, relativePath: relPath }));
 };
 /* * * * * *
+ * Update Entity
+ * * * * * */
+// Get the method and the relative path for adding an entity
+export var getUpdateEntityMethodAndPath = function (nsReq) {
+    // Validate props
+    var ns = new Namespace(nsReq);
+    if (!ns.isEntity()) {
+        throw new Error('Expected namespace to be an entity namespace but is not');
+    }
+    return {
+        method: 'PUT',
+        relPath: joinURL('v1/', ns.toURLPath()),
+    };
+};
+/* * * * * *
  * Get Entity
  * * * * * */
 var getGetEntityMethodAndPath = function (nsReq) {

@@ -3,7 +3,7 @@ import { Button, ButtonGroup, Title } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 import { AppContext } from '../../common/AppContextV3';
 import { Operator } from '../../common/Filter';
-import { getEntityAddPath } from '../EntityLink';
+import { getEntityAddPath, getEntityEditPath } from '../EntityLink';
 import { EntityListTableInner } from './EntityList';
 import { ServerResponseWrapper } from './ServerResponseWrapper';
 import { useGetEntity, useListEntity } from '../../providers/httpV2';
@@ -23,11 +23,18 @@ export var EntityDetail = function (props) {
         React.createElement(ServerResponseWrapper, { error: error || (resp === null || resp === void 0 ? void 0 : resp.error), loading: loading }, (resp === null || resp === void 0 ? void 0 : resp.data) && (React.createElement("div", { className: "flex flex-col gap-4" },
             React.createElement("div", { className: "flex justify-between my-5" },
                 React.createElement(Title, { order: 2 }, "".concat(entityInfo.getNameFriendly(), ": ").concat(entityInfo.getEntityNameFriendly(resp.data))),
-                React.createElement(Button, { onClick: function () {
-                        router.push(getEntityAddPath(entityInfo));
-                    } },
-                    "Add New ",
-                    entityInfo.getNameFriendly())),
+                React.createElement("div", { className: "flex gap-5" },
+                    React.createElement(Button, { onClick: function () {
+                            router.push(getEntityEditPath({
+                                entityInfo: entityInfo,
+                                entity: resp.data,
+                            }));
+                        } }, "Edit"),
+                    React.createElement(Button, { onClick: function () {
+                            router.push(getEntityAddPath(entityInfo));
+                        } },
+                        "Add New ",
+                        entityInfo.getNameFriendly()))),
             React.createElement(EntityActions, { entityInfo: entityInfo, id: identifier, refetchEntity: fetch }),
             React.createElement("pre", null, JSON.stringify(resp.data, null, 2)),
             React.createElement(EntityAssociations, { entityInfo: entityInfo, entityID: identifier, entityData: resp.data }))))));
@@ -56,25 +63,22 @@ var EntityAssociationGeneric = function (props) {
         throw new Error(errMsg);
     }
     if (assoc.relationship === 'parent_of') {
-        return React.createElement(EntityAssociationChildren, { entityInfo: entityInfo, assoc: assoc, entityID: entityID, otherEntityInfo: otherEntityInfo });
+        return React.createElement(EntityAssociationParentOf, { entityInfo: entityInfo, assoc: assoc, entityID: entityID, otherEntityInfo: otherEntityInfo });
     }
     if (assoc.relationship === 'child_of') {
         // If an entity is a child, the parent ID is stored in the entity itself
-        return React.createElement(EntityAssociationParents, { entityInfo: entityInfo, assoc: assoc, entityID: entityID, entityData: entityData, otherEntityInfo: otherEntityInfo });
+        return React.createElement(EntityAssociationChildOf, { entityInfo: entityInfo, assoc: assoc, entityID: entityID, entityData: entityData, otherEntityInfo: otherEntityInfo });
     }
     console.warn('[EntityDetail] [EntityAssociationGeneric] Association type is not yet implemented', 'relationship', assoc.relationship);
 };
-var EntityAssociationChildren = function (props) {
+var EntityAssociationParentOf = function (props) {
     var _a;
     var _b;
     var entityInfo = props.entityInfo, entityID = props.entityID, assoc = props.assoc, otherEntityInfo = props.otherEntityInfo;
     // From the entity, get the corresponding other association.
     var otherAssoc = otherEntityInfo.associations.find(function (a) {
         console.log('[EntityDetail] [EntityAssociationGeneric] Finding matching association in corresponding entity');
-        var expectedRelationship = assoc.relationship === 'parent_of' ? 'child_of' : assoc.relationship === 'child_of' ? 'parent_of' : undefined;
-        if (!expectedRelationship) {
-            throw new Error('Could not determine the expected relationship of the corresponding entity association');
-        }
+        var expectedRelationship = 'child_of';
         return a.relationship === expectedRelationship && a.entityNamespace.equal(props.entityInfo.namespace) && assoc.otherAssociationName && a.name.equal(assoc.otherAssociationName);
     });
     if (!otherAssoc) {
@@ -85,7 +89,7 @@ var EntityAssociationChildren = function (props) {
     // From the other association, get the field name of the other entity that links to this entity
     // otherEntityFieldName should of type keyof E2
     // const otherEntityFieldName = otherAssoc.name.toFieldName() as keyof E2
-    var otherEntityFilterFieldName = (assoc.type === 'many' ? 'having' + otherAssoc.toFieldName().toPascal() : otherAssoc.toFieldName().toFieldName());
+    var otherEntityFilterFieldName = (otherAssoc.type === 'many' ? 'having' + otherAssoc.toFieldName().toPascal() : otherAssoc.toFieldName().toFieldName());
     console.debug('[EntityDetail] [EntityAssociationGeneric] Field name for corresponding entity found:', otherEntityFilterFieldName);
     var _c = useListEntity({
         entityNamespace: otherEntityInfo.namespace.toRaw(),
@@ -102,14 +106,14 @@ var EntityAssociationChildren = function (props) {
         React.createElement(Title, { order: 3 }, assoc.name.toCapital()),
         React.createElement(EntityListTableInner, { entityInfo: otherEntityInfo, data: resp.data })))));
 };
-var EntityAssociationParents = function (props) {
+var EntityAssociationChildOf = function (props) {
     var assoc = props.assoc, otherEntityInfo = props.otherEntityInfo, entityID = props.entityID, entityData = props.entityData;
     // The parents don't know about their children. So we need to fetch the parent entity by their IDs. Those IDs are stored in the entity itself
     var assocFieldName = (assoc.type === 'many' ? assoc.name.append('ids').toCamel() : assoc.name.append('id').toCamel());
     // The ID could be a single ID or an array of IDs
     var parentIDs = entityData[assocFieldName];
     if (!parentIDs) {
-        console.error('[EntityDetail] [EntityAssociationParents] Parent IDs not found', 'fieldName', assocFieldName);
+        console.error('[EntityDetail] [EntityAssociationChildOf] Parent IDs not found', 'fieldName', assocFieldName);
         return null;
     }
     // If the parent IDs are an array, we need to fetch all the parents
@@ -150,7 +154,7 @@ var EntityActions = function (props) {
             console.error('[EntityDetail] [EntityActions] API not found', 'method', method.namespace.method);
             throw new Error('API not found');
         }
-        return (React.createElement(Button, { key: action.name.toRaw(), onClick: function () {
+        return (React.createElement(Button, { variant: "outline", key: action.name.toRaw(), onClick: function () {
                 console.log('[EntityDetail] [EntityActions] [Button] Calling action', 'action', action.name.toRaw());
                 api.makeAPIRequest({
                     ID: props.id,

@@ -219,6 +219,31 @@ export const useAddEntity = <E extends IEntityMinimal>(props: UseXEntityProps<Ad
 }
 
 /* * * * * *
+ * Update Entity
+ * * * * * */
+
+// Get the method and the relative path for adding an entity
+export const getUpdateEntityMethodAndPath = (nsReq: NamespaceReq): { method: HTTPMethod; relPath: string } => {
+    // Validate props
+    const ns = new Namespace(nsReq)
+    if (!ns.isEntity()) {
+        throw new Error('Expected namespace to be an entity namespace but is not')
+    }
+    return {
+        method: 'PUT',
+        relPath: joinURL('v1/', ns.toURLPath()),
+    }
+}
+
+export interface UpdateEntityRequestData<E extends IEntityMinimal> {
+    object: E
+}
+
+export interface UpdateEntityResponseData<E extends IEntityMinimal> {
+    object: E
+}
+
+/* * * * * *
  * Get Entity
  * * * * * */
 

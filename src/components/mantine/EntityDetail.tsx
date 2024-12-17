@@ -6,14 +6,14 @@ import { EntityAssociation, EntityInfo, IEntityMinimal } from '../../common/app_
 import { AppContext } from '../../common/AppContextV3'
 import { Operator } from '../../common/Filter'
 import { ID } from '../../common/scalars'
-import { getEntityAddPath } from '../EntityLink'
+import { getEntityAddPath, getEntityEditPath } from '../EntityLink'
 import { EntityListTableInner } from './EntityList'
 import { ServerResponseWrapper } from './ServerResponseWrapper'
 import { FetchFunc, useGetEntity, useListEntity } from '../../providers/httpV2'
 import { useRouter } from 'next/navigation'
 import React, { useContext } from 'react'
 
-export const EntityDetail = <E extends IEntityMinimal = any>(props: { entityInfo: EntityInfo<E>; identifier: string }) => {
+export const EntityDetail = <E extends IEntityMinimal = IEntityMinimal>(props: { entityInfo: EntityInfo<E>; identifier: string }) => {
     const { entityInfo, identifier } = props
 
     const router = useRouter()
@@ -34,13 +34,27 @@ export const EntityDetail = <E extends IEntityMinimal = any>(props: { entityInfo
                     <div className="flex flex-col gap-4">
                         <div className="flex justify-between my-5">
                             <Title order={2}>{`${entityInfo.getNameFriendly()}: ${entityInfo.getEntityNameFriendly(resp.data)}`}</Title>
-                            <Button
-                                onClick={() => {
-                                    router.push(getEntityAddPath(entityInfo))
-                                }}
-                            >
-                                Add New {entityInfo.getNameFriendly()}
-                            </Button>
+                            <div className="flex gap-5">
+                                <Button
+                                    onClick={() => {
+                                        router.push(
+                                            getEntityEditPath<E>({
+                                                entityInfo: entityInfo,
+                                                entity: resp.data!,
+                                            })
+                                        )
+                                    }}
+                                >
+                                    Edit
+                                </Button>
+                                <Button
+                                    onClick={() => {
+                                        router.push(getEntityAddPath(entityInfo))
+                                    }}
+                                >
+                                    Add New {entityInfo.getNameFriendly()}
+                                </Button>
+                            </div>
                         </div>
                         <EntityActions entityInfo={entityInfo} id={identifier} refetchEntity={fetch} />
                         <pre>{JSON.stringify(resp.data, null, 2)}</pre>
@@ -82,17 +96,17 @@ const EntityAssociationGeneric = <E extends IEntityMinimal>(props: { entityInfo:
     }
 
     if (assoc.relationship === 'parent_of') {
-        return <EntityAssociationChildren entityInfo={entityInfo} assoc={assoc} entityID={entityID} otherEntityInfo={otherEntityInfo} />
+        return <EntityAssociationParentOf entityInfo={entityInfo} assoc={assoc} entityID={entityID} otherEntityInfo={otherEntityInfo} />
     }
     if (assoc.relationship === 'child_of') {
         // If an entity is a child, the parent ID is stored in the entity itself
-        return <EntityAssociationParents entityInfo={entityInfo} assoc={assoc} entityID={entityID} entityData={entityData} otherEntityInfo={otherEntityInfo} />
+        return <EntityAssociationChildOf entityInfo={entityInfo} assoc={assoc} entityID={entityID} entityData={entityData} otherEntityInfo={otherEntityInfo} />
     }
 
     console.warn('[EntityDetail] [EntityAssociationGeneric] Association type is not yet implemented', 'relationship', assoc.relationship)
 }
 
-const EntityAssociationChildren = <E extends IEntityMinimal, E2 extends IEntityMinimal>(props: {
+const EntityAssociationParentOf = <E extends IEntityMinimal, E2 extends IEntityMinimal>(props: {
     entityInfo: EntityInfo<E>
     assoc: EntityAssociation
     entityID: ID
@@ -103,10 +117,7 @@ const EntityAssociationChildren = <E extends IEntityMinimal, E2 extends IEntityM
     // From the entity, get the corresponding other association.
     const otherAssoc = otherEntityInfo.associations.find((a) => {
         console.log('[EntityDetail] [EntityAssociationGeneric] Finding matching association in corresponding entity')
-        const expectedRelationship = assoc.relationship === 'parent_of' ? 'child_of' : assoc.relationship === 'child_of' ? 'parent_of' : undefined
-        if (!expectedRelationship) {
-            throw new Error('Could not determine the expected relationship of the corresponding entity association')
-        }
+        const expectedRelationship = 'child_of'
         return a.relationship === expectedRelationship && a.entityNamespace.equal(props.entityInfo.namespace) && assoc.otherAssociationName && a.name.equal(assoc.otherAssociationName)
     })
     if (!otherAssoc) {
@@ -118,7 +129,7 @@ const EntityAssociationChildren = <E extends IEntityMinimal, E2 extends IEntityM
     // From the other association, get the field name of the other entity that links to this entity
     // otherEntityFieldName should of type keyof E2
     // const otherEntityFieldName = otherAssoc.name.toFieldName() as keyof E2
-    const otherEntityFilterFieldName = (assoc.type === 'many' ? 'having' + otherAssoc.toFieldName().toPascal() : otherAssoc.toFieldName().toFieldName()) as keyof E2
+    const otherEntityFilterFieldName = (otherAssoc.type === 'many' ? 'having' + otherAssoc.toFieldName().toPascal() : otherAssoc.toFieldName().toFieldName()) as keyof E2
     console.debug('[EntityDetail] [EntityAssociationGeneric] Field name for corresponding entity found:', otherEntityFilterFieldName)
 
     const { resp, loading, error, fetchDone, fetch } = useListEntity<E2>({
@@ -145,7 +156,7 @@ const EntityAssociationChildren = <E extends IEntityMinimal, E2 extends IEntityM
     )
 }
 
-const EntityAssociationParents = <E extends IEntityMinimal, E2 extends IEntityMinimal>(props: {
+const EntityAssociationChildOf = <E extends IEntityMinimal, E2 extends IEntityMinimal>(props: {
     entityInfo: EntityInfo<E>
     assoc: EntityAssociation
     entityID: ID
@@ -159,7 +170,7 @@ const EntityAssociationParents = <E extends IEntityMinimal, E2 extends IEntityMi
     // The ID could be a single ID or an array of IDs
     const parentIDs = entityData[assocFieldName]
     if (!parentIDs) {
-        console.error('[EntityDetail] [EntityAssociationParents] Parent IDs not found', 'fieldName', assocFieldName)
+        console.error('[EntityDetail] [EntityAssociationChildOf] Parent IDs not found', 'fieldName', assocFieldName)
         return null
     }
 
@@ -223,6 +234,7 @@ const EntityActions = <E extends IEntityMinimal>(props: { entityInfo: EntityInfo
         }
         return (
             <Button
+                variant="outline"
                 key={action.name.toRaw()}
                 onClick={() => {
                     console.log('[EntityDetail] [EntityActions] [Button] Calling action', 'action', action.name.toRaw())

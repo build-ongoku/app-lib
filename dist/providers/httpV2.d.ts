@@ -46,6 +46,16 @@ export interface AddEntityResponseData extends IEntityMinimal {
 }
 export declare const addEntity: <E extends IEntityMinimal>(props: XEntityProps<AddEntityRequestData<E>>) => Promise<MakeRequestResponse<AddEntityResponseData>>;
 export declare const useAddEntity: <E extends IEntityMinimal>(props: UseXEntityProps<AddEntityRequestData<E>>) => UseMakeRequestResponse<AddEntityRequestData<E>, AddEntityResponseData>;
+export declare const getUpdateEntityMethodAndPath: (nsReq: NamespaceReq) => {
+    method: HTTPMethod;
+    relPath: string;
+};
+export interface UpdateEntityRequestData<E extends IEntityMinimal> {
+    object: E;
+}
+export interface UpdateEntityResponseData<E extends IEntityMinimal> {
+    object: E;
+}
 export interface GetEntityRequestData {
     id: scalars.ID;
 }

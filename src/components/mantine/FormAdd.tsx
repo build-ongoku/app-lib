@@ -7,7 +7,7 @@ import {
     ComboboxData,
     ComboboxItem,
     Fieldset,
-    JsonInput,
+    JsonInput as MantineJSONInput,
     JsonInputProps,
     FileInput as MantineFileInput,
     NumberInput as MantineNumberInput,
@@ -19,6 +19,7 @@ import {
     SwitchProps,
     TextInput,
     TextInputProps,
+    MultiSelectProps,
 } from '@mantine/core'
 import { DateInputProps, DateTimePicker, DateTimePickerProps, DateInput as MantineDateInput } from '@mantine/dates'
 import '@mantine/dates/styles.css'
@@ -26,8 +27,11 @@ import { UseFormReturnType } from '@mantine/form'
 import { Field, ITypeMinimal, TypeInfo, Dtype } from '../../common/app_v3'
 import { AppContext } from '../../common/AppContextV3'
 import * as fieldkind from '../../common/fieldkind'
-import { queryByTextEntity, uploadFile } from '../../providers/httpV2'
+import { listEntity, queryByTextEntity, uploadFile } from '../../providers/httpV2'
 import React, { useContext, useEffect, useState } from 'react'
+import { Email, ID, Money } from '../../common/scalars'
+import { describe } from 'node:test'
+import { clear } from 'console'
 
 export const TypeAddForm = <T extends ITypeMinimal = any>(props: {
     typeInfo: TypeInfo<T>
@@ -70,15 +74,15 @@ const GenericFieldInput = <T extends ITypeMinimal = any>(props: {
     return <GenericDtypeInput dtype={field.dtype} isRepeated={field.isRepeated} {...props} />
 }
 
-export const GenericDtypeInput = <T extends ITypeMinimal = any>(props: {
+export const GenericDtypeInput = <T extends any>(props: {
     dtype: Dtype
     identifier: string // formIdentifier for the input, e.g. 'email', 'name.firstName' etc.
     label: string
-    form: UseFormReturnType<T>
+    form: UseFormReturnType<any>
     initialData?: T
     isRepeated?: boolean
 }) => {
-    const { dtype, label, identifier, isRepeated } = props
+    const { dtype, label, identifier, isRepeated, initialData } = props
 
     const { appInfo } = useContext(AppContext)
     if (!appInfo) {
@@ -94,17 +98,17 @@ export const GenericDtypeInput = <T extends ITypeMinimal = any>(props: {
 
     switch (dtype.kind) {
         case fieldkind.StringKind:
-            return <StringInput label={label} placeholder={defaultPlaceholder} identifier={identifier} form={props.form} />
+            return <StringInput label={label} placeholder={defaultPlaceholder} identifier={identifier} initialValue={initialData as string | undefined} form={props.form} />
         case fieldkind.NumberKind:
-            return <NumberInput label={label} placeholder={defaultPlaceholder} identifier={identifier} form={props.form} />
+            return <NumberInput label={label} placeholder={defaultPlaceholder} identifier={identifier} initialValue={initialData as number | undefined} form={props.form} />
         case fieldkind.BoolKind:
-            return <BooleanInput label={label} placeholder={defaultPlaceholder} identifier={identifier} form={props.form} />
+            return <BooleanInput label={label} placeholder={defaultPlaceholder} identifier={identifier} initialValue={initialData as boolean | undefined} form={props.form} />
         case fieldkind.DateKind:
-            return <DateInput label={label} placeholder={defaultPlaceholder} identifier={identifier} form={props.form} />
+            return <DateInput label={label} placeholder={defaultPlaceholder} identifier={identifier} initialValue={initialData as Date | undefined} form={props.form} />
         case fieldkind.TimestampKind:
-            return <TimestampInput label={label} placeholder={defaultPlaceholder} identifier={identifier} form={props.form} />
+            return <TimestampInput label={label} placeholder={defaultPlaceholder} identifier={identifier} initialValue={initialData as Date | undefined} form={props.form} />
         case fieldkind.IDKind:
-            return <StringInput label={label} placeholder={defaultPlaceholder} identifier={identifier} form={props.form} />
+            return <StringInput label={label} placeholder={defaultPlaceholder} identifier={identifier} initialValue={initialData as ID | undefined} form={props.form} />
         case fieldkind.ForeignEntityKind:
             const ns = dtype.namespace
             if (!ns) {
@@ -117,14 +121,17 @@ export const GenericDtypeInput = <T extends ITypeMinimal = any>(props: {
                     label={label}
                     placeholder={`Select ${ns.entity ? ns.entity.toCapital() : ''}`}
                     identifier={identifier}
+                    initialValue={initialData as ID | ID[] | undefined}
                     form={props.form}
                     multiple={isRepeated}
                 />
             )
         case fieldkind.EmailKind:
-            return <EmailInput label={label} placeholder={defaultPlaceholder} identifier={identifier} form={props.form} />
+            return <EmailInput label={label} placeholder={defaultPlaceholder} identifier={identifier} initialValue={initialData as Email | undefined} form={props.form} />
         case fieldkind.MoneyKind:
-            return <MoneyInput label={label} placeholder={defaultPlaceholder} identifier={identifier} form={props.form} />
+            return <MoneyInput label={label} placeholder={defaultPlaceholder} identifier={identifier} initialValue={initialData as Money | undefined} form={props.form} />
+        case fieldkind.GenericDataKind:
+            return <GenericDataInput label={label} placeholder={defaultPlaceholder} identifier={identifier} initialValue={initialData} form={props.form} />
         case fieldkind.EnumKind: {
             // Get enum values for the field
             const ns = dtype.namespace as IEnumNamespace
@@ -135,7 +142,16 @@ export const GenericDtypeInput = <T extends ITypeMinimal = any>(props: {
             const options: ComboboxData | undefined = enumInfo?.values.map((enumVal): ComboboxItem => {
                 return { value: enumVal.value as string, label: enumVal.getDisplayValue() }
             })
-            return <SelectInput label={label} placeholder={defaultPlaceholder} identifier={identifier} form={props.form} internalProps={{ data: options }} />
+            return (
+                <SelectOrMultiSelectInput
+                    label={label}
+                    placeholder={defaultPlaceholder}
+                    identifier={identifier}
+                    initialValue={initialData as string | string[]}
+                    form={props.form}
+                    internalProps={{ data: options }}
+                />
+            )
         }
 
         case fieldkind.NestedKind: {
@@ -144,14 +160,14 @@ export const GenericDtypeInput = <T extends ITypeMinimal = any>(props: {
             if (!ns) {
                 throw new Error('Nested field does not have a reference namespace')
             }
-            const fieldTypeInfo = appInfo.getTypeInfo<T>(ns.toRaw() as TypeNamespaceReq)
+            const fieldTypeInfo = appInfo.getTypeInfo<T extends ITypeMinimal ? T : never>(ns.toRaw() as TypeNamespaceReq)
             if (!fieldTypeInfo) {
                 throw new Error('Type Info not found for field')
             }
 
             return (
                 <Fieldset legend={label}>
-                    <TypeAddForm parentIdentifier={identifier} typeInfo={fieldTypeInfo} form={props.form} />
+                    <TypeAddForm parentIdentifier={identifier} typeInfo={fieldTypeInfo} initialData={initialData} form={props.form} />
                 </Fieldset>
             )
         }
@@ -162,141 +178,210 @@ export const GenericDtypeInput = <T extends ITypeMinimal = any>(props: {
             return <DefaultConditionInput identifier={identifier} form={props.form} label={label} placeholder={defaultPlaceholder} />
         default:
             console.warn('Field type not found. Using default input', dtype.kind)
-            return <DefaultInput label={label} placeholder="{}" identifier={identifier} form={props.form} />
+            return <JSONInput label={label} placeholder={defaultPlaceholder} identifier={identifier} initialValue={initialData} form={props.form} />
     }
 }
 
-interface InputProps<T = any> {
-    internalProps?: Omit<T, 'label' | 'placeholder' | 'description' | 'key'> // Internal props for the input component, specific to the library that the input component is from
+interface InputProps<InternalPropsT = any, T = any> {
+    internalProps?: Omit<InternalPropsT, 'label' | 'placeholder' | 'description' | 'key'> // Internal props for the input component, specific to the library that the input component is from
     form: UseFormReturnType<any>
 
     identifier: string // formIdentifier for the input, e.g. 'email', 'name.firstName' etc.
     label: string
     placeholder: string
     description?: string
-    value?: string // Any initial value?
+    initialValue?: T // Any initial value?
     // onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
 }
 
-export const DefaultInput = (props: InputProps<never>) => {
-    return <JSONInput {...props} />
+export const DefaultInput = <T extends any = any>(props: InputProps<never, T>) => {
+    return <JSONInput<T> {...props} />
 }
 
-export const StringInput = (props: InputProps<TextInputProps>) => {
+export const StringInput = (props: InputProps<TextInputProps, string>) => {
     const { form } = props
-    return <TextInput label={props.label} description={props.description} placeholder={props.placeholder} key={props.identifier} {...form.getInputProps(props.identifier)} data-1p-ignore />
+
+    // Get the form input props so we can change the "null" default value to "undefined"
+    const formInputProps = form.getInputProps(props.identifier)
+    formInputProps.defaultValue = formInputProps.defaultValue ?? undefined
+
+    return <TextInput key={props.identifier} label={props.label} description={props.description} placeholder={props.placeholder} {...formInputProps} {...props.internalProps} data-1p-ignore />
 }
 
-export const NumberInput = (props: InputProps<NumberInputProps>) => {
+export const NumberInput = (props: InputProps<NumberInputProps, number>) => {
     const { form } = props
-    return (
-        <MantineNumberInput
-            label={props.label}
-            description={props.description}
-            placeholder={props.placeholder}
-            key={props.identifier}
-            {...form.getInputProps(props.identifier)}
-            {...props.internalProps}
-            data-1p-ignore
-        />
-    )
+
+    // Get the form input props so we can change the "null" default value to "undefined"
+    const formInputProps = form.getInputProps(props.identifier)
+    formInputProps.defaultValue = formInputProps.defaultValue ?? undefined
+
+    return <MantineNumberInput key={props.identifier} label={props.label} description={props.description} placeholder={props.placeholder} {...formInputProps} {...props.internalProps} data-1p-ignore />
 }
 
-export const BooleanInput = (props: InputProps<SwitchProps>) => {
+export const BooleanInput = (props: InputProps<SwitchProps, boolean>) => {
     const { form } = props
+
+    // Get the form input props so we can change the "null" default value to "undefined"
+    const formInputProps = form.getInputProps(props.identifier)
+    formInputProps.defaultValue = formInputProps.defaultValue ?? undefined
+
     return (
         <Switch
+            key={props.identifier}
             label={props.label}
             description={props.description}
             placeholder={props.placeholder}
-            key={props.identifier}
-            {...form.getInputProps(props.identifier)}
+            {...formInputProps}
+            {...props.internalProps}
+            defaultChecked={props.initialValue}
             data-onepassword-title="disabled"
         />
     )
 }
 
-export const DateInput = (props: InputProps<DateInputProps>) => {
+export const DateInput = (props: InputProps<DateInputProps, Date>) => {
     const { form } = props
+
+    // Get the form input props so we can change the "null" default value to "undefined"
+    const formInputProps = form.getInputProps(props.identifier)
+    formInputProps.defaultValue = formInputProps.defaultValue ?? undefined
+
     return (
         <MantineDateInput
+            key={props.identifier}
             valueFormat="DD/MM/YYYY"
             label={props.label}
             description={props.description}
-            key={props.identifier}
             placeholder={props.placeholder}
             clearable
-            {...form.getInputProps(props.identifier)}
+            {...formInputProps}
+            {...props.internalProps}
         />
     )
 }
 
-export const TimestampInput = (props: InputProps<DateTimePickerProps>) => {
+export const TimestampInput = (props: InputProps<DateTimePickerProps, Date>) => {
     const { form } = props
-    return <DateTimePicker label={props.label} description={props.description} placeholder={props.placeholder} key={props.identifier} {...form.getInputProps(props.identifier)} data-1p-ignore />
+
+    // Get the form input props so we can change the "null" default value to "undefined"
+    const formInputProps = form.getInputProps(props.identifier)
+    formInputProps.defaultValue = formInputProps.defaultValue ?? undefined
+
+    return <DateTimePicker key={props.identifier} label={props.label} description={props.description} placeholder={props.placeholder} {...formInputProps} {...props.internalProps} data-1p-ignore />
 }
 
-export const EmailInput = (props: InputProps<TextInputProps>) => {
+export const EmailInput = (props: InputProps<TextInputProps, Email>) => {
     const { form } = props
+
+    // Get the form input props so we can change the "null" default value to "undefined"
+    const formInputProps = form.getInputProps(props.identifier)
+    formInputProps.defaultValue = formInputProps.defaultValue ?? undefined
+
     return (
         <TextInput
+            key={props.identifier}
             label={props.label}
             description={props.description}
             placeholder={props.placeholder}
-            key={props.identifier}
-            {...form.getInputProps(props.identifier)}
+            {...formInputProps}
+            {...props.internalProps}
             leftSection="@"
             data-1p-ignore
         />
     )
 }
 
-export const MoneyInput = (props: InputProps<never>) => {
+export const SelectOrMultiSelectInput = <T extends string>(props: InputProps<SelectProps | MultiSelectProps, T | T[]>) => {
+    const { form } = props
+    console.log('SelectOrMultiSelectInput', props)
+
+    // Make common props from the props.internalProps.
+    const commonPropValues = {
+        label: props.label,
+        description: props.description,
+        placeholder: props.placeholder,
+        searchable: true,
+        clearable: true,
+        'data-1p-ignore': true,
+    }
+
+    if (props.initialValue) {
+        commonPropValues.placeholder = 'Selected: ' + props.initialValue
+    }
+
+    // Get the form input props so we can change the "null" default value to "undefined"
+    const formInputProps = form.getInputProps(props.identifier)
+    formInputProps.defaultValue = formInputProps.defaultValue ?? undefined
+
+    if (props.internalProps?.multiple) {
+        return <MultiSelect key={props.identifier} {...formInputProps} {...commonPropValues} {...(props.internalProps as MultiSelectProps)} />
+    }
+
+    return <Select key={props.identifier} {...form.getInputProps(props.identifier)} {...commonPropValues} {...(props.internalProps as SelectProps)} />
+}
+
+export const MoneyInput = (props: InputProps<never, Money>) => {
     return <NumberInput internalProps={{ prefix: '$', allowNegative: false, decimalScale: 2, fixedDecimalScale: true, thousandSeparator: ',' }} {...props} />
 }
 
-export const SelectInput = (props: InputProps<SelectProps>) => {
+export const GenericDataInput = <T extends any>(props: InputProps<never, T>) => {
     const { form } = props
-    const Component = props.internalProps?.multiple ? MultiSelect : Select
-    return (
-        <Component
-            label={props.label}
-            description={props.description}
-            placeholder={props.placeholder}
-            key={props.identifier}
-            data={props.internalProps!.data}
-            searchable
-            clearable
-            {...form.getInputProps(props.identifier)}
-            data-1p-ignore
-        />
-    )
-}
+    const formProps = form.getInputProps(props.identifier)
+    const newOnChange = (e: any) => {
+        console.log('Generic Data Change', e)
+        // deserialize the JSON string
+        try {
+            e = JSON.parse(e)
+            console.log('Deserialized', e)
+        } catch (error) {}
 
-export const JSONInput = (props: InputProps<JsonInputProps>) => {
-    const { form } = props
+        formProps.onChange(e)
+    }
     return (
-        <JsonInput
+        <MantineJSONInput
+            key={props.identifier}
             label={props.label}
             placeholder={props.placeholder}
             validationError="The JSON you have provided looks invalid. Try using an online JSON validator?"
             formatOnBlur
             autosize
-            key={props.identifier}
-            {...form.getInputProps(props.identifier)}
+            {...formProps}
+            onChange={newOnChange}
             data-1p-ignore
         />
     )
 }
 
-interface ForeignEntityInputProps extends InputProps<never> {
+export const JSONInput = <T extends any = any>(props: InputProps<JsonInputProps, T>) => {
+    const { form } = props
+
+    // Get the form input props so we can change the "null" default value to "undefined"
+    const formInputProps = form.getInputProps(props.identifier)
+    formInputProps.defaultValue = formInputProps.defaultValue ?? undefined
+
+    return (
+        <MantineJSONInput
+            key={props.identifier}
+            label={props.label}
+            placeholder={props.placeholder}
+            validationError="The JSON you have provided looks invalid. Try using an online JSON validator?"
+            formatOnBlur
+            autosize
+            {...formInputProps}
+            {...props.internalProps}
+            data-1p-ignore
+        />
+    )
+}
+
+interface ForeignEntityInputProps extends InputProps<never, ID | ID[]> {
     foreignEntityNs: EntityNamespaceReq
     // Allow multiple selections?
     multiple?: boolean
 }
 
 const ForeignEntityInput = (props: ForeignEntityInputProps) => {
-    const [data, setData] = useState<ComboboxData | undefined>(undefined)
+    const [options, setOptions] = useState<ComboboxData | undefined>(undefined)
     const [searchTerm, setSearchTerm] = useState<string>('')
 
     // Get the entity info
@@ -311,6 +396,11 @@ const ForeignEntityInput = (props: ForeignEntityInputProps) => {
     }
 
     useEffect(() => {
+        // Only search if there is a search term
+        if (!searchTerm) {
+            return
+        }
+        // Search for options
         queryByTextEntity({
             entityNamespace: props.foreignEntityNs,
             data: { queryText: searchTerm },
@@ -330,22 +420,74 @@ const ForeignEntityInput = (props: ForeignEntityInputProps) => {
             const options: ComboboxData = response.data.items.map((e): ComboboxItem => {
                 return { value: e.id, label: entityInfo.getEntityNameFriendly(e) }
             })
-            setData(options)
+            setOptions(options)
         })
     }, [searchTerm])
 
-    const internalProps: SelectProps = {
+    // If there is initial data, we need to fetch the entity and set the initial values
+    useEffect(() => {
+        // No initial data
+        if (!props.initialValue || props.initialValue.length === 0) {
+            return
+        }
+        // List by the ids
+        listEntity({
+            entityNamespace: props.foreignEntityNs,
+            data: {
+                filter: {
+                    id: {
+                        op: Operator.IN,
+                        // if initial values is array, use as is, other wise make it into an array
+                        values: typeof props.initialValue === 'string' ? [props.initialValue] : props.initialValue,
+                    },
+                },
+            },
+        }).then((response) => {
+            if (response.error) {
+                console.error('Error fetching data', response.error)
+                return
+            }
+            if (!response.data) {
+                console.error('No data returned')
+                return
+            }
+            if (!response.data.items || response.data.items.length === 0) {
+                console.error('No items returned')
+                return
+            }
+            // Set the initially selected values
+            const options: ComboboxData = response.data.items.map((e): ComboboxItem => {
+                return { value: e.id, label: entityInfo.getEntityNameFriendly(e) }
+            })
+            if (options.length > 0) {
+                setOptions(options)
+                console.log('[ForeignEntityInput] Setting initial values', props.initialValue)
+            }
+            // const ids = response.data.items.map((e) => e.id)
+            // if (props.multiple) {
+            //     props.form.setFieldValue(props.identifier, ids)
+            //     return
+            // }
+            // props.form.setFieldValue(props.identifier, ids[0])
+        })
+    }, [props.initialValue])
+
+    // Overwrite the label to remove the ID or IDs suffix
+    const label = props.label.replace(/(ids?)$/i, '')
+
+    const internalProps: SelectProps | MultiSelectProps = {
         onSearchChange: setSearchTerm,
         multiple: props.multiple,
-        data: data,
+        data: options,
     }
-
-    return <SelectInput {...props} internalProps={internalProps} />
+    return <SelectOrMultiSelectInput {...props} label={label} internalProps={internalProps} />
 }
 
-export const FileInput = (props: InputProps<never>) => {
+export const FileInput = (props: InputProps<never, ID>) => {
     const { form } = props
     const [file, setFile] = useState<File | null>(null)
+
+    // Todo: If initial value is set, fetch the file and set the file state
 
     // If the label has suffix ID, Id, id etc. then remove it
     const label = props.label.replace(/(id)$/i, '')
@@ -376,17 +518,7 @@ export const FileInput = (props: InputProps<never>) => {
                 console.error('File Upload Error', error)
             })
     }
-    return (
-        <MantineFileInput
-            {...form.getInputProps(props.identifier)}
-            value={file}
-            onChange={onChange}
-            label={label}
-            placeholder={props.placeholder}
-            description={props.description}
-            key={props.identifier}
-        />
-    )
+    return <MantineFileInput {...form.getInputProps(props.identifier)} onChange={onChange} label={label} placeholder={props.placeholder} description={props.description} key={props.identifier} />
 }
 
 // Todo: Consider implementing conditions as Goku types, which would allow us to use the TypeAddForm for conditions as well.
@@ -399,7 +531,7 @@ const DefaultConditionInput = (props: InputProps<never>) => {
     })
     return (
         <Fieldset legend={props.label}>
-            <SelectInput label={'Operator'} placeholder={'Operator'} identifier={props.identifier + '.' + 'operator'} form={props.form} internalProps={{ data: operators }} />
+            <SelectOrMultiSelectInput label={'Operator'} placeholder={'Operator'} identifier={props.identifier + '.' + 'operator'} form={props.form} internalProps={{ data: operators }} />
             <JSONInput label={'Values'} placeholder={'{}'} identifier={props.identifier + '.' + 'values'} form={props.form} />
         </Fieldset>
     )
