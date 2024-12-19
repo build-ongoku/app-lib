@@ -151,6 +151,7 @@ interface IEntityInfo<E extends IEntityMinimal> {
     actions: IEntityAction[];
     associations: IEntityAssociation[];
     getTypeNamespace(): ITypeEntityNamespace;
+    getTypeInfo(appInfo: App): TypeInfo<E>;
     getName(): Name;
     getNameFriendly(): string;
     getEntityName(r: E): string;
@@ -167,6 +168,7 @@ export declare class EntityInfo<E extends IEntityMinimal> implements IEntityInfo
     actions: EntityAction[];
     constructor(req: EntityInfoReq);
     getTypeNamespace(): ITypeEntityNamespace;
+    getTypeInfo(appInfo: App): TypeInfo<E>;
     getName(): Name;
     getNameFriendly(): string;
     funcGetNameFriendly: (info: EntityInfo<E>) => string;

@@ -12,6 +12,9 @@ var Name = /** @class */ (function () {
     Name.prototype.equal = function (other) {
         return this.raw === other.toRaw();
     };
+    Name.prototype.equalString = function (other) {
+        return this.raw === snakeCase(other);
+    };
     Name.prototype.append = function (suffix) {
         // convert suffix to snake case
         return new Name(this.raw + '_' + snakeCase(suffix));

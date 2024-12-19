@@ -8,6 +8,7 @@ export declare const DateKind: IFieldKind;
 export declare const TimestampKind: IFieldKind;
 export declare const IDKind: IFieldKind;
 export declare const EmailKind: IFieldKind;
+export declare const LinkKind: IFieldKind;
 export declare const SecretDecryptableKind: IFieldKind;
 export declare const GenericDataKind: IFieldKind;
 export declare const MoneyKind: IFieldKind;

@@ -5,14 +5,22 @@ import relativeTime from 'dayjs/plugin/relativeTime';
 import { MantineReactTable, useMantineReactTable } from 'mantine-react-table';
 import 'mantine-react-table/styles.css'; //make sure MRT styles were imported in your app root (once)
 import { useRouter } from 'next/navigation';
-import React, { useMemo } from 'react';
+import React, { useContext, useMemo } from 'react';
 import { getEntityAddPath } from '../../components/EntityLink';
 import { useListEntity } from '../../providers/httpV2';
 import { ServerResponseWrapper } from './ServerResponseWrapper';
 import { pluralize } from '../../common/namespacev2';
+import { MdAdd } from 'react-icons/md';
+import { AppContext } from '../../common/AppContextV3';
 dayjs.extend(relativeTime);
-var getDefaultEntityColumns = function (entityInfo) { return [
-    {
+var getDefaultEntityColumns = function (entityInfo) {
+    var cols = [];
+    var appInfo = useContext(AppContext).appInfo;
+    if (!appInfo) {
+        throw new Error('AppInfo not loaded');
+    }
+    // ID
+    cols.push({
         id: 'identifier',
         accessorFn: function (row) {
             return entityInfo.getEntityNameFriendly(row);
@@ -25,8 +33,23 @@ var getDefaultEntityColumns = function (entityInfo) { return [
             var id = entity.id;
             return (React.createElement(Anchor, { key: id, href: "".concat(entityInfo.namespace.toURLPath(), "/").concat(id) }, name));
         },
-    },
-    {
+    });
+    // If the entity has a status field, add it
+    var typeInfo = entityInfo.getTypeInfo(appInfo);
+    var statusField = typeInfo.fields.find(function (f) { return f.name.equalString('status'); });
+    if (statusField) {
+        cols.push({
+            accessorKey: 'status',
+            header: 'Status',
+            Cell: function (_a) {
+                var cell = _a.cell;
+                var value = cell.getValue();
+                return React.createElement(Text, null, value);
+            },
+        });
+    }
+    // Created At
+    cols.push({
         accessorKey: 'createdAt',
         header: 'Created At',
         Cell: function (_a) {
@@ -35,8 +58,9 @@ var getDefaultEntityColumns = function (entityInfo) { return [
             var displayValue = dayjs(value).fromNow();
             return React.createElement(Text, null, displayValue);
         },
-    },
-    {
+    });
+    // Updated At
+    cols.push({
         accessorKey: 'updatedAt',
         header: 'Updated At',
         Cell: function (_a) {
@@ -45,8 +69,9 @@ var getDefaultEntityColumns = function (entityInfo) { return [
             var displayValue = dayjs(value).fromNow();
             return React.createElement(Text, null, displayValue);
         },
-    },
-]; };
+    });
+    return cols;
+};
 // EntityListTable fetches the list of entities and renders the table
 export var EntityListTable = function (props) {
     var entityInfo = props.entityInfo;
@@ -62,7 +87,7 @@ export var EntityListTable = function (props) {
                 React.createElement(Title, { order: 2 },
                     "Your ",
                     pluralize(entityInfo.getNameFriendly())),
-                React.createElement(Button, { onClick: function () {
+                React.createElement(Button, { leftSection: React.createElement(MdAdd, null), onClick: function () {
                         router.push(getEntityAddPath(entityInfo));
                     } },
                     "Add ",

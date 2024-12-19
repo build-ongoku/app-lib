@@ -19,6 +19,7 @@ export var DateKind = __assign(__assign({}, DefaultFieldKind), { name: 'date' })
 export var TimestampKind = __assign(__assign({}, DefaultFieldKind), { name: 'timestamp' });
 export var IDKind = __assign(__assign({}, StringKind), { name: 'id' });
 export var EmailKind = __assign(__assign({}, StringKind), { name: 'email' });
+export var LinkKind = __assign(__assign({}, StringKind), { name: 'link' });
 export var SecretDecryptableKind = __assign(__assign({}, StringKind), { name: 'secret_decryptable' });
 export var GenericDataKind = __assign(__assign({}, StringKind), { name: 'generic data' });
 export var MoneyKind = __assign(__assign({}, NumberKind), { name: 'money' });

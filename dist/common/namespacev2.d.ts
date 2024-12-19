@@ -2,6 +2,7 @@ import { RequiredFields } from './types';
 export declare const acronyms: string[];
 interface IName {
     equal(other: IName): boolean;
+    equalString(other: string): boolean;
     append(suffix: string): Name;
     toRaw(): string;
     toCapital(): string;
@@ -14,6 +15,7 @@ export declare class Name implements IName {
     raw: string;
     constructor(raw: string);
     equal(other: IName): boolean;
+    equalString(other: string): boolean;
     append(suffix: string): Name;
     toRaw(): string;
     toCapital(): string;

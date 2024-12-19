@@ -3,12 +3,14 @@ import { Button, ButtonGroup, Title } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 import { AppContext } from '../../common/AppContextV3';
 import { Operator } from '../../common/Filter';
-import { getEntityAddPath, getEntityEditPath } from '../EntityLink';
+import { getEntityAddPath, getEntityEditPath, getEntityListPath } from '../EntityLink';
 import { EntityListTableInner } from './EntityList';
 import { ServerResponseWrapper } from './ServerResponseWrapper';
 import { useGetEntity, useListEntity } from '../../providers/httpV2';
 import { useRouter } from 'next/navigation';
 import React, { useContext } from 'react';
+import { FiEdit2 } from 'react-icons/fi';
+import { MdAdd, MdOutlineFormatListBulleted } from 'react-icons/md';
 export var EntityDetail = function (props) {
     var entityInfo = props.entityInfo, identifier = props.identifier;
     var router = useRouter();
@@ -23,18 +25,19 @@ export var EntityDetail = function (props) {
         React.createElement(ServerResponseWrapper, { error: error || (resp === null || resp === void 0 ? void 0 : resp.error), loading: loading }, (resp === null || resp === void 0 ? void 0 : resp.data) && (React.createElement("div", { className: "flex flex-col gap-4" },
             React.createElement("div", { className: "flex justify-between my-5" },
                 React.createElement(Title, { order: 2 }, "".concat(entityInfo.getNameFriendly(), ": ").concat(entityInfo.getEntityNameFriendly(resp.data))),
-                React.createElement("div", { className: "flex gap-5" },
-                    React.createElement(Button, { onClick: function () {
+                React.createElement("div", { className: "flex gap-3" },
+                    React.createElement(Button, { autoContrast: true, leftSection: React.createElement(FiEdit2, null), onClick: function () {
                             router.push(getEntityEditPath({
                                 entityInfo: entityInfo,
                                 entity: resp.data,
                             }));
                         } }, "Edit"),
-                    React.createElement(Button, { onClick: function () {
+                    React.createElement(Button, { leftSection: React.createElement(MdAdd, null), onClick: function () {
                             router.push(getEntityAddPath(entityInfo));
-                        } },
-                        "Add New ",
-                        entityInfo.getNameFriendly()))),
+                        } }, "New"),
+                    React.createElement(Button, { leftSection: React.createElement(MdOutlineFormatListBulleted, null), onClick: function () {
+                            router.push(getEntityListPath(entityInfo));
+                        } }, "List"))),
             React.createElement(EntityActions, { entityInfo: entityInfo, id: identifier, refetchEntity: fetch }),
             React.createElement("pre", null, JSON.stringify(resp.data, null, 2)),
             React.createElement(EntityAssociations, { entityInfo: entityInfo, entityID: identifier, entityData: resp.data }))))));

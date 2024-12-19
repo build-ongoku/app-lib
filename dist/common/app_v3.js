@@ -292,6 +292,9 @@ var EntityInfo = /** @class */ (function () {
         var ns = new Namespace({ service: this.namespace.service.toRaw(), entity: this.namespace.entity.toRaw(), types: [this.namespace.entity.toRaw()] });
         return ns;
     };
+    EntityInfo.prototype.getTypeInfo = function (appInfo) {
+        return appInfo.getTypeInfo(this.getTypeNamespace().toRaw());
+    };
     EntityInfo.prototype.getName = function () {
         return this.namespace.entity;
     };
