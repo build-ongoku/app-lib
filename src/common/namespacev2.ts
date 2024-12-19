@@ -10,6 +10,7 @@ export const acronyms = ['api', 'dal', 'http', 'https', 'id', 'jwt', 'sha', 'ui'
 
 interface IName {
     equal(other: IName): boolean
+    equalString(other: string): boolean
     append(suffix: string): Name
 
     toRaw(): string
@@ -31,6 +32,10 @@ export class Name implements IName {
 
     equal(other: IName): boolean {
         return this.raw === other.toRaw()
+    }
+
+    equalString(other: string): boolean {
+        return this.raw === snakeCase(other)
     }
 
     append(suffix: string): Name {

@@ -6,17 +6,27 @@ import relativeTime from 'dayjs/plugin/relativeTime'
 import { MantineReactTable, useMantineReactTable, type MRT_ColumnDef } from 'mantine-react-table'
 import 'mantine-react-table/styles.css' //make sure MRT styles were imported in your app root (once)
 import { useRouter } from 'next/navigation'
-import React, { useMemo } from 'react'
+import React, { useContext, useMemo } from 'react'
 import { EntityInfo, IEntityMinimal } from '../../common/app_v3'
 import { getEntityAddPath } from '../../components/EntityLink'
 import { ListEntityResponseData, useListEntity } from '../../providers/httpV2'
 import { ServerResponseWrapper } from './ServerResponseWrapper'
 import { pluralize } from '../../common/namespacev2'
+import { MdAdd } from 'react-icons/md'
+import { AppContext } from '../../common/AppContextV3'
 
 dayjs.extend(relativeTime)
 
-const getDefaultEntityColumns = <E extends IEntityMinimal>(entityInfo: EntityInfo<E>): MRT_ColumnDef<E>[] => [
-    {
+const getDefaultEntityColumns = <E extends IEntityMinimal>(entityInfo: EntityInfo<E>): MRT_ColumnDef<E>[] => {
+    const cols: MRT_ColumnDef<E>[] = []
+
+    const { appInfo } = useContext(AppContext)
+    if (!appInfo) {
+        throw new Error('AppInfo not loaded')
+    }
+
+    // ID
+    cols.push({
         id: 'identifier',
         accessorFn: (row: E) => {
             return entityInfo.getEntityNameFriendly(row)
@@ -32,8 +42,24 @@ const getDefaultEntityColumns = <E extends IEntityMinimal>(entityInfo: EntityInf
                 </Anchor>
             )
         },
-    },
-    {
+    })
+
+    // If the entity has a status field, add it
+    const typeInfo = entityInfo.getTypeInfo(appInfo)
+    const statusField = typeInfo.fields.find((f) => f.name.equalString('status'))
+    if (statusField) {
+        cols.push({
+            accessorKey: 'status',
+            header: 'Status',
+            Cell: ({ cell }) => {
+                const value = cell.getValue<string>()
+                return <Text>{value}</Text>
+            },
+        })
+    }
+
+    // Created At
+    cols.push({
         accessorKey: 'createdAt',
         header: 'Created At',
         Cell: ({ cell }) => {
@@ -41,8 +67,10 @@ const getDefaultEntityColumns = <E extends IEntityMinimal>(entityInfo: EntityInf
             const displayValue = dayjs(value).fromNow()
             return <Text>{displayValue}</Text>
         },
-    },
-    {
+    })
+
+    // Updated At
+    cols.push({
         accessorKey: 'updatedAt',
         header: 'Updated At',
         Cell: ({ cell }) => {
@@ -50,8 +78,10 @@ const getDefaultEntityColumns = <E extends IEntityMinimal>(entityInfo: EntityInf
             const displayValue = dayjs(value).fromNow()
             return <Text>{displayValue}</Text>
         },
-    },
-]
+    })
+
+    return cols
+}
 
 // EntityListTable fetches the list of entities and renders the table
 export const EntityListTable = <E extends IEntityMinimal>(props: { entityInfo: EntityInfo<E> }) => {
@@ -70,6 +100,7 @@ export const EntityListTable = <E extends IEntityMinimal>(props: { entityInfo: E
                 <div className="flex justify-between my-5">
                     <Title order={2}>Your {pluralize(entityInfo.getNameFriendly())}</Title>
                     <Button
+                        leftSection={<MdAdd />}
                         onClick={() => {
                             router.push(getEntityAddPath(entityInfo))
                         }}

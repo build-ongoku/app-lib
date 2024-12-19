@@ -439,6 +439,7 @@ interface IEntityInfo<E extends IEntityMinimal> {
     actions: IEntityAction[]
     associations: IEntityAssociation[]
     getTypeNamespace(): ITypeEntityNamespace
+    getTypeInfo(appInfo: App): TypeInfo<E>
     getName(): Name
     getNameFriendly(): string
     getEntityName(r: E): string
@@ -473,6 +474,10 @@ export class EntityInfo<E extends IEntityMinimal> implements IEntityInfo<E> {
         // Take the entity namespace and add the type to it
         const ns = new Namespace({ service: this.namespace.service!.toRaw(), entity: this.namespace.entity!.toRaw(), types: [this.namespace.entity!.toRaw()] })
         return ns as ITypeEntityNamespace
+    }
+
+    getTypeInfo(appInfo: App): TypeInfo<E> {
+        return appInfo.getTypeInfo<E>(this.getTypeNamespace().toRaw() as TypeNamespaceReq)
     }
 
     getName(): Name {

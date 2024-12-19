@@ -42,6 +42,11 @@ export const EmailKind: IFieldKind = {
     name: 'email',
 }
 
+export const LinkKind: IFieldKind = {
+    ...StringKind,
+    name: 'link',
+}
+
 export const SecretDecryptableKind: IFieldKind = {
     ...StringKind,
     name: 'secret_decryptable',
