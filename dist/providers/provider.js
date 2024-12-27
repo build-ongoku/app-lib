@@ -2,35 +2,64 @@
 // It does not add the version number.
 // e.g. for DEV, it may return http://localhost:80/api/
 var getBaseURL = function () {
-    var _a, _b;
+    var _a;
     console.log('[Provider] [getBaseURL]', 'envVariables', process.env);
-    var host = process.env.NEXT_PUBLIC_GOKU_BACKEND_HOST;
-    var port = process.env.NEXT_PUBLIC_GOKU_BACKEND_PORT;
-    var protocol = process.env.NEXT_PUBLIC_GOKU_BACKEND_PROTOCOL;
-    if (!protocol) {
-        // use the same protocol as the frontend
-        if (typeof window === 'undefined') {
-            console.warn('[Provider] [getBaseURL] Protocol not set. Defaulting to https:');
-            protocol = 'https:';
-        }
-        else {
-            protocol = (_b = (_a = window === null || window === void 0 ? void 0 : window.location) === null || _a === void 0 ? void 0 : _a.protocol) !== null && _b !== void 0 ? _b : 'https:';
-            console.warn("[Provider] [getBaseURL] Protocol not set. Defaulting to window's protocol [".concat(protocol, "]"));
-        }
+    // Host
+    var host = process.env.GOKU_BACKEND_HOST;
+    if (!host) {
+        host = process.env.NEXT_PUBLIC_GOKU_BACKEND_HOST;
+        console.debug('[Provider] [getBaseURL]', 'NEXT_PUBLIC_GOKU_BACKEND_HOST', host);
     }
-    if (protocol !== 'http:' && protocol !== 'https:') {
-        console.warn("[Provider] [getBaseURL] Invalid protocol [".concat(protocol, "] (not \"http:\" or \"https:\"). Setting to window's protocol [").concat(window.location.protocol, "]"));
-        protocol = window.location.protocol;
+    if (!host) {
+        host = process.env.EXPO_PUBLIC_GOKU_BACKEND_HOST;
+        console.debug('[Provider] [getBaseURL]', 'EXPO_PUBLIC_GOKU_BACKEND_HOST', host);
     }
+    // Note: add any other specific environment variables name for the host here
     if (!host) {
         console.warn('[Provider] [getBaseURL] Host not set. Defaulting to localhost');
         host = 'localhost';
     }
-    if (!port) {
-        port = protocol === 'https:' ? '443' : '80';
-        console.warn("[Provider] [getBaseURL] Port not set. Defaulting to [".concat(port, "]"));
+    console.log('[Provider] [getBaseURL]', 'Host: ', host);
+    // Protocol
+    var protocol = process.env.GOKU_BACKEND_PROTOCOL;
+    if (!protocol) {
+        protocol = process.env.NEXT_PUBLIC_GOKU_BACKEND_PROTOCOL;
+        console.debug('[Provider] [getBaseURL]', 'NEXT_PUBLIC_GOKU_BACKEND_PROTOCOL', protocol);
     }
-    var url = "".concat(protocol, "//").concat(host, ":").concat(port, "/api");
+    if (!protocol) {
+        protocol = process.env.EXPO_PUBLIC_GOKU_BACKEND_PROTOCOL;
+        console.debug('[Provider] [getBaseURL]', 'EXPO_PUBLIC_GOKU_BACKEND_PROTOCOL', protocol);
+    }
+    if (!protocol) {
+        protocol = (_a = window === null || window === void 0 ? void 0 : window.location) === null || _a === void 0 ? void 0 : _a.protocol;
+        console.debug('[Provider] [getBaseURL]', 'window.location.protocol', protocol);
+        if (protocol) {
+            console.log('[Provider] [getBaseURL] Setting protocol to window.location.protocol', protocol);
+        }
+    }
+    if (!protocol) {
+        protocol = 'https:';
+        console.warn('[Provider] [getBaseURL] Protocol not set. Defaulting to https.');
+    }
+    // Todo: ensure protocol is valid
+    if (protocol && protocol !== 'http:' && protocol !== 'https:') {
+        console.warn('[Provider] [getBaseURL] Protocol is not http or https. Defaulting to https.');
+        protocol = 'https:';
+    }
+    // Port
+    var port = process.env.GOKU_BACKEND_PORT;
+    if (!port) {
+        port = process.env.NEXT_PUBLIC_GOKU_BACKEND_PORT;
+        console.debug('[Provider] [getBaseURL]', 'NEXT_PUBLIC_GOKU_BACKEND_PORT', port);
+    }
+    if (!port) {
+        port = process.env.EXPO_PUBLIC_GOKU_BACKEND_PORT;
+        console.debug('[Provider] [getBaseURL]', 'EXPO_PUBLIC_GOKU_BACKEND_PORT', port);
+    }
+    if (!port) {
+        console.warn('[Provider] [getBaseURL] Port not set. Leaving empty.');
+    }
+    var url = "".concat(protocol, "//").concat(host) + (port ? ":".concat(port) : '') + '/api';
     console.log('[Provider] [getBaseURL]', 'url: ', url);
     return url;
 };

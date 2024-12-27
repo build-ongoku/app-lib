@@ -3,34 +3,68 @@
 // e.g. for DEV, it may return http://localhost:80/api/
 const getBaseURL = (): string => {
     console.log('[Provider] [getBaseURL]', 'envVariables', process.env)
-    let host = process.env.NEXT_PUBLIC_GOKU_BACKEND_HOST
-    let port = process.env.NEXT_PUBLIC_GOKU_BACKEND_PORT
-    let protocol = process.env.NEXT_PUBLIC_GOKU_BACKEND_PROTOCOL
-    if (!protocol) {
-        // use the same protocol as the frontend
-        if (typeof window === 'undefined') {
-            console.warn('[Provider] [getBaseURL] Protocol not set. Defaulting to https:')
-            protocol = 'https:'
-        } else {
-            protocol = window?.location?.protocol ?? 'https:'
-            console.warn(`[Provider] [getBaseURL] Protocol not set. Defaulting to window's protocol [${protocol}]`)
-        }
+
+    // Host
+    let host = process.env.GOKU_BACKEND_HOST
+    if (!host) {
+        host = process.env.NEXT_PUBLIC_GOKU_BACKEND_HOST
+        console.debug('[Provider] [getBaseURL]', 'NEXT_PUBLIC_GOKU_BACKEND_HOST', host)
     }
-    if (protocol !== 'http:' && protocol !== 'https:') {
-        console.warn(`[Provider] [getBaseURL] Invalid protocol [${protocol}] (not "http:" or "https:"). Setting to window's protocol [${window.location.protocol}]`)
-        protocol = window.location.protocol
+    if (!host) {
+        host = process.env.EXPO_PUBLIC_GOKU_BACKEND_HOST
+        console.debug('[Provider] [getBaseURL]', 'EXPO_PUBLIC_GOKU_BACKEND_HOST', host)
     }
+    // Note: add any other specific environment variables name for the host here
     if (!host) {
         console.warn('[Provider] [getBaseURL] Host not set. Defaulting to localhost')
         host = 'localhost'
     }
-    if (!port) {
-        port = protocol === 'https:' ? '443' : '80'
-        console.warn(`[Provider] [getBaseURL] Port not set. Defaulting to [${port}]`)
+    console.log('[Provider] [getBaseURL]', 'Host: ', host)
+
+    // Protocol
+    let protocol = process.env.GOKU_BACKEND_PROTOCOL
+    if (!protocol) {
+        protocol = process.env.NEXT_PUBLIC_GOKU_BACKEND_PROTOCOL
+        console.debug('[Provider] [getBaseURL]', 'NEXT_PUBLIC_GOKU_BACKEND_PROTOCOL', protocol)
+    }
+    if (!protocol) {
+        protocol = process.env.EXPO_PUBLIC_GOKU_BACKEND_PROTOCOL
+        console.debug('[Provider] [getBaseURL]', 'EXPO_PUBLIC_GOKU_BACKEND_PROTOCOL', protocol)
+    }
+    if (!protocol) {
+        protocol = window?.location?.protocol
+        console.debug('[Provider] [getBaseURL]', 'window.location.protocol', protocol)
+        if (protocol) {
+            console.log('[Provider] [getBaseURL] Setting protocol to window.location.protocol', protocol)
+        }
+    }
+    if (!protocol) {
+        protocol = 'https:'
+        console.warn('[Provider] [getBaseURL] Protocol not set. Defaulting to https.')
+    }
+    // Todo: ensure protocol is valid
+    if (protocol && protocol !== 'http:' && protocol !== 'https:') {
+        console.warn('[Provider] [getBaseURL] Protocol is not http or https. Defaulting to https.')
+        protocol = 'https:'
     }
 
-    const url = `${protocol}//${host}:${port}/api`
+    // Port
+    let port = process.env.GOKU_BACKEND_PORT
+    if (!port) {
+        port = process.env.NEXT_PUBLIC_GOKU_BACKEND_PORT
+        console.debug('[Provider] [getBaseURL]', 'NEXT_PUBLIC_GOKU_BACKEND_PORT', port)
+    }
+    if (!port) {
+        port = process.env.EXPO_PUBLIC_GOKU_BACKEND_PORT
+        console.debug('[Provider] [getBaseURL]', 'EXPO_PUBLIC_GOKU_BACKEND_PORT', port)
+    }
+    if (!port) {
+        console.warn('[Provider] [getBaseURL] Port not set. Leaving empty.')
+    }
+
+    const url = `${protocol}//${host}` + (port ? `:${port}` : '') + '/api'
     console.log('[Provider] [getBaseURL]', 'url: ', url)
+
     return url
 }
 
