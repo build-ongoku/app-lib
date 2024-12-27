@@ -42,7 +42,7 @@ var AppLayout = function (props) {
                 React.createElement(NavLinksInnerForServices, { appInfo: appInfo, svcs: appInfo.services.filter(function (svc) { return svc.source !== 'mod'; }) })),
             React.createElement(NavLink, { key: 'services-builtin', label: 'Built In' },
                 React.createElement(NavLinksInnerForServices, { appInfo: appInfo, svcs: appInfo.services.filter(function (svc) { return svc.source === 'mod'; }) })),
-            React.createElement(NavLink, { key: 'api-docs', target: "_blank", href: addBaseURL('/v1/docs'), label: React.createElement(React.Fragment, null,
+            React.createElement(NavLink, { key: 'api-docs', target: "_blank", href: addBaseURL('/v2/docs'), label: React.createElement(React.Fragment, null,
                     'API Documentation',
                     " ",
                     React.createElement(FiExternalLink, null)) })),

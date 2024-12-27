@@ -74,7 +74,7 @@ const AppLayout = (props: { children: React.ReactNode }) => {
                 <NavLink
                     key={'api-docs'}
                     target="_blank"
-                    href={addBaseURL('/v1/docs')}
+                    href={addBaseURL('/v2/docs')}
                     label={
                         <>
                             {'API Documentation'} <FiExternalLink />
