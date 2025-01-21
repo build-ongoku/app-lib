@@ -42,8 +42,11 @@ var getBaseURL = function () {
         console.warn('[Provider] [getBaseURL] Protocol not set. Defaulting to https.');
     }
     // Todo: ensure protocol is valid
+    if (protocol === 'http' || protocol === 'https') {
+        protocol = protocol + ':';
+    }
     if (protocol && protocol !== 'http:' && protocol !== 'https:') {
-        console.warn('[Provider] [getBaseURL] Protocol is not http or https. Defaulting to https.');
+        console.warn('[Provider] [getBaseURL] Protocol is not `http:` or `https:`. Defaulting to https.');
         protocol = 'https:';
     }
     // Port

@@ -93,7 +93,7 @@ export var makeRequest = function (props) { return __awaiter(void 0, void 0, voi
                 return [3 /*break*/, 4];
             case 3:
                 err_1 = _b.sent();
-                errMsg = 'Are you sure the backend is running? Admin Tool could not communicate with the backend. Please see the logs for more information.';
+                errMsg = 'Admin Tool could not communicate with the backend server. Are you sure the backend server is running? Please see the logs for more information.';
                 console.error(errMsg);
                 return [2 /*return*/, { error: errMsg, statusCode: 0 }]; // We don't know the status code because the request itself failed
             case 4:

@@ -25,9 +25,9 @@ interface UseMakeRequestResponse<ReqT = any, RespT = any> {
 }
 export type FetchFunc<ReqT = any> = (data?: ReqT) => void;
 export declare const useMakeRequest: <RespT = any, ReqT = any>(props: UseMakeRequestProps<ReqT>) => UseMakeRequestResponse<ReqT, RespT>;
-interface XEntityMakeRequestProps<ReqT = any> extends Omit<MakeRequestProps<ReqT>, 'method' | 'relativePath' | 'unauthenticated'> {
+interface XEntityMakeRequestProps<ReqT = any> extends Omit<MakeRequestProps<ReqT>, 'method' | 'relativePath' | 'unauthenticated' | 'url'> {
 }
-interface UseXEntityMakeRequestProps<ReqT = any> extends Omit<UseMakeRequestProps<ReqT>, 'method' | 'relativePath' | 'unauthenticated'> {
+interface UseXEntityMakeRequestProps<ReqT = any> extends Omit<UseMakeRequestProps<ReqT>, 'method' | 'relativePath' | 'unauthenticated' | 'url'> {
 }
 interface XEntityProps<ReqT = any> extends XEntityMakeRequestProps<ReqT> {
     entityNamespace: NamespaceReq;

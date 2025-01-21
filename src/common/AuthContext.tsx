@@ -15,6 +15,24 @@ export interface Session {
     token: string
 }
 
+import { decodeToken } from 'react-jwt'
+
+interface DecodedToken {
+    exp: number // Expiration time
+    iat: number // Issued at
+    iss: string // Issuer
+    jti: string // JWT ID
+    nbf: number // Not before
+    sub: string // Subject (user ID)
+}
+export const getDetailsFromSession = (session: Session): DecodedToken => {
+    const decodedToken = decodeToken<DecodedToken>(session.token)
+    if (!decodedToken) {
+        throw new Error('Could not decode token. Invalid token.')
+    }
+    return decodedToken
+}
+
 const _cookieKey = 'session'
 
 export const getSessionCookie = (): Session | undefined => {

@@ -62,7 +62,7 @@ export const makeRequest = async <RespT = any, ReqT = any>(props: MakeRequestPro
     try {
         httpResp = await fetch(fullUrl, req)
     } catch (err) {
-        const errMsg = 'Are you sure the backend is running? Admin Tool could not communicate with the backend. Please see the logs for more information.'
+        const errMsg = 'Admin Tool could not communicate with the backend server. Are you sure the backend server is running? Please see the logs for more information.'
         console.error(errMsg)
         return { error: errMsg, statusCode: 0 } // We don't know the status code because the request itself failed
     }
@@ -161,9 +161,9 @@ export const useMakeRequest = <RespT = any, ReqT = any>(props: UseMakeRequestPro
  * * * * * */
 
 // XEntityMakeRequestProps are the standard props needed for all XEntity requests.
-interface XEntityMakeRequestProps<ReqT = any> extends Omit<MakeRequestProps<ReqT>, 'method' | 'relativePath' | 'unauthenticated'> {}
+interface XEntityMakeRequestProps<ReqT = any> extends Omit<MakeRequestProps<ReqT>, 'method' | 'relativePath' | 'unauthenticated' | 'url'> {}
 
-interface UseXEntityMakeRequestProps<ReqT = any> extends Omit<UseMakeRequestProps<ReqT>, 'method' | 'relativePath' | 'unauthenticated'> {}
+interface UseXEntityMakeRequestProps<ReqT = any> extends Omit<UseMakeRequestProps<ReqT>, 'method' | 'relativePath' | 'unauthenticated' | 'url'> {}
 
 interface XEntityProps<ReqT = any> extends XEntityMakeRequestProps<ReqT> {
     entityNamespace: NamespaceReq

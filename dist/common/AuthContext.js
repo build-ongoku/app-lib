@@ -38,6 +38,14 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 import { joinURL } from '../providers/provider';
 import { makeRequest } from '../providers/httpV2';
 import React, { useContext, useEffect, useState } from 'react';
+import { decodeToken } from 'react-jwt';
+export var getDetailsFromSession = function (session) {
+    var decodedToken = decodeToken(session.token);
+    if (!decodedToken) {
+        throw new Error('Could not decode token. Invalid token.');
+    }
+    return decodedToken;
+};
 var _cookieKey = 'session';
 export var getSessionCookie = function () {
     var sessionStr = localStorage.getItem(_cookieKey);

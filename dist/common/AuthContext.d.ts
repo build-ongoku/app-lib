@@ -8,6 +8,15 @@ export interface AuthenticateTokenRequest {
 export interface Session {
     token: string;
 }
+interface DecodedToken {
+    exp: number;
+    iat: number;
+    iss: string;
+    jti: string;
+    nbf: number;
+    sub: string;
+}
+export declare const getDetailsFromSession: (session: Session) => DecodedToken;
 export declare const getSessionCookie: () => Session | undefined;
 export declare const setSessionCookie: (session: Session) => void;
 export declare const deleteSessionCookie: () => void;
@@ -26,3 +35,4 @@ export declare const AuthProvider: (props: {
     children: React.ReactNode;
 }) => React.JSX.Element;
 export declare const useAuth: () => AuthContextData;
+export {};
