@@ -3,6 +3,7 @@
 import { joinURL } from '../providers/provider'
 import { makeRequest } from '../providers/httpV2'
 import React, { useContext, useEffect, useState } from 'react'
+import { decodeToken } from 'react-jwt'
 
 export interface AuthenticateResponse {
     token: string
@@ -14,8 +15,6 @@ export interface AuthenticateTokenRequest {
 export interface Session {
     token: string
 }
-
-import { decodeToken } from 'react-jwt'
 
 interface DecodedToken {
     exp: number // Expiration time
