@@ -1,9 +1,7 @@
-'use client'
-
 import { ColorSchemeScript, createTheme, MantineProvider } from '@mantine/core'
 import { Notifications } from '@mantine/notifications'
 import { AuthProvider } from '../../../common/AuthContext'
-import React from 'react'
+import React, { Suspense } from 'react'
 
 const theme = createTheme({
     colors: {
@@ -75,7 +73,9 @@ export const LayoutRoot = (props: { children: React.ReactNode }) => {
     return (
         <html lang="en">
             <head>
-                <ColorSchemeScript />
+                <Suspense>
+                    <ColorSchemeScript />
+                </Suspense>
                 <link rel="icon" href="/icon.ico" sizes="any" />
             </head>
             <body>

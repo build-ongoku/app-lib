@@ -1,8 +1,7 @@
-'use client';
 import { ColorSchemeScript, createTheme, MantineProvider } from '@mantine/core';
 import { Notifications } from '@mantine/notifications';
 import { AuthProvider } from '../../../common/AuthContext';
-import React from 'react';
+import React, { Suspense } from 'react';
 var theme = createTheme({
     colors: {
         primary: [
@@ -71,7 +70,8 @@ var theme = createTheme({
 export var LayoutRoot = function (props) {
     return (React.createElement("html", { lang: "en" },
         React.createElement("head", null,
-            React.createElement(ColorSchemeScript, null),
+            React.createElement(Suspense, null,
+                React.createElement(ColorSchemeScript, null)),
             React.createElement("link", { rel: "icon", href: "/icon.ico", sizes: "any" })),
         React.createElement("body", null,
             React.createElement(MantineProvider, { theme: theme },
