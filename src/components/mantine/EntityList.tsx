@@ -8,11 +8,11 @@ import 'mantine-react-table/styles.css' //make sure MRT styles were imported in 
 import { useRouter } from 'next/navigation'
 import React, { useContext, useMemo } from 'react'
 import { EntityInfo, IEntityMinimal } from '../../common/app_v3'
-import { getEntityAddPath } from '../../components/EntityLink'
+import { getEntityAddPath, getEntityChatPath } from '../../components/EntityLink'
 import { ListEntityResponseData, useListEntity } from '../../providers/httpV2'
 import { ServerResponseWrapper } from './ServerResponseWrapper'
 import { pluralize } from '../../common/namespacev2'
-import { MdAdd } from 'react-icons/md'
+import { MdAdd, MdChat } from 'react-icons/md'
 import { AppContext } from '../../common/AppContextV3'
 
 dayjs.extend(relativeTime)
@@ -99,14 +99,25 @@ export const EntityListTable = <E extends IEntityMinimal>(props: { entityInfo: E
             <ServerResponseWrapper error={error || resp?.error} loading={loading}>
                 <div className="flex justify-between my-5">
                     <Title order={2}>Your {pluralize(entityInfo.getNameFriendly())}</Title>
-                    <Button
-                        leftSection={<MdAdd />}
-                        onClick={() => {
-                            router.push(getEntityAddPath(entityInfo))
-                        }}
-                    >
-                        Add {entityInfo.getNameFriendly()}
-                    </Button>
+                    <div className="flex gap-3">
+
+                        <Button
+                            leftSection={<MdAdd />}
+                            onClick={() => {
+                                router.push(getEntityAddPath(entityInfo))
+                            }}
+                        >
+                            Add {entityInfo.getNameFriendly()}
+                        </Button>
+                        <Button
+                            leftSection={<MdChat />}
+                            onClick={() => {
+                                router.push(getEntityChatPath(entityInfo))
+                            }}
+                        >
+                            Chat
+                        </Button>
+                    </div>
                 </div>
                 {resp?.data && <EntityListTableInner entityInfo={entityInfo} data={resp.data} />}
             </ServerResponseWrapper>

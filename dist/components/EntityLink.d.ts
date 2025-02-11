@@ -29,4 +29,5 @@ export declare const getEntityEditPath: <E extends IEntityMinimal = IEntityMinim
     entityInfo: EntityInfo<E>;
     entity: E;
 }) => string;
+export declare const getEntityChatPath: <E extends IEntityMinimal = IEntityMinimal>(entityInfo: EntityInfo<E>) => string;
 export {};

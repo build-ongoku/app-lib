@@ -3,14 +3,14 @@ import { Button, ButtonGroup, Title } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 import { AppContext } from '../../common/AppContextV3';
 import { Operator } from '../../common/Filter';
-import { getEntityAddPath, getEntityEditPath, getEntityListPath } from '../EntityLink';
+import { getEntityAddPath, getEntityChatPath, getEntityEditPath, getEntityListPath } from '../EntityLink';
 import { EntityListTableInner } from './EntityList';
 import { ServerResponseWrapper } from './ServerResponseWrapper';
 import { useGetEntity, useListEntity } from '../../providers/httpV2';
 import { useRouter } from 'next/navigation';
 import React, { useContext } from 'react';
 import { FiEdit2 } from 'react-icons/fi';
-import { MdAdd, MdOutlineFormatListBulleted } from 'react-icons/md';
+import { MdAdd, MdOutlineFormatListBulleted, MdChat } from 'react-icons/md';
 export var EntityDetail = function (props) {
     var entityInfo = props.entityInfo, identifier = props.identifier;
     var router = useRouter();
@@ -37,7 +37,10 @@ export var EntityDetail = function (props) {
                         } }, "New"),
                     React.createElement(Button, { leftSection: React.createElement(MdOutlineFormatListBulleted, null), onClick: function () {
                             router.push(getEntityListPath(entityInfo));
-                        } }, "List"))),
+                        } }, "List"),
+                    React.createElement(Button, { leftSection: React.createElement(MdChat, null), onClick: function () {
+                            router.push(getEntityChatPath(entityInfo));
+                        } }, "Chat"))),
             React.createElement(EntityActions, { entityInfo: entityInfo, id: identifier, refetchEntity: fetch }),
             React.createElement("pre", null, JSON.stringify(resp.data, null, 2)),
             React.createElement(EntityAssociations, { entityInfo: entityInfo, entityID: identifier, entityData: resp.data }))))));

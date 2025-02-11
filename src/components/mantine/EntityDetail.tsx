@@ -6,14 +6,14 @@ import { EntityAssociation, EntityInfo, IEntityMinimal } from '../../common/app_
 import { AppContext } from '../../common/AppContextV3'
 import { Operator } from '../../common/Filter'
 import { ID } from '../../common/scalars'
-import { getEntityAddPath, getEntityEditPath, getEntityListPath } from '../EntityLink'
+import { getEntityAddPath, getEntityChatPath, getEntityEditPath, getEntityListPath } from '../EntityLink'
 import { EntityListTableInner } from './EntityList'
 import { ServerResponseWrapper } from './ServerResponseWrapper'
 import { FetchFunc, useGetEntity, useListEntity } from '../../providers/httpV2'
 import { useRouter } from 'next/navigation'
 import React, { useContext } from 'react'
 import { FiEdit2 } from 'react-icons/fi'
-import { MdAdd, MdOutlineFormatListBulleted } from 'react-icons/md'
+import { MdAdd, MdOutlineFormatListBulleted, MdChat } from 'react-icons/md'
 
 export const EntityDetail = <E extends IEntityMinimal = IEntityMinimal>(props: { entityInfo: EntityInfo<E>; identifier: string }) => {
     const { entityInfo, identifier } = props
@@ -66,6 +66,14 @@ export const EntityDetail = <E extends IEntityMinimal = IEntityMinimal>(props: {
                                     }}
                                 >
                                     List
+                                </Button>
+                                <Button
+                                    leftSection={<MdChat />}
+                                    onClick={() => {
+                                        router.push(getEntityChatPath(entityInfo))
+                                    }}
+                                >
+                                    Chat
                                 </Button>
                             </div>
                         </div>

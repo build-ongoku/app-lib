@@ -49,3 +49,7 @@ export const getEntityEditPath = <E extends IEntityMinimal = IEntityMinimal>(pro
     const { entityInfo, entity } = props
     return entityInfo.namespace.toURLPath() + '/' + entity.id + '/edit'
 }
+
+export const getEntityChatPath = <E extends IEntityMinimal = IEntityMinimal>(entityInfo: EntityInfo<E>): string => {
+    return entityInfo.namespace.toURLPath() + '/method/chat'
+}

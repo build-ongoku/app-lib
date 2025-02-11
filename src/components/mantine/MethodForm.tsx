@@ -18,8 +18,10 @@ export const MethodForm = <ReqT extends ITypeMinimal = any, RespT extends ITypeM
     if (!mthd.namespace.method) {
         throw new Error('Method namespace does not have method')
     }
+    let unsupported = false
     if (!mthd.requestDtype) {
-        throw new Error('Method does not have request type')
+        unsupported = true
+        // throw new Error('Method does not have request type')
     }
 
     const api = mthd.getAPI()
@@ -32,7 +34,9 @@ export const MethodForm = <ReqT extends ITypeMinimal = any, RespT extends ITypeM
     return (
         <div>
             <Title order={1}>Method: {mthd.namespace.method.toCapital()}</Title>
+            {unsupported || !mthd.requestDtype ? <Text>The {mthd.namespace.method.toCapital()} method is a special method which is not supported by the methods explorer of the Admin UI app.</Text> :
             <DtypeFormWrapper<ReqT, RespT> dtype={mthd.requestDtype} postEndpoint={endpoint} method={api.method} />
+            }
         </div>
     )
 }

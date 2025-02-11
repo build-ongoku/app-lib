@@ -28,3 +28,6 @@ export var getEntityEditPath = function (props) {
     var entityInfo = props.entityInfo, entity = props.entity;
     return entityInfo.namespace.toURLPath() + '/' + entity.id + '/edit';
 };
+export var getEntityChatPath = function (entityInfo) {
+    return entityInfo.namespace.toURLPath() + '/method/chat';
+};

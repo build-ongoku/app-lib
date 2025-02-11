@@ -13,8 +13,10 @@ export var MethodForm = function (props) {
     if (!mthd.namespace.method) {
         throw new Error('Method namespace does not have method');
     }
+    var unsupported = false;
     if (!mthd.requestDtype) {
-        throw new Error('Method does not have request type');
+        unsupported = true;
+        // throw new Error('Method does not have request type')
     }
     var api = mthd.getAPI();
     if (!api) {
@@ -28,5 +30,9 @@ export var MethodForm = function (props) {
         React.createElement(Title, { order: 1 },
             "Method: ",
             mthd.namespace.method.toCapital()),
-        React.createElement(DtypeFormWrapper, { dtype: mthd.requestDtype, postEndpoint: endpoint, method: api.method })));
+        unsupported || !mthd.requestDtype ? React.createElement(Text, null,
+            "The ",
+            mthd.namespace.method.toCapital(),
+            " method is a special method which is not supported by the methods explorer of the Admin UI app.") :
+            React.createElement(DtypeFormWrapper, { dtype: mthd.requestDtype, postEndpoint: endpoint, method: api.method })));
 };

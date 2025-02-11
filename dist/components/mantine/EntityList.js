@@ -6,11 +6,11 @@ import { MantineReactTable, useMantineReactTable } from 'mantine-react-table';
 import 'mantine-react-table/styles.css'; //make sure MRT styles were imported in your app root (once)
 import { useRouter } from 'next/navigation';
 import React, { useContext, useMemo } from 'react';
-import { getEntityAddPath } from '../../components/EntityLink';
+import { getEntityAddPath, getEntityChatPath } from '../../components/EntityLink';
 import { useListEntity } from '../../providers/httpV2';
 import { ServerResponseWrapper } from './ServerResponseWrapper';
 import { pluralize } from '../../common/namespacev2';
-import { MdAdd } from 'react-icons/md';
+import { MdAdd, MdChat } from 'react-icons/md';
 import { AppContext } from '../../common/AppContextV3';
 dayjs.extend(relativeTime);
 var getDefaultEntityColumns = function (entityInfo) {
@@ -87,11 +87,15 @@ export var EntityListTable = function (props) {
                 React.createElement(Title, { order: 2 },
                     "Your ",
                     pluralize(entityInfo.getNameFriendly())),
-                React.createElement(Button, { leftSection: React.createElement(MdAdd, null), onClick: function () {
-                        router.push(getEntityAddPath(entityInfo));
-                    } },
-                    "Add ",
-                    entityInfo.getNameFriendly())),
+                React.createElement("div", { className: "flex gap-3" },
+                    React.createElement(Button, { leftSection: React.createElement(MdAdd, null), onClick: function () {
+                            router.push(getEntityAddPath(entityInfo));
+                        } },
+                        "Add ",
+                        entityInfo.getNameFriendly()),
+                    React.createElement(Button, { leftSection: React.createElement(MdChat, null), onClick: function () {
+                            router.push(getEntityChatPath(entityInfo));
+                        } }, "Chat"))),
             (resp === null || resp === void 0 ? void 0 : resp.data) && React.createElement(EntityListTableInner, { entityInfo: entityInfo, data: resp.data }))));
 };
 // EntityListTableInner takes the list response and renders the table
