@@ -20,6 +20,10 @@ import {
     TextInput,
     TextInputProps,
     MultiSelectProps,
+    Group,
+    ActionIcon,
+    Button,
+    Box,
 } from '@mantine/core'
 import { DateInputProps, DateTimePicker, DateTimePickerProps, DateInput as MantineDateInput } from '@mantine/dates'
 import '@mantine/dates/styles.css'
@@ -30,18 +34,30 @@ import * as fieldkind from '../../common/fieldkind'
 import { listEntity, queryByTextEntity, uploadFile } from '../../providers/httpV2'
 import React, { useContext, useEffect, useState } from 'react'
 import { Email, ID, Money } from '../../common/scalars'
-import { describe } from 'node:test'
-import { clear } from 'console'
+import { IconTrash } from '@tabler/icons-react'
+import { randomId } from '@mantine/hooks'
+import { MetaFieldKeys } from '../../common/types'
 
 export const TypeAddForm = <T extends ITypeMinimal = any>(props: {
     typeInfo: TypeInfo<T>
     form: UseFormReturnType<T>
     parentIdentifier?: string // parent key, e.g. 'name', 'address' etc. Set this if this is a nested form, so the child inputs have the correct full key e.g. 'address.street', 'address.city' etc.
-    initialData?: T
+    initialData?: T | Omit<T, MetaFieldKeys>
 }) => {
     const { form, typeInfo } = props
+    let { initialData } = props
 
     console.log('TypeAddForm', typeInfo)
+
+    const { appInfo } = useContext(AppContext)
+    if (!appInfo) {
+        throw new Error('AppInfo not available')
+    }
+
+    // if initial data is not set, use typeInfo to get empty initial data
+    if (!initialData) {
+        initialData = typeInfo.getEmptyObject(appInfo)
+    }
 
     const inputElements = typeInfo.fields.map((f: Field) => {
         // Skip meta fields
@@ -54,7 +70,7 @@ export const TypeAddForm = <T extends ITypeMinimal = any>(props: {
         const label = f.getLabel()
         // if we're dealing with a nested form, the keys should be prefixed with the parent key
         const identifier = props.parentIdentifier ? props.parentIdentifier + '.' + f.name.toFieldName() : f.name.toFieldName()
-        const value = props.initialData ? f.getFieldValue(props.initialData) : undefined
+        const value = initialData ? f.getFieldValue(initialData) : undefined
 
         return <GenericFieldInput key={identifier} identifier={identifier} label={label} field={f} form={form} initialData={value} />
     })
@@ -74,6 +90,53 @@ const GenericFieldInput = <T extends ITypeMinimal = any>(props: {
     return <GenericDtypeInput dtype={field.dtype} isRepeated={field.isRepeated} {...props} />
 }
 
+const GenericDtypeInputRepeated = <T extends any>(props: {
+    dtype: Dtype
+    identifier: string // formIdentifier for the input, e.g. 'email', 'name.firstName' etc.
+    label: string
+    form: UseFormReturnType<any>
+    initialData?: T
+}) => {
+    const { dtype, label, identifier, initialData, form } = props
+
+    // Initial data is an array. Enforce that.
+    const value = form.getInputProps(props.identifier).defaultValue ?? initialData ?? []
+    const items = Object.entries(value).map(([key, value]) => ({
+        key,
+        value,
+    }))
+
+    // Loop over the items and create a form for each one
+    const itemsForm = items.map(({ key, value }, index) => {
+        // identifier for individual item looks like: `parentfield.${index}.subfield`
+        const subIdentifier = `${identifier}.${index}`
+        return (
+            <Group key={key} mt="xs">
+                <GenericDtypeInput dtype={dtype} identifier={subIdentifier} label={label} form={form} initialData={value} isRepeated={false} />
+                <ActionIcon color="red" onClick={() => form.removeListItem(identifier, index)}>
+                    <IconTrash size={16} />
+                </ActionIcon>
+            </Group>
+        )
+    })
+
+    return (
+        <Box maw={500} mx="auto">
+            {itemsForm}
+            <Group mt="xs">
+                <Button
+                    onClick={() => {
+                        form.insertListItem(identifier, { key: randomId() })
+                        console.log('Inserting item', identifier)
+                    }}
+                >
+                    Add {label}
+                </Button>
+            </Group>
+        </Box>
+    )
+    // return <DefaultInput label={label} description={'Repeated fields are not yet supported in the Admin UI.'} placeholder="[]" identifier={identifier} form={props.form} />
+}
 export const GenericDtypeInput = <T extends any>(props: {
     dtype: Dtype
     identifier: string // formIdentifier for the input, e.g. 'email', 'name.firstName' etc.
@@ -82,7 +145,7 @@ export const GenericDtypeInput = <T extends any>(props: {
     initialData?: T
     isRepeated?: boolean
 }) => {
-    const { dtype, label, identifier, isRepeated, initialData } = props
+    const { dtype, label, identifier, isRepeated, initialData, form } = props
 
     const { appInfo } = useContext(AppContext)
     if (!appInfo) {
@@ -93,7 +156,7 @@ export const GenericDtypeInput = <T extends any>(props: {
 
     // We can't process repeated fields yet, except for "select" where we can simply allow multiple selections.
     if (isRepeated && dtype.kind !== fieldkind.ForeignEntityKind && dtype.kind !== fieldkind.EnumKind) {
-        return <DefaultInput label={label} placeholder="[]" identifier={identifier} form={props.form} />
+        return <GenericDtypeInputRepeated {...props} />
     }
 
     switch (dtype.kind) {
@@ -363,6 +426,7 @@ export const JSONInput = <T extends any = any>(props: InputProps<JsonInputProps,
         <MantineJSONInput
             key={props.identifier}
             label={props.label}
+            description={props.description}
             placeholder={props.placeholder}
             validationError="The JSON you have provided looks invalid. Try using an online JSON validator?"
             formatOnBlur

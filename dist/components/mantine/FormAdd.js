@@ -47,16 +47,27 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 import { Operator } from '../../common/Filter';
-import { Fieldset, JsonInput as MantineJSONInput, FileInput as MantineFileInput, NumberInput as MantineNumberInput, MultiSelect, Select, Switch, TextInput, } from '@mantine/core';
+import { Fieldset, JsonInput as MantineJSONInput, FileInput as MantineFileInput, NumberInput as MantineNumberInput, MultiSelect, Select, Switch, TextInput, Group, ActionIcon, Button, Box, } from '@mantine/core';
 import { DateTimePicker, DateInput as MantineDateInput } from '@mantine/dates';
 import '@mantine/dates/styles.css';
 import { AppContext } from '../../common/AppContextV3';
 import * as fieldkind from '../../common/fieldkind';
 import { listEntity, queryByTextEntity, uploadFile } from '../../providers/httpV2';
 import React, { useContext, useEffect, useState } from 'react';
+import { IconTrash } from '@tabler/icons-react';
+import { randomId } from '@mantine/hooks';
 export var TypeAddForm = function (props) {
     var form = props.form, typeInfo = props.typeInfo;
+    var initialData = props.initialData;
     console.log('TypeAddForm', typeInfo);
+    var appInfo = useContext(AppContext).appInfo;
+    if (!appInfo) {
+        throw new Error('AppInfo not available');
+    }
+    // if initial data is not set, use typeInfo to get empty initial data
+    if (!initialData) {
+        initialData = typeInfo.getEmptyObject(appInfo);
+    }
     var inputElements = typeInfo.fields.map(function (f) {
         // Skip meta fields
         if (f.isMetaField) {
@@ -68,7 +79,7 @@ export var TypeAddForm = function (props) {
         var label = f.getLabel();
         // if we're dealing with a nested form, the keys should be prefixed with the parent key
         var identifier = props.parentIdentifier ? props.parentIdentifier + '.' + f.name.toFieldName() : f.name.toFieldName();
-        var value = props.initialData ? f.getFieldValue(props.initialData) : undefined;
+        var value = initialData ? f.getFieldValue(initialData) : undefined;
         return React.createElement(GenericFieldInput, { key: identifier, identifier: identifier, label: label, field: f, form: form, initialData: value });
     });
     return React.createElement(React.Fragment, null, inputElements);
@@ -77,8 +88,41 @@ var GenericFieldInput = function (props) {
     var field = props.field;
     return React.createElement(GenericDtypeInput, __assign({ dtype: field.dtype, isRepeated: field.isRepeated }, props));
 };
+var GenericDtypeInputRepeated = function (props) {
+    var _a, _b;
+    var dtype = props.dtype, label = props.label, identifier = props.identifier, initialData = props.initialData, form = props.form;
+    // Initial data is an array. Enforce that.
+    var value = (_b = (_a = form.getInputProps(props.identifier).defaultValue) !== null && _a !== void 0 ? _a : initialData) !== null && _b !== void 0 ? _b : [];
+    var items = Object.entries(value).map(function (_a) {
+        var key = _a[0], value = _a[1];
+        return ({
+            key: key,
+            value: value,
+        });
+    });
+    // Loop over the items and create a form for each one
+    var itemsForm = items.map(function (_a, index) {
+        var key = _a.key, value = _a.value;
+        // identifier for individual item looks like: `parentfield.${index}.subfield`
+        var subIdentifier = "".concat(identifier, ".").concat(index);
+        return (React.createElement(Group, { key: key, mt: "xs" },
+            React.createElement(GenericDtypeInput, { dtype: dtype, identifier: subIdentifier, label: label, form: form, initialData: value, isRepeated: false }),
+            React.createElement(ActionIcon, { color: "red", onClick: function () { return form.removeListItem(identifier, index); } },
+                React.createElement(IconTrash, { size: 16 }))));
+    });
+    return (React.createElement(Box, { maw: 500, mx: "auto" },
+        itemsForm,
+        React.createElement(Group, { mt: "xs" },
+            React.createElement(Button, { onClick: function () {
+                    form.insertListItem(identifier, { key: randomId() });
+                    console.log('Inserting item', identifier);
+                } },
+                "Add ",
+                label))));
+    // return <DefaultInput label={label} description={'Repeated fields are not yet supported in the Admin UI.'} placeholder="[]" identifier={identifier} form={props.form} />
+};
 export var GenericDtypeInput = function (props) {
-    var dtype = props.dtype, label = props.label, identifier = props.identifier, isRepeated = props.isRepeated, initialData = props.initialData;
+    var dtype = props.dtype, label = props.label, identifier = props.identifier, isRepeated = props.isRepeated, initialData = props.initialData, form = props.form;
     var appInfo = useContext(AppContext).appInfo;
     if (!appInfo) {
         throw new Error('AppInfo not available');
@@ -86,7 +130,7 @@ export var GenericDtypeInput = function (props) {
     var defaultPlaceholder = '';
     // We can't process repeated fields yet, except for "select" where we can simply allow multiple selections.
     if (isRepeated && dtype.kind !== fieldkind.ForeignEntityKind && dtype.kind !== fieldkind.EnumKind) {
-        return React.createElement(DefaultInput, { label: label, placeholder: "[]", identifier: identifier, form: props.form });
+        return React.createElement(GenericDtypeInputRepeated, __assign({}, props));
     }
     switch (dtype.kind) {
         case fieldkind.StringKind:
@@ -247,7 +291,7 @@ export var JSONInput = function (props) {
     // Get the form input props so we can change the "null" default value to "undefined"
     var formInputProps = form.getInputProps(props.identifier);
     formInputProps.defaultValue = (_a = formInputProps.defaultValue) !== null && _a !== void 0 ? _a : undefined;
-    return (React.createElement(MantineJSONInput, __assign({ key: props.identifier, label: props.label, placeholder: props.placeholder, validationError: "The JSON you have provided looks invalid. Try using an online JSON validator?", formatOnBlur: true, autosize: true }, formInputProps, props.internalProps, { "data-1p-ignore": true })));
+    return (React.createElement(MantineJSONInput, __assign({ key: props.identifier, label: props.label, description: props.description, placeholder: props.placeholder, validationError: "The JSON you have provided looks invalid. Try using an online JSON validator?", formatOnBlur: true, autosize: true }, formInputProps, props.internalProps, { "data-1p-ignore": true })));
 };
 var ForeignEntityInput = function (props) {
     var _a = useState(undefined), options = _a[0], setOptions = _a[1];

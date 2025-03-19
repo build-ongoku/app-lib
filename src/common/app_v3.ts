@@ -507,7 +507,12 @@ export class EntityInfo<E extends IEntityMinimal> implements IEntityInfo<E> {
                 // Person Name (First + Last)
                 name = `${_r.name.firstName} ${_r.name.lastName}`
             }
+        } else if (_r.title) {
+            name = _r.title
+        } else if (_r.key) {
+            name = _r.key
         }
+
         if (r.deletedAt) {
             name += ' (Deleted)'
         }

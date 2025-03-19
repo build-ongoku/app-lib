@@ -5,11 +5,12 @@ import { UseFormReturnType } from '@mantine/form';
 import { ITypeMinimal, TypeInfo, Dtype } from '../../common/app_v3';
 import React from 'react';
 import { Email, ID, Money } from '../../common/scalars';
+import { MetaFieldKeys } from '../../common/types';
 export declare const TypeAddForm: <T extends ITypeMinimal = any>(props: {
     typeInfo: TypeInfo<T>;
     form: UseFormReturnType<T>;
     parentIdentifier?: string;
-    initialData?: T;
+    initialData?: T | Omit<T, MetaFieldKeys>;
 }) => React.JSX.Element;
 export declare const GenericDtypeInput: <T extends unknown>(props: {
     dtype: Dtype;

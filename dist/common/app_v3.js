@@ -267,6 +267,12 @@ var EntityInfo = /** @class */ (function () {
                     name = "".concat(_r.name.firstName, " ").concat(_r.name.lastName);
                 }
             }
+            else if (_r.title) {
+                name = _r.title;
+            }
+            else if (_r.key) {
+                name = _r.key;
+            }
             if (r.deletedAt) {
                 name += ' (Deleted)';
             }
