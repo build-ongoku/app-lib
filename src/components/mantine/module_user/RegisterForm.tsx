@@ -39,7 +39,7 @@ export const RegisterForm = <RequestT extends BareMinimumRegisterForm>(props: {}
         // skip type check for now
         validate: {
             // Commented out for DEV purposes
-            email: (value: string) => (/^\S+@\S+$/.test(value) ? null : ('Invalid email' as React.ReactNode)),
+            email: (value?: string) => (value && /^\S+@\S+$/.test(value) ? null : 'Invalid email'),
         },
     })
 

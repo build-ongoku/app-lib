@@ -41,7 +41,7 @@ export var RegisterForm = function (props) {
         // skip type check for now
         validate: {
             // Commented out for DEV purposes
-            email: function (value) { return (/^\S+@\S+$/.test(value) ? null : 'Invalid email'); },
+            email: function (value) { return (value && /^\S+@\S+$/.test(value) ? null : 'Invalid email'); },
         },
     });
     return (React.createElement(Container, { className: "w-96" },
