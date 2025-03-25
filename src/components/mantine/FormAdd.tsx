@@ -24,6 +24,7 @@ import {
     ActionIcon,
     Button,
     Box,
+    Anchor,
 } from '@mantine/core'
 import { DateInputProps, DateTimePicker, DateTimePickerProps, DateInput as MantineDateInput } from '@mantine/dates'
 import '@mantine/dates/styles.css'
@@ -100,43 +101,57 @@ const GenericDtypeInputRepeated = <T extends any>(props: {
     const { dtype, label, identifier, initialData, form } = props
 
     // Initial data is an array. Enforce that.
-    const value = form.getInputProps(props.identifier).defaultValue ?? initialData ?? []
-    const items = Object.entries(value).map(([key, value]) => ({
-        key,
-        value,
-    }))
 
-    // Loop over the items and create a form for each one
-    const itemsForm = items.map(({ key, value }, index) => {
-        // identifier for individual item looks like: `parentfield.${index}.subfield`
-        const subIdentifier = `${identifier}.${index}`
+    if (dtype.kind == fieldkind.NestedKind) {
+        const value = form.getInputProps(props.identifier).defaultValue ?? initialData ?? []
+
+        const items = Object.entries(value).map(([key, value]) => ({
+            key,
+            value,
+        }))
+
+        // Loop over the items and create a form for each one
+        const itemsForm = items.map(({ key, value }, index) => {
+            // identifier for individual item looks like: `parentfield.${index}.subfield`
+            const subIdentifier = `${identifier}.${key}`
+            console.log('key', key, 'value', value, 'index', index, 'sub-identifier', subIdentifier)
+
+            return (
+                <Group key={key} mt="xs">
+                    <GenericDtypeInput dtype={dtype} identifier={subIdentifier} label={label} form={form} initialData={value} isRepeated={false} />
+                    <ActionIcon
+                        color="red"
+                        onClick={() => {
+                            console.log('Removing item', identifier, index, key)
+                            form.removeListItem(identifier, index)
+                        }}
+                    >
+                        <IconTrash size={16} />
+                    </ActionIcon>
+                </Group>
+            )
+        })
+
         return (
-            <Group key={key} mt="xs">
-                <GenericDtypeInput dtype={dtype} identifier={subIdentifier} label={label} form={form} initialData={value} isRepeated={false} />
-                <ActionIcon color="red" onClick={() => form.removeListItem(identifier, index)}>
-                    <IconTrash size={16} />
-                </ActionIcon>
-            </Group>
+            <Box maw={500} mx="auto">
+                {itemsForm}
+                <Group mt="xs">
+                    <Button
+                        onClick={() => {
+                            form.insertListItem(identifier, {key: randomId()})
+                            console.log('Inserting item', identifier)
+                        }}
+                    >
+                        Add {label}
+                    </Button>
+                </Group>
+            </Box>
         )
-    })
+    }
 
-    return (
-        <Box maw={500} mx="auto">
-            {itemsForm}
-            <Group mt="xs">
-                <Button
-                    onClick={() => {
-                        form.insertListItem(identifier, { key: randomId() })
-                        console.log('Inserting item', identifier)
-                    }}
-                >
-                    Add {label}
-                </Button>
-            </Group>
-        </Box>
-    )
-    // return <DefaultInput label={label} description={'Repeated fields are not yet supported in the Admin UI.'} placeholder="[]" identifier={identifier} form={props.form} />
+    return <JSONInput label={label} description="JSON" initialValue={initialData} identifier={identifier} form={form} placeholder="[]" />
 }
+
 export const GenericDtypeInput = <T extends any>(props: {
     dtype: Dtype
     identifier: string // formIdentifier for the input, e.g. 'email', 'name.firstName' etc.
@@ -146,6 +161,8 @@ export const GenericDtypeInput = <T extends any>(props: {
     isRepeated?: boolean
 }) => {
     const { dtype, label, identifier, isRepeated, initialData, form } = props
+
+    console.log('GenericDtypeInput', props)
 
     const { appInfo } = useContext(AppContext)
     if (!appInfo) {
@@ -254,7 +271,6 @@ interface InputProps<InternalPropsT = any, T = any> {
     placeholder: string
     description?: string
     initialValue?: T // Any initial value?
-    // onChange: (e: React.ChangeEvent<HTMLInputElement>) => void
 }
 
 export const DefaultInput = <T extends any = any>(props: InputProps<never, T>) => {
@@ -416,19 +432,35 @@ export const GenericDataInput = <T extends any>(props: InputProps<never, T>) => 
 }
 
 export const JSONInput = <T extends any = any>(props: InputProps<JsonInputProps, T>) => {
+    console.log('JSONInput', props)
+
     const { form } = props
 
     // Get the form input props so we can change the "null" default value to "undefined"
     const formInputProps = form.getInputProps(props.identifier)
     formInputProps.defaultValue = formInputProps.defaultValue ?? undefined
+    // if the initial value is an empty array, set the default value to undefined
+    if (Array.isArray(props.initialValue) && props.initialValue.length === 0) {
+        formInputProps.defaultValue = undefined
+    }
+    // if the initial value is an empty object, set the default value to undefined
+    if (typeof props.initialValue === 'object' && Object.keys(props.initialValue ?? {}).length === 0) {
+        formInputProps.defaultValue = undefined
+    }
 
+    console.log('JSONInput formInputProps', formInputProps)
     return (
         <MantineJSONInput
             key={props.identifier}
             label={props.label}
             description={props.description}
             placeholder={props.placeholder}
-            validationError="The JSON you have provided looks invalid. Try using an online JSON validator?"
+            validationError={
+                <>
+                    {'The JSON you have provided looks invalid. Try using an '}
+                    <a href="https://jsonlint.com" target="_blank" rel="noopener noreferrer">online JSON validator.</a>
+                </>
+            }
             formatOnBlur
             autosize
             {...formInputProps}

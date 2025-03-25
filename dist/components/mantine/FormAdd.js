@@ -20,8 +20,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 var __generator = (this && this.__generator) || function (thisArg, body) {
-    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g = Object.create((typeof Iterator === "function" ? Iterator : Object).prototype);
-    return g.next = verb(0), g["throw"] = verb(1), g["return"] = verb(2), typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
     function verb(n) { return function (v) { return step([n, v]); }; }
     function step(op) {
         if (f) throw new TypeError("Generator is already executing.");
@@ -92,37 +92,44 @@ var GenericDtypeInputRepeated = function (props) {
     var _a, _b;
     var dtype = props.dtype, label = props.label, identifier = props.identifier, initialData = props.initialData, form = props.form;
     // Initial data is an array. Enforce that.
-    var value = (_b = (_a = form.getInputProps(props.identifier).defaultValue) !== null && _a !== void 0 ? _a : initialData) !== null && _b !== void 0 ? _b : [];
-    var items = Object.entries(value).map(function (_a) {
-        var key = _a[0], value = _a[1];
-        return ({
-            key: key,
-            value: value,
+    if (dtype.kind == fieldkind.NestedKind) {
+        var value = (_b = (_a = form.getInputProps(props.identifier).defaultValue) !== null && _a !== void 0 ? _a : initialData) !== null && _b !== void 0 ? _b : [];
+        var items = Object.entries(value).map(function (_a) {
+            var key = _a[0], value = _a[1];
+            return ({
+                key: key,
+                value: value,
+            });
         });
-    });
-    // Loop over the items and create a form for each one
-    var itemsForm = items.map(function (_a, index) {
-        var key = _a.key, value = _a.value;
-        // identifier for individual item looks like: `parentfield.${index}.subfield`
-        var subIdentifier = "".concat(identifier, ".").concat(index);
-        return (React.createElement(Group, { key: key, mt: "xs" },
-            React.createElement(GenericDtypeInput, { dtype: dtype, identifier: subIdentifier, label: label, form: form, initialData: value, isRepeated: false }),
-            React.createElement(ActionIcon, { color: "red", onClick: function () { return form.removeListItem(identifier, index); } },
-                React.createElement(IconTrash, { size: 16 }))));
-    });
-    return (React.createElement(Box, { maw: 500, mx: "auto" },
-        itemsForm,
-        React.createElement(Group, { mt: "xs" },
-            React.createElement(Button, { onClick: function () {
-                    form.insertListItem(identifier, { key: randomId() });
-                    console.log('Inserting item', identifier);
-                } },
-                "Add ",
-                label))));
-    // return <DefaultInput label={label} description={'Repeated fields are not yet supported in the Admin UI.'} placeholder="[]" identifier={identifier} form={props.form} />
+        // Loop over the items and create a form for each one
+        var itemsForm = items.map(function (_a, index) {
+            var key = _a.key, value = _a.value;
+            // identifier for individual item looks like: `parentfield.${index}.subfield`
+            var subIdentifier = "".concat(identifier, ".").concat(key);
+            console.log('key', key, 'value', value, 'index', index, 'sub-identifier', subIdentifier);
+            return (React.createElement(Group, { key: key, mt: "xs" },
+                React.createElement(GenericDtypeInput, { dtype: dtype, identifier: subIdentifier, label: label, form: form, initialData: value, isRepeated: false }),
+                React.createElement(ActionIcon, { color: "red", onClick: function () {
+                        console.log('Removing item', identifier, index, key);
+                        form.removeListItem(identifier, index);
+                    } },
+                    React.createElement(IconTrash, { size: 16 }))));
+        });
+        return (React.createElement(Box, { maw: 500, mx: "auto" },
+            itemsForm,
+            React.createElement(Group, { mt: "xs" },
+                React.createElement(Button, { onClick: function () {
+                        form.insertListItem(identifier, { key: randomId() });
+                        console.log('Inserting item', identifier);
+                    } },
+                    "Add ",
+                    label))));
+    }
+    return React.createElement(JSONInput, { label: label, description: "JSON", initialValue: initialData, identifier: identifier, form: form, placeholder: "[]" });
 };
 export var GenericDtypeInput = function (props) {
     var dtype = props.dtype, label = props.label, identifier = props.identifier, isRepeated = props.isRepeated, initialData = props.initialData, form = props.form;
+    console.log('GenericDtypeInput', props);
     var appInfo = useContext(AppContext).appInfo;
     if (!appInfo) {
         throw new Error('AppInfo not available');
@@ -286,12 +293,24 @@ export var GenericDataInput = function (props) {
     return (React.createElement(MantineJSONInput, __assign({ key: props.identifier, label: props.label, placeholder: props.placeholder, validationError: "The JSON you have provided looks invalid. Try using an online JSON validator?", formatOnBlur: true, autosize: true }, formProps, { onChange: newOnChange, "data-1p-ignore": true })));
 };
 export var JSONInput = function (props) {
-    var _a;
+    var _a, _b;
+    console.log('JSONInput', props);
     var form = props.form;
     // Get the form input props so we can change the "null" default value to "undefined"
     var formInputProps = form.getInputProps(props.identifier);
     formInputProps.defaultValue = (_a = formInputProps.defaultValue) !== null && _a !== void 0 ? _a : undefined;
-    return (React.createElement(MantineJSONInput, __assign({ key: props.identifier, label: props.label, description: props.description, placeholder: props.placeholder, validationError: "The JSON you have provided looks invalid. Try using an online JSON validator?", formatOnBlur: true, autosize: true }, formInputProps, props.internalProps, { "data-1p-ignore": true })));
+    // if the initial value is an empty array, set the default value to undefined
+    if (Array.isArray(props.initialValue) && props.initialValue.length === 0) {
+        formInputProps.defaultValue = undefined;
+    }
+    // if the initial value is an empty object, set the default value to undefined
+    if (typeof props.initialValue === 'object' && Object.keys((_b = props.initialValue) !== null && _b !== void 0 ? _b : {}).length === 0) {
+        formInputProps.defaultValue = undefined;
+    }
+    console.log('JSONInput formInputProps', formInputProps);
+    return (React.createElement(MantineJSONInput, __assign({ key: props.identifier, label: props.label, description: props.description, placeholder: props.placeholder, validationError: React.createElement(React.Fragment, null,
+            'The JSON you have provided looks invalid. Try using an ',
+            React.createElement("a", { href: "https://jsonlint.com", target: "_blank", rel: "noopener noreferrer" }, "online JSON validator.")), formatOnBlur: true, autosize: true }, formInputProps, props.internalProps, { "data-1p-ignore": true })));
 };
 var ForeignEntityInput = function (props) {
     var _a = useState(undefined), options = _a[0], setOptions = _a[1];
