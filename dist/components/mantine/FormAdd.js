@@ -70,7 +70,8 @@ export var TypeAddForm = function (props) {
     }
     var inputElements = typeInfo.fields.map(function (f) {
         // Skip meta fields
-        if (f.isMetaField) {
+        // but allow key field
+        if (f.isMetaField && f.name.toRaw() !== 'key') {
             return;
         }
         if (f.excludeFromForm) {
@@ -307,10 +308,28 @@ export var JSONInput = function (props) {
     if (typeof props.initialValue === 'object' && Object.keys((_b = props.initialValue) !== null && _b !== void 0 ? _b : {}).length === 0) {
         formInputProps.defaultValue = undefined;
     }
+    // MantineJSONInput expects a quoted value, so we need to quote the initial value
+    if (props.initialValue) {
+        formInputProps.defaultValue = JSON.stringify(props.initialValue);
+    }
+    // Create a custom onChange handler to parse the JSON string into an object
+    var newOnChange = function (e) {
+        console.log('JSON Input Change', e);
+        // deserialize the JSON string
+        try {
+            e = JSON.parse(e);
+            console.log('Deserialized JSON', e);
+        }
+        catch (error) {
+            console.error('Failed to parse JSON', error);
+        }
+        formInputProps.onChange(e);
+    };
     console.log('JSONInput formInputProps', formInputProps);
     return (React.createElement(MantineJSONInput, __assign({ key: props.identifier, label: props.label, description: props.description, placeholder: props.placeholder, validationError: React.createElement(React.Fragment, null,
             'The JSON you have provided looks invalid. Try using an ',
-            React.createElement("a", { href: "https://jsonlint.com", target: "_blank", rel: "noopener noreferrer" }, "online JSON validator.")), formatOnBlur: true, autosize: true }, formInputProps, props.internalProps, { "data-1p-ignore": true })));
+            ' ',
+            React.createElement("a", { href: "https://jsonlint.com", target: "_blank", rel: "noopener noreferrer" }, "online JSON validator.")), formatOnBlur: true, autosize: true }, formInputProps, { onChange: newOnChange }, props.internalProps, { "data-1p-ignore": true })));
 };
 var ForeignEntityInput = function (props) {
     var _a = useState(undefined), options = _a[0], setOptions = _a[1];

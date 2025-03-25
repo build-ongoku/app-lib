@@ -62,7 +62,8 @@ export const TypeAddForm = <T extends ITypeMinimal = any>(props: {
 
     const inputElements = typeInfo.fields.map((f: Field) => {
         // Skip meta fields
-        if (f.isMetaField) {
+        // but allow key field
+        if (f.isMetaField && f.name.toRaw() !== 'key') {
             return
         }
         if (f.excludeFromForm) {
@@ -138,7 +139,7 @@ const GenericDtypeInputRepeated = <T extends any>(props: {
                 <Group mt="xs">
                     <Button
                         onClick={() => {
-                            form.insertListItem(identifier, {key: randomId()})
+                            form.insertListItem(identifier, { key: randomId() })
                             console.log('Inserting item', identifier)
                         }}
                     >
@@ -447,6 +448,24 @@ export const JSONInput = <T extends any = any>(props: InputProps<JsonInputProps,
     if (typeof props.initialValue === 'object' && Object.keys(props.initialValue ?? {}).length === 0) {
         formInputProps.defaultValue = undefined
     }
+    // MantineJSONInput expects a quoted value, so we need to quote the initial value
+    if (props.initialValue) {
+        formInputProps.defaultValue = JSON.stringify(props.initialValue)
+    }
+
+    // Create a custom onChange handler to parse the JSON string into an object
+    const newOnChange = (e: any) => {
+        console.log('JSON Input Change', e)
+        // deserialize the JSON string
+        try {
+            e = JSON.parse(e)
+            console.log('Deserialized JSON', e)
+        } catch (error) {
+            console.error('Failed to parse JSON', error)
+        }
+
+        formInputProps.onChange(e)
+    }
 
     console.log('JSONInput formInputProps', formInputProps)
     return (
@@ -457,13 +476,16 @@ export const JSONInput = <T extends any = any>(props: InputProps<JsonInputProps,
             placeholder={props.placeholder}
             validationError={
                 <>
-                    {'The JSON you have provided looks invalid. Try using an '}
-                    <a href="https://jsonlint.com" target="_blank" rel="noopener noreferrer">online JSON validator.</a>
+                    {'The JSON you have provided looks invalid. Try using an '}{' '}
+                    <a href="https://jsonlint.com" target="_blank" rel="noopener noreferrer">
+                        online JSON validator.
+                    </a>
                 </>
             }
             formatOnBlur
             autosize
             {...formInputProps}
+            onChange={newOnChange}
             {...props.internalProps}
             data-1p-ignore
         />
