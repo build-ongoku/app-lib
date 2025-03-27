@@ -31,58 +31,63 @@ export const EntityDetail = <E extends IEntityMinimal = IEntityMinimal>(props: {
 
     return (
         <div>
-            <ServerResponseWrapper error={error || resp?.error} loading={loading}>
-                {resp?.data && (
-                    <div className="flex flex-col gap-4">
-                        <div className="flex justify-between my-5">
-                            <Title order={2}>{`${entityInfo.getNameFriendly()}: ${entityInfo.getEntityNameFriendly(resp.data)}`}</Title>
-                            <div className="flex gap-3">
-                                <Button
-                                    autoContrast
-                                    leftSection={<FiEdit2 />}
-                                    onClick={() => {
-                                        router.push(
-                                            getEntityEditPath<E>({
-                                                entityInfo: entityInfo,
-                                                entity: resp.data!,
-                                            })
-                                        )
-                                    }}
-                                >
-                                    Edit
-                                </Button>
-                                <Button
-                                    leftSection={<MdAdd />}
-                                    onClick={() => {
-                                        router.push(getEntityAddPath(entityInfo))
-                                    }}
-                                >
-                                    New
-                                </Button>
-                                <Button
-                                    leftSection={<MdOutlineFormatListBulleted />}
-                                    onClick={() => {
-                                        router.push(getEntityListPath(entityInfo))
-                                    }}
-                                >
-                                    List
-                                </Button>
-                                <Button
-                                    leftSection={<MdChat />}
-                                    onClick={() => {
-                                        router.push(getEntityChatPath(entityInfo))
-                                    }}
-                                >
-                                    Chat
-                                </Button>
-                            </div>
-                        </div>
-                        <EntityActions entityInfo={entityInfo} id={identifier} refetchEntity={fetch} />
-                        <pre>{JSON.stringify(resp.data, null, 2)}</pre>
-                        <EntityAssociations entityInfo={entityInfo} entityID={identifier} entityData={resp.data} />
+            <div className="flex flex-col gap-4">
+                <div className="flex justify-between my-5">
+                    <Title order={2}>{entityInfo.getNameFriendly()}: {resp?.data ? entityInfo.getEntityNameFriendly(resp.data) : 'Unknown'}</Title>
+                    <div className="flex gap-3">
+                        <Button
+                            autoContrast
+                            leftSection={<FiEdit2 />}
+                            onClick={() => {
+                                router.push(
+                                    getEntityEditPath<E>({
+                                        entityInfo: entityInfo,
+                                        entity: resp?.data!,
+                                    })
+                                )
+                            }}
+                            loading={loading}
+                            disabled={!!error || !resp?.data || loading}
+                        >
+                            Edit
+                        </Button>
+                        <Button
+                            leftSection={<MdAdd />}
+                            onClick={() => {
+                                router.push(getEntityAddPath(entityInfo))
+                            }}
+                        >
+                            New
+                        </Button>
+                        <Button
+                            leftSection={<MdOutlineFormatListBulleted />}
+                            onClick={() => {
+                                router.push(getEntityListPath(entityInfo))
+                            }}
+                        >
+                            List
+                        </Button>
+                        <Button
+                            leftSection={<MdChat />}
+                            onClick={() => {
+                                router.push(getEntityChatPath(entityInfo))
+                            }}
+                            disabled={true}
+                        >
+                            Chat
+                        </Button>
                     </div>
-                )}
-            </ServerResponseWrapper>
+                </div>
+                <ServerResponseWrapper error={error || resp?.error} loading={loading}>
+                    {resp?.data && (
+                        <>
+                            <EntityActions entityInfo={entityInfo} id={identifier} refetchEntity={fetch} />
+                            <pre>{JSON.stringify(resp?.data, null, 2)}</pre>
+                            <EntityAssociations entityInfo={entityInfo} entityID={identifier} entityData={resp?.data} />
+                        </>
+                    )}
+                </ServerResponseWrapper>
+            </div>
         </div>
     )
 }

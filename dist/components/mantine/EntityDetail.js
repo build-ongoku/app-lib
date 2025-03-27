@@ -22,16 +22,19 @@ export var EntityDetail = function (props) {
         },
     }), resp = _a.resp, loading = _a.loading, error = _a.error, fetchDone = _a.fetchDone, fetch = _a.fetch;
     return (React.createElement("div", null,
-        React.createElement(ServerResponseWrapper, { error: error || (resp === null || resp === void 0 ? void 0 : resp.error), loading: loading }, (resp === null || resp === void 0 ? void 0 : resp.data) && (React.createElement("div", { className: "flex flex-col gap-4" },
+        React.createElement("div", { className: "flex flex-col gap-4" },
             React.createElement("div", { className: "flex justify-between my-5" },
-                React.createElement(Title, { order: 2 }, "".concat(entityInfo.getNameFriendly(), ": ").concat(entityInfo.getEntityNameFriendly(resp.data))),
+                React.createElement(Title, { order: 2 },
+                    entityInfo.getNameFriendly(),
+                    ": ",
+                    (resp === null || resp === void 0 ? void 0 : resp.data) ? entityInfo.getEntityNameFriendly(resp.data) : 'Unknown'),
                 React.createElement("div", { className: "flex gap-3" },
                     React.createElement(Button, { autoContrast: true, leftSection: React.createElement(FiEdit2, null), onClick: function () {
                             router.push(getEntityEditPath({
                                 entityInfo: entityInfo,
-                                entity: resp.data,
+                                entity: resp === null || resp === void 0 ? void 0 : resp.data,
                             }));
-                        } }, "Edit"),
+                        }, loading: loading, disabled: !!error || !(resp === null || resp === void 0 ? void 0 : resp.data) || loading }, "Edit"),
                     React.createElement(Button, { leftSection: React.createElement(MdAdd, null), onClick: function () {
                             router.push(getEntityAddPath(entityInfo));
                         } }, "New"),
@@ -40,10 +43,11 @@ export var EntityDetail = function (props) {
                         } }, "List"),
                     React.createElement(Button, { leftSection: React.createElement(MdChat, null), onClick: function () {
                             router.push(getEntityChatPath(entityInfo));
-                        } }, "Chat"))),
-            React.createElement(EntityActions, { entityInfo: entityInfo, id: identifier, refetchEntity: fetch }),
-            React.createElement("pre", null, JSON.stringify(resp.data, null, 2)),
-            React.createElement(EntityAssociations, { entityInfo: entityInfo, entityID: identifier, entityData: resp.data }))))));
+                        }, disabled: true }, "Chat"))),
+            React.createElement(ServerResponseWrapper, { error: error || (resp === null || resp === void 0 ? void 0 : resp.error), loading: loading }, (resp === null || resp === void 0 ? void 0 : resp.data) && (React.createElement(React.Fragment, null,
+                React.createElement(EntityActions, { entityInfo: entityInfo, id: identifier, refetchEntity: fetch }),
+                React.createElement("pre", null, JSON.stringify(resp === null || resp === void 0 ? void 0 : resp.data, null, 2)),
+                React.createElement(EntityAssociations, { entityInfo: entityInfo, entityID: identifier, entityData: resp === null || resp === void 0 ? void 0 : resp.data })))))));
 };
 var EntityAssociations = function (props) {
     var appInfo = useContext(AppContext).appInfo;
