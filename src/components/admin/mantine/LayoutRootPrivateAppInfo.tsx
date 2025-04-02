@@ -8,16 +8,19 @@ import { LogoutButton } from '../../mantine/module_user/LogoutButton'
 import { addBaseURL } from '../../../providers/provider'
 import React, { Suspense, useContext } from 'react'
 import { FiExternalLink } from 'react-icons/fi'
+import { Router } from '../../../common/types'
 
-export const LayoutRootPrivateAppInfo = (props: { appReq: AppReq; applyOverrides?: (appInfo: App) => Promise<App>; children: React.ReactNode }) => {
+export const LayoutRootPrivateAppInfo = (props: { appReq: AppReq; applyOverrides?: (appInfo: App) => Promise<App>; children: React.ReactNode; router: Router }) => {
     return (
         <AppProvider appReq={props.appReq} applyOverrides={props.applyOverrides}>
-            <AppLayout>{props.children}</AppLayout>
+            <AppLayout router={props.router}>{props.children}</AppLayout>
         </AppProvider>
     )
 }
 
-const AppLayout = (props: { children: React.ReactNode }) => {
+const AppLayout = (props: { children: React.ReactNode; router: Router }) => {
+    const { router } = props
+
     const [opened, { toggle }] = useDisclosure()
 
     const { appInfo } = useContext(AppContext)
@@ -57,7 +60,7 @@ const AppLayout = (props: { children: React.ReactNode }) => {
                     </div>
 
                     <div className="flex-grow" />
-                    <LogoutButton />
+                    <LogoutButton router={router} />
                 </Group>
             </AppShell.Header>
             <AppShell.Navbar>

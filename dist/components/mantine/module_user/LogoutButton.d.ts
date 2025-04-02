@@ -1,2 +1,5 @@
 import React from 'react';
-export declare const LogoutButton: () => React.JSX.Element;
+import { Router } from '../../../common/types';
+export declare const LogoutButton: (props: {
+    router: Router;
+}) => React.JSX.Element;

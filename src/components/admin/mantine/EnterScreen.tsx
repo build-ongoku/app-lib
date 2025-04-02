@@ -2,13 +2,14 @@
 
 import { Button, Container, Image, Title } from '@mantine/core'
 import { useAuth } from '../../../common/AuthContext'
-import { useRouter } from 'next/navigation'
 import React, { useState } from 'react'
+import { Router } from '../../../common/types'
 
 export interface EnterScreenProps {
     appName: string
     authenticatedUserRedirectPath: string
     unauthenticatedUserRedirectPath: string
+    router: Router
 }
 
 export const EnterScreen = (props: EnterScreenProps) => {
@@ -30,9 +31,9 @@ export const EnterScreen = (props: EnterScreenProps) => {
 }
 
 const EnterButton = (props: EnterScreenProps) => {
-    const router = useRouter()
-    const [loading, setLoading] = useState(false)
+    const { router } = props
 
+    const [loading, setLoading] = useState(false)
     const { session, loading: loadingSession } = useAuth()
 
     const redirectPath = loadingSession || !session ? props.unauthenticatedUserRedirectPath : props.authenticatedUserRedirectPath

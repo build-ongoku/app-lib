@@ -4,6 +4,7 @@ import { AppContext } from '../../common/AppContextV3';
 import { EntityAddForm } from './EntityAdd';
 import React, { useContext } from 'react';
 export var PageEntityAdd = function (props) {
+    var router = props.router;
     var _a = props.params, serviceName = _a.service, entityName = _a.entity;
     var appInfo = useContext(AppContext).appInfo;
     if (!appInfo) {
@@ -24,5 +25,5 @@ export var PageEntityAdd = function (props) {
         React.createElement(Title, { order: 1 },
             "Add ", entityInfo === null || entityInfo === void 0 ? void 0 :
             entityInfo.getNameFriendly()),
-        React.createElement(EntityAddForm, { entityInfo: entityInfo, initialData: typeInfo.getEmptyObject(appInfo) })));
+        React.createElement(EntityAddForm, { entityInfo: entityInfo, initialData: typeInfo.getEmptyObject(appInfo), router: router })));
 };

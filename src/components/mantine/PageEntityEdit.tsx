@@ -4,6 +4,7 @@ import { Title } from '@mantine/core'
 import { IEntityMinimal } from '../../common/app_v3'
 import { AppContext } from '../../common/AppContextV3'
 import { EntityEditForm } from './EntityEdit'
+import { WithRouter } from '../../common/types'
 import React, { useContext } from 'react'
 
 export interface Props {
@@ -14,8 +15,10 @@ export interface Props {
     }
 }
 
-export const PageEntityEdit = <E extends IEntityMinimal = any>(props: Props) => {
+export const PageEntityEdit = <E extends IEntityMinimal = any>(props: Props & WithRouter) => {
+    const { router } = props
     const { service: serviceName, entity: entityName, identifier } = props.params
+
     const { appInfo } = useContext(AppContext)
     if (!appInfo) {
         throw new Error('AppInfo not loaded')
@@ -37,7 +40,7 @@ export const PageEntityEdit = <E extends IEntityMinimal = any>(props: Props) => 
     return (
         <div>
             <Title order={1}>Edit {entityInfo?.getNameFriendly()}</Title>
-            <EntityEditForm<E> entityInfo={entityInfo} objectId={identifier} />
+            <EntityEditForm<E> entityInfo={entityInfo} objectId={identifier} router={router} />
         </div>
     )
 }

@@ -5,7 +5,6 @@ import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import { MantineReactTable, useMantineReactTable, type MRT_ColumnDef } from 'mantine-react-table'
 import 'mantine-react-table/styles.css' //make sure MRT styles were imported in your app root (once)
-import { useRouter } from 'next/navigation'
 import React, { useContext, useMemo } from 'react'
 import { EntityInfo, IEntityMinimal } from '../../common/app_v3'
 import { getEntityAddPath, getEntityChatPath } from '../../components/EntityLink'
@@ -14,6 +13,7 @@ import { ServerResponseWrapper } from './ServerResponseWrapper'
 import { pluralize } from '../../common/namespacev2'
 import { MdAdd, MdChat } from 'react-icons/md'
 import { AppContext } from '../../common/AppContextV3'
+import { Router } from '../../common/types'
 
 dayjs.extend(relativeTime)
 
@@ -84,9 +84,11 @@ const getDefaultEntityColumns = <E extends IEntityMinimal>(entityInfo: EntityInf
 }
 
 // EntityListTable fetches the list of entities and renders the table
-export const EntityListTable = <E extends IEntityMinimal>(props: { entityInfo: EntityInfo<E> }) => {
-    const { entityInfo } = props
-    const router = useRouter()
+export const EntityListTable = <E extends IEntityMinimal>(props: { 
+    entityInfo: EntityInfo<E>
+    router: Router
+ }) => {
+    const { entityInfo, router } = props
 
     // Get the entity from the server
     const { resp, error, loading, fetchDone, fetch } = useListEntity<E>({

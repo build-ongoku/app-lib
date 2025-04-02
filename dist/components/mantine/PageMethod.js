@@ -13,5 +13,6 @@ var __assign = (this && this.__assign) || function () {
 import { MethodForm } from './MethodForm';
 import React from 'react';
 export var PageMethod = function (props) {
-    return React.createElement(MethodForm, __assign({}, props.params));
+    var router = props.router;
+    return React.createElement(MethodForm, __assign({}, props.params, { router: router }));
 };

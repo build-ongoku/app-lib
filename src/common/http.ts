@@ -1,5 +1,4 @@
 import { Optional } from './types'
-import { NextRequest, NextResponse } from 'next/server'
 
 interface Error {
     // This is the error message
@@ -21,15 +20,6 @@ export interface ResponseBody<T = null> {
     error?: Error
 }
 
-export class CustomNextRequest<T = null> extends NextRequest {
-    async json(): Promise<T> {
-        const body = await super.json()
-        return body as T
-    }
-}
-
-export class CustomNextResponse<T> extends NextResponse<ResponseBody<T>> {}
-
 // An enum list of all important HTTP status codes
 export enum HTTPStatus {
     OK = 200,
@@ -39,11 +29,4 @@ export enum HTTPStatus {
     FORBIDDEN = 403,
     NOT_FOUND = 404,
     INTERNAL_SERVER_ERROR = 500,
-}
-
-export const handleResponse = <T>(resp: ActionResponseBody<T>): CustomNextResponse<T> => {
-    if (resp.error) {
-        return CustomNextResponse.json({ ...resp, status: HTTPStatus.BAD_REQUEST })
-    }
-    return CustomNextResponse.json({ ...resp, status: HTTPStatus.OK })
 }

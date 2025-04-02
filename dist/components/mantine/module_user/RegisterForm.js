@@ -14,7 +14,6 @@ import { Anchor, Container, PasswordInput, TextInput } from '@mantine/core';
 import { useForm } from '@mantine/form';
 import { useAuth } from '../../../common/AuthContext';
 import { Form } from '../Form';
-import { useRouter } from 'next/navigation';
 import React from 'react';
 /*
 interface IRegisterForm {
@@ -26,7 +25,7 @@ interface IRegisterForm {
     }
 }*/
 export var RegisterForm = function (props) {
-    var router = useRouter();
+    var router = props.router;
     var authenticate = useAuth().authenticate;
     var form = useForm({
         mode: 'uncontrolled',
@@ -53,7 +52,7 @@ export var RegisterForm = function (props) {
                     return;
                 }
                 throw new Error('Login call succeeded but no token was returned.');
-            }, redirectPath: "/home" },
+            }, redirectPath: "/home", router: router },
             React.createElement(TextInput, __assign({ label: "Email", placeholder: "you@email.com", key: form.key('email') }, form.getInputProps('email'))),
             React.createElement(PasswordInput, __assign({ className: "", label: "Password", placeholder: "super-secret-password", key: form.key('password'), mt: "md" }, form.getInputProps('password'))),
             React.createElement(TextInput, __assign({ label: "First Name", placeholder: "John", key: form.key('name.firstName') }, form.getInputProps('name.firstName'))),

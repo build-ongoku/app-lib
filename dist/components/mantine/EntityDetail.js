@@ -7,13 +7,11 @@ import { getEntityAddPath, getEntityChatPath, getEntityEditPath, getEntityListPa
 import { EntityListTableInner } from './EntityList';
 import { ServerResponseWrapper } from './ServerResponseWrapper';
 import { useGetEntity, useListEntity } from '../../providers/httpV2';
-import { useRouter } from 'next/navigation';
 import React, { useContext } from 'react';
 import { FiEdit2 } from 'react-icons/fi';
 import { MdAdd, MdOutlineFormatListBulleted, MdChat } from 'react-icons/md';
 export var EntityDetail = function (props) {
-    var entityInfo = props.entityInfo, identifier = props.identifier;
-    var router = useRouter();
+    var entityInfo = props.entityInfo, identifier = props.identifier, router = props.router;
     // Todo: Assume that the identifier is the id for now but this could include any other human readable identifier
     var _a = useGetEntity({
         entityNamespace: entityInfo.namespace.toRaw(),

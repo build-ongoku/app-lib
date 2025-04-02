@@ -2,12 +2,13 @@
 
 import { Container, Image, Title } from '@mantine/core'
 import { useAuth } from '../../../common/AuthContext'
-import { useRouter } from 'next/navigation'
 import React, { useEffect } from 'react'
+import { Router } from '../../../common/types'
 
-export const LayoutRootPublic = ({ children }: { children: React.ReactNode }) => {
+export const LayoutRootPublic = (props: { router: Router; children: React.ReactNode }) => {
+    const { router, children } = props
+
     const { session, loading: loadingSession } = useAuth()
-    const router = useRouter()
 
     // Do not allow authenticated users to access this part of the app.
     useEffect(() => {

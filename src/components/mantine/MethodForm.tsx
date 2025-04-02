@@ -5,9 +5,10 @@ import { ITypeMinimal } from '../../common/app_v3'
 import { AppContext } from '../../common/AppContextV3'
 import { DtypeFormWrapper } from './FormAddTypeWrapper'
 import React, { useContext } from 'react'
+import { Router } from '../../common/types'
 
-export const MethodForm = <ReqT extends ITypeMinimal = any, RespT extends ITypeMinimal = any>(props: { service: string; entity?: string; method: string }) => {
-    const { service, entity, method } = props
+export const MethodForm = <ReqT extends ITypeMinimal = any, RespT extends ITypeMinimal = any>(props: { service: string; entity?: string; method: string; router: Router }) => {
+    const { service, entity, method, router } = props
 
     const { appInfo } = useContext(AppContext)
     if (!appInfo) {
@@ -34,9 +35,11 @@ export const MethodForm = <ReqT extends ITypeMinimal = any, RespT extends ITypeM
     return (
         <div>
             <Title order={1}>Method: {mthd.namespace.method.toCapital()}</Title>
-            {unsupported || !mthd.requestDtype ? <Text>The {mthd.namespace.method.toCapital()} method is a special method which is not supported by the methods explorer of the Admin UI app.</Text> :
-            <DtypeFormWrapper<ReqT, RespT> dtype={mthd.requestDtype} postEndpoint={endpoint} method={api.method} />
-            }
+            {unsupported || !mthd.requestDtype ? (
+                <Text>The {mthd.namespace.method.toCapital()} method is a special method which is not supported by the methods explorer of the Admin UI app.</Text>
+            ) : (
+                <DtypeFormWrapper<ReqT, RespT> dtype={mthd.requestDtype} postEndpoint={endpoint} method={api.method} router={router} />
+            )}
         </div>
     )
 }

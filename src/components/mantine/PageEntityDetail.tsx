@@ -3,6 +3,7 @@
 import { AppContext } from '../../common/AppContextV3'
 import { IEntityMinimal } from '../../common/app_v3'
 import { EntityDetail } from './EntityDetail'
+import { WithRouter } from '../../common/types'
 import React, { useContext } from 'react'
 
 export interface Props {
@@ -13,7 +14,8 @@ export interface Props {
     }
 }
 
-export const PageEntityDetail = <E extends IEntityMinimal = any>(props: Props) => {
+export const PageEntityDetail = <E extends IEntityMinimal = any>(props: Props & WithRouter) => {
+    const { router } = props
     const { service: serviceName, entity: entityName } = props.params
     const { appInfo } = useContext(AppContext)
     if (!appInfo) {
@@ -30,7 +32,7 @@ export const PageEntityDetail = <E extends IEntityMinimal = any>(props: Props) =
 
     return (
         <>
-            <EntityDetail entityInfo={entityInfo} identifier={identifier} />
+            <EntityDetail entityInfo={entityInfo} identifier={identifier} router={router} />
         </>
     )
 }

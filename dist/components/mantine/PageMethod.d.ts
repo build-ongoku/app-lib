@@ -1,3 +1,4 @@
+import { WithRouter } from '../../common/types';
 import React from 'react';
 export interface PropsService {
     params: {
@@ -12,4 +13,4 @@ export interface PropsEntity {
         method: string;
     };
 }
-export declare const PageMethod: <P extends PropsService | PropsEntity>(props: P) => React.JSX.Element;
+export declare const PageMethod: <P extends (PropsService | PropsEntity) & WithRouter>(props: P) => React.JSX.Element;

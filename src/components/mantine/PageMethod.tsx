@@ -1,6 +1,7 @@
 'use client'
 
 import { MethodForm } from './MethodForm'
+import { WithRouter } from '../../common/types'
 import React from 'react'
 
 export interface PropsService {
@@ -18,6 +19,7 @@ export interface PropsEntity {
     }
 }
 
-export const PageMethod = <P extends PropsService | PropsEntity>(props: P) => {
-    return <MethodForm {...props.params} />
+export const PageMethod = <P extends (PropsService | PropsEntity) & WithRouter>(props: P) => {
+    const { router } = props
+    return <MethodForm {...props.params} router={router} />
 }

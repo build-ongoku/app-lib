@@ -4,7 +4,7 @@ import { Anchor, Container, PasswordInput, TextInput } from '@mantine/core'
 import { useForm } from '@mantine/form'
 import { useAuth } from '../../../common/AuthContext'
 import { Form } from '../Form'
-import { useRouter } from 'next/navigation'
+import { Router } from '../../../common/types'
 import React from 'react'
 import { ITypeMinimal } from '../../../common/app_v3'
 
@@ -22,8 +22,8 @@ interface IRegisterForm {
     }
 }*/
 
-export const RegisterForm = <RequestT extends BareMinimumRegisterForm>(props: {}) => {
-    const router = useRouter()
+export const RegisterForm = <RequestT extends BareMinimumRegisterForm>(props: { router: Router }) => {
+    const { router } = props
     const { authenticate } = useAuth()
 
     const form = useForm({
@@ -67,6 +67,7 @@ export const RegisterForm = <RequestT extends BareMinimumRegisterForm>(props: {}
                     throw new Error('Login call succeeded but no token was returned.')
                 }}
                 redirectPath="/home"
+                router={router}
             >
                 <TextInput label="Email" placeholder="you@email.com" key={form.key('email')} {...form.getInputProps('email')} />
                 <PasswordInput className="" label="Password" placeholder="super-secret-password" key={form.key('password')} mt="md" {...form.getInputProps('password')} />

@@ -48,12 +48,11 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 import { Anchor, Container, PasswordInput, TextInput } from '@mantine/core';
 import { isEmail, useForm } from '@mantine/form';
-import { useRouter } from 'next/navigation';
 import React from 'react';
 import { useAuth } from '../../../common/AuthContext';
 import { Form } from '../Form';
-export var LoginForm = function () {
-    var router = useRouter();
+export var LoginForm = function (props) {
+    var router = props.router;
     var authenticate = useAuth().authenticate;
     var form = useForm({
         mode: 'uncontrolled',
@@ -77,7 +76,7 @@ export var LoginForm = function () {
                         case 2: throw new Error('Login call succeeded but no token was returned.');
                     }
                 });
-            }); }, redirectPath: "/home" },
+            }); }, redirectPath: "/home", router: router },
             React.createElement(TextInput, __assign({ label: "Email", placeholder: "you@email.com", key: form.key('email') }, form.getInputProps('email'))),
             React.createElement(PasswordInput, __assign({ className: "", label: "Password", placeholder: "super-secret-password", key: form.key('password'), mt: "md" }, form.getInputProps('password'))))));
 };

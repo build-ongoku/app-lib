@@ -4,6 +4,7 @@ import { AppContext } from '../../common/AppContextV3';
 import { EntityEditForm } from './EntityEdit';
 import React, { useContext } from 'react';
 export var PageEntityEdit = function (props) {
+    var router = props.router;
     var _a = props.params, serviceName = _a.service, entityName = _a.entity, identifier = _a.identifier;
     var appInfo = useContext(AppContext).appInfo;
     if (!appInfo) {
@@ -24,5 +25,5 @@ export var PageEntityEdit = function (props) {
         React.createElement(Title, { order: 1 },
             "Edit ", entityInfo === null || entityInfo === void 0 ? void 0 :
             entityInfo.getNameFriendly()),
-        React.createElement(EntityEditForm, { entityInfo: entityInfo, objectId: identifier })));
+        React.createElement(EntityEditForm, { entityInfo: entityInfo, objectId: identifier, router: router })));
 };

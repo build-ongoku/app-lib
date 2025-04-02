@@ -1,14 +1,12 @@
 'use client';
 import { Alert, Box, Button, Paper, Stack } from '@mantine/core';
-import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { FiAlertCircle } from 'react-icons/fi';
 import { useMakeRequest } from '../../providers/httpV2';
 export var discardableInputKey = '__og_discardable';
 export var Form = function (props) {
     var _a, _b;
-    // Todo: remove dependency on next/navigation
-    var router = useRouter();
+    var router = props.router;
     var _c = useState(false), processing = _c[0], setProcessing = _c[1];
     var _d = useState(), errMessage = _d[0], setErrMessage = _d[1];
     var makeResp = useMakeRequest({

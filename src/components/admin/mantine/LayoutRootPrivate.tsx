@@ -1,13 +1,14 @@
 'use client'
 
+import { Router } from '../../../common/types'
 import { useAuth } from '../../../common/AuthContext'
 import { ScreenLoader } from './Loader'
-import { useRouter } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
 
 // LayoutRootPrivate handles the authentication logic for the private part of the app.
-export const LayoutRootPrivate = (props: { children: React.ReactNode }) => {
-    const router = useRouter()
+export const LayoutRootPrivate = (props: { router: Router; children: React.ReactNode }) => {
+    const { router } = props
+
     const [processing, setProcessing] = useState(true)
     const { session, loading: loadingSession } = useAuth()
 

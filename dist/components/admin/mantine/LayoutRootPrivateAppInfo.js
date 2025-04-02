@@ -8,9 +8,10 @@ import React, { Suspense, useContext } from 'react';
 import { FiExternalLink } from 'react-icons/fi';
 export var LayoutRootPrivateAppInfo = function (props) {
     return (React.createElement(AppProvider, { appReq: props.appReq, applyOverrides: props.applyOverrides },
-        React.createElement(AppLayout, null, props.children)));
+        React.createElement(AppLayout, { router: props.router }, props.children)));
 };
 var AppLayout = function (props) {
+    var router = props.router;
     var _a = useDisclosure(), opened = _a[0], toggle = _a[1].toggle;
     var appInfo = useContext(AppContext).appInfo;
     if (!appInfo) {
@@ -36,7 +37,7 @@ var AppLayout = function (props) {
                             "goku",
                             ' '))),
                 React.createElement("div", { className: "flex-grow" }),
-                React.createElement(LogoutButton, null))),
+                React.createElement(LogoutButton, { router: router }))),
         React.createElement(AppShell.Navbar, null,
             React.createElement(NavLink, { key: 'services', label: 'Application' },
                 React.createElement(NavLinksInnerForServices, { appInfo: appInfo, svcs: appInfo.services.filter(function (svc) { return svc.source !== 'mod'; }) })),

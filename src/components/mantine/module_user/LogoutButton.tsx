@@ -2,13 +2,14 @@
 
 import { Button } from '@mantine/core'
 import { useAuth } from '../../../common/AuthContext'
-import { useRouter } from 'next/navigation'
 import React, { useState } from 'react'
+import { Router } from '../../../common/types'
 
-export const LogoutButton = () => {
+export const LogoutButton = (props: { router: Router }) => {
+    const { router } = props
+    
     const [loading, setLoading] = useState(false)
     const { endSession } = useAuth()
-    const router = useRouter()
 
     return (
         <Button

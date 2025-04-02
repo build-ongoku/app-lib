@@ -1,11 +1,10 @@
 'use client';
 import { useAuth } from '../../../common/AuthContext';
 import { ScreenLoader } from './Loader';
-import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 // LayoutRootPrivate handles the authentication logic for the private part of the app.
 export var LayoutRootPrivate = function (props) {
-    var router = useRouter();
+    var router = props.router;
     var _a = useState(true), processing = _a[0], setProcessing = _a[1];
     var _b = useAuth(), session = _b.session, loadingSession = _b.loading;
     console.log('[LayoutRootPrivate] Rendering...');

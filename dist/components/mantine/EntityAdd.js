@@ -4,14 +4,11 @@ import { AppContext } from '../../common/AppContextV3';
 import { Form } from './Form';
 import { TypeAddForm } from './FormAdd';
 import { joinURL } from '../../providers/provider';
-import { useRouter } from 'next/navigation';
 import React, { useContext } from 'react';
 import { getAddEntityMethodAndPath } from '../../providers/httpV2';
 export var EntityAddForm = function (props) {
-    var entityInfo = props.entityInfo;
+    var entityInfo = props.entityInfo, router = props.router;
     var initialData = props.initialData || {};
-    // Todo: remove dependency on next/navigation
-    var router = useRouter();
     var form = useForm({
         mode: 'uncontrolled',
         validate: {},
@@ -40,6 +37,6 @@ export var EntityAddForm = function (props) {
                 router.push(redirectURL);
                 return;
             }
-        } },
+        }, router: router },
         React.createElement(TypeAddForm, { typeInfo: typeInfo, form: form })));
 };

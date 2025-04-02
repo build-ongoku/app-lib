@@ -4,26 +4,24 @@ import { AppContext } from '../../common/AppContextV3';
 import { Form } from './Form';
 import { TypeAddForm } from './FormAdd';
 import { joinURL } from '../../providers/provider';
-import { useRouter } from 'next/navigation';
 import React, { useContext } from 'react';
 import { getUpdateEntityMethodAndPath, useGetEntity } from '../../providers/httpV2';
 import { ServerResponseWrapper } from './ServerResponseWrapper';
 import { Title } from '@mantine/core';
 export var EntityEditForm = function (props) {
-    var entityInfo = props.entityInfo;
+    var entityInfo = props.entityInfo, objectId = props.objectId, key = props.key, router = props.router;
     // Get the entity data from the server
     var _a = useGetEntity({
         data: {
-            id: props.objectId,
+            id: objectId,
         },
         entityNamespace: entityInfo.namespace.toRaw(),
     }), resp = _a.resp, error = _a.error, loading = _a.loading;
-    return (React.createElement(ServerResponseWrapper, { loading: loading, error: error || (resp === null || resp === void 0 ? void 0 : resp.error) }, (resp === null || resp === void 0 ? void 0 : resp.data) && React.createElement(EntityEditFormInner, { key: props.key, entityInfo: entityInfo, object: resp === null || resp === void 0 ? void 0 : resp.data })));
+    return (React.createElement(ServerResponseWrapper, { loading: loading, error: error || (resp === null || resp === void 0 ? void 0 : resp.error) }, (resp === null || resp === void 0 ? void 0 : resp.data) && React.createElement(EntityEditFormInner, { key: key, entityInfo: entityInfo, object: resp === null || resp === void 0 ? void 0 : resp.data, router: router })));
 };
 var EntityEditFormInner = function (props) {
-    var entityInfo = props.entityInfo, object = props.object;
+    var entityInfo = props.entityInfo, object = props.object, router = props.router;
     // Todo: remove dependency on next/navigation
-    var router = useRouter();
     var form = useForm({
         mode: 'uncontrolled',
         validate: {},
@@ -58,6 +56,6 @@ var EntityEditFormInner = function (props) {
                     router.push(redirectURL);
                     return;
                 }
-            } },
+            }, router: router },
             React.createElement(TypeAddForm, { typeInfo: typeInfo, form: form, initialData: object }))));
 };

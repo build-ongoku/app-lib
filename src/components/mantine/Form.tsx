@@ -2,10 +2,10 @@
 
 import { Alert, Box, Button, Paper, Stack } from '@mantine/core'
 import { UseFormReturnType } from '@mantine/form'
-import { useRouter } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
 import { FiAlertCircle } from 'react-icons/fi'
 import { useMakeRequest } from '../../providers/httpV2'
+import { Router } from '../../common/types'
 
 export const discardableInputKey = '__og_discardable'
 
@@ -20,9 +20,9 @@ export const Form = <FormT extends Record<string, any>, RequestT = FormT, Respon
     redirectPath?: string
     onSuccess?: (data: ResponseT) => void
     onError?: (error: string) => void
+    router: Router
 }) => {
-    // Todo: remove dependency on next/navigation
-    const router = useRouter()
+    const { router } = props
 
     const [processing, setProcessing] = useState(false)
     const [errMessage, setErrMessage] = useState<string>()

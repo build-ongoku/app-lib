@@ -6,7 +6,7 @@ import { AppContext } from '../../common/AppContextV3'
 import { MetaFieldKeys } from '../../common/types'
 import { discardableInputKey, Form } from './Form'
 import { GenericDtypeInput, TypeAddForm } from './FormAdd'
-import { useRouter } from 'next/navigation'
+import { Router } from '../../common/types'
 import React, { useContext } from 'react'
 
 export const DtypeFormWrapper = <T = any, RespT = any>(props: {
@@ -18,7 +18,10 @@ export const DtypeFormWrapper = <T = any, RespT = any>(props: {
     submitText?: string
     redirectPath?: string
     label?: string
+    router: Router
 }) => {
+    const { router } = props
+
     type FormT = { [discardableInputKey]: Omit<T, MetaFieldKeys> }
 
     const { dtype } = props
@@ -50,6 +53,7 @@ export const DtypeFormWrapper = <T = any, RespT = any>(props: {
                 console.log('[TypeAddFormWrapper] [onSuccess]', 'data', data)
                 setResponse(data)
             }}
+            router={router}
         >
             <GenericDtypeInput dtype={dtype} label={props.label ?? 'Request'} form={form} identifier={discardableInputKey} />
             {response && <pre>{JSON.stringify(response, null, 2)}</pre>}
@@ -64,12 +68,13 @@ interface TypeAddFormProps<T extends ITypeMinimal = any> {
     initialData?: Omit<T, MetaFieldKeys>
     submitText?: string
     redirectPath?: string
+    router: Router
 }
 
 export const TypeAddFormWrapper = <T extends ITypeMinimal = any, RespT = any>(props: TypeAddFormProps<T>) => {
     type FormT = Omit<T, MetaFieldKeys>
 
-    const { typeInfo } = props
+    const { typeInfo, router } = props
 
     const { appInfo } = useContext(AppContext)
     if (!appInfo) {
@@ -80,8 +85,6 @@ export const TypeAddFormWrapper = <T extends ITypeMinimal = any, RespT = any>(pr
 
     const initialData = props.initialData || typeInfo.getEmptyObject(appInfo) || ({} as FormT)
 
-    // Todo: remove dependency on next/navigation
-    const router = useRouter()
     const form = useForm<FormT>({
         mode: 'uncontrolled',
         initialValues: initialData,
@@ -99,6 +102,7 @@ export const TypeAddFormWrapper = <T extends ITypeMinimal = any, RespT = any>(pr
                 console.log('[TypeAddFormWrapper] [onSuccess]', 'data', data)
                 setResponse(data)
             }}
+            router={router}
         >
             <TypeAddForm typeInfo={typeInfo} form={form} />
             {response && <pre>{JSON.stringify(response, null, 2)}</pre>}

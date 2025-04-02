@@ -4,7 +4,6 @@ import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import { MantineReactTable, useMantineReactTable } from 'mantine-react-table';
 import 'mantine-react-table/styles.css'; //make sure MRT styles were imported in your app root (once)
-import { useRouter } from 'next/navigation';
 import React, { useContext, useMemo } from 'react';
 import { getEntityAddPath, getEntityChatPath } from '../../components/EntityLink';
 import { useListEntity } from '../../providers/httpV2';
@@ -74,8 +73,7 @@ var getDefaultEntityColumns = function (entityInfo) {
 };
 // EntityListTable fetches the list of entities and renders the table
 export var EntityListTable = function (props) {
-    var entityInfo = props.entityInfo;
-    var router = useRouter();
+    var entityInfo = props.entityInfo, router = props.router;
     // Get the entity from the server
     var _a = useListEntity({
         entityNamespace: entityInfo.namespace.toRaw(),

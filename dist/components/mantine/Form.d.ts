@@ -1,5 +1,6 @@
 import { UseFormReturnType } from '@mantine/form';
 import React from 'react';
+import { Router } from '../../common/types';
 export declare const discardableInputKey = "__og_discardable";
 export declare const Form: <FormT extends Record<string, any>, RequestT = FormT, ResponseT = any>(props: {
     form: UseFormReturnType<FormT>;
@@ -12,4 +13,5 @@ export declare const Form: <FormT extends Record<string, any>, RequestT = FormT,
     redirectPath?: string;
     onSuccess?: (data: ResponseT) => void;
     onError?: (error: string) => void;
+    router: Router;
 }) => React.JSX.Element;

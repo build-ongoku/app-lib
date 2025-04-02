@@ -4,6 +4,7 @@ import { Title } from '@mantine/core'
 import { IEntityMinimal } from '../../common/app_v3'
 import { AppContext } from '../../common/AppContextV3'
 import { EntityAddForm } from './EntityAdd'
+import { WithRouter } from '../../common/types'
 import React, { useContext } from 'react'
 
 export interface Props {
@@ -13,8 +14,10 @@ export interface Props {
     }
 }
 
-export const PageEntityAdd = <E extends IEntityMinimal = any>(props: Props) => {
+export const PageEntityAdd = <E extends IEntityMinimal = any>(props: Props & WithRouter) => {
+    const { router } = props
     const { service: serviceName, entity: entityName } = props.params
+
     const { appInfo } = useContext(AppContext)
     if (!appInfo) {
         throw new Error('AppInfo not loaded')
@@ -36,7 +39,7 @@ export const PageEntityAdd = <E extends IEntityMinimal = any>(props: Props) => {
     return (
         <div>
             <Title order={1}>Add {entityInfo?.getNameFriendly()}</Title>
-            <EntityAddForm<E> entityInfo={entityInfo} initialData={typeInfo.getEmptyObject(appInfo)} />
+            <EntityAddForm<E> entityInfo={entityInfo} initialData={typeInfo.getEmptyObject(appInfo)} router={router} />
         </div>
     )
 }

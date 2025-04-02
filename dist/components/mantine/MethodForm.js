@@ -4,7 +4,7 @@ import { AppContext } from '../../common/AppContextV3';
 import { DtypeFormWrapper } from './FormAddTypeWrapper';
 import React, { useContext } from 'react';
 export var MethodForm = function (props) {
-    var service = props.service, entity = props.entity, method = props.method;
+    var service = props.service, entity = props.entity, method = props.method, router = props.router;
     var appInfo = useContext(AppContext).appInfo;
     if (!appInfo) {
         throw new Error('AppInfo not loaded');
@@ -30,9 +30,8 @@ export var MethodForm = function (props) {
         React.createElement(Title, { order: 1 },
             "Method: ",
             mthd.namespace.method.toCapital()),
-        unsupported || !mthd.requestDtype ? React.createElement(Text, null,
+        unsupported || !mthd.requestDtype ? (React.createElement(Text, null,
             "The ",
             mthd.namespace.method.toCapital(),
-            " method is a special method which is not supported by the methods explorer of the Admin UI app.") :
-            React.createElement(DtypeFormWrapper, { dtype: mthd.requestDtype, postEndpoint: endpoint, method: api.method })));
+            " method is a special method which is not supported by the methods explorer of the Admin UI app.")) : (React.createElement(DtypeFormWrapper, { dtype: mthd.requestDtype, postEndpoint: endpoint, method: api.method, router: router }))));
 };

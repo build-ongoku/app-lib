@@ -10,15 +10,13 @@ import { getEntityAddPath, getEntityChatPath, getEntityEditPath, getEntityListPa
 import { EntityListTableInner } from './EntityList'
 import { ServerResponseWrapper } from './ServerResponseWrapper'
 import { FetchFunc, useGetEntity, useListEntity } from '../../providers/httpV2'
-import { useRouter } from 'next/navigation'
 import React, { useContext } from 'react'
 import { FiEdit2 } from 'react-icons/fi'
 import { MdAdd, MdOutlineFormatListBulleted, MdChat } from 'react-icons/md'
+import { Router } from '../../common/types'
 
-export const EntityDetail = <E extends IEntityMinimal = IEntityMinimal>(props: { entityInfo: EntityInfo<E>; identifier: string }) => {
-    const { entityInfo, identifier } = props
-
-    const router = useRouter()
+export const EntityDetail = <E extends IEntityMinimal = IEntityMinimal>(props: { entityInfo: EntityInfo<E>; identifier: string; router: Router }) => {
+    const { entityInfo, identifier, router } = props
 
     // Todo: Assume that the identifier is the id for now but this could include any other human readable identifier
 
@@ -33,7 +31,9 @@ export const EntityDetail = <E extends IEntityMinimal = IEntityMinimal>(props: {
         <div>
             <div className="flex flex-col gap-4">
                 <div className="flex justify-between my-5">
-                    <Title order={2}>{entityInfo.getNameFriendly()}: {resp?.data ? entityInfo.getEntityNameFriendly(resp.data) : 'Unknown'}</Title>
+                    <Title order={2}>
+                        {entityInfo.getNameFriendly()}: {resp?.data ? entityInfo.getEntityNameFriendly(resp.data) : 'Unknown'}
+                    </Title>
                     <div className="flex gap-3">
                         <Button
                             autoContrast

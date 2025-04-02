@@ -2,10 +2,10 @@
 
 import { Anchor, Container, PasswordInput, TextInput } from '@mantine/core'
 import { isEmail, useForm } from '@mantine/form'
-import { useRouter } from 'next/navigation'
 import React from 'react'
 import { useAuth } from '../../../common/AuthContext'
 import { Form } from '../Form'
+import { Router } from '../../../common/types'
 
 export interface LoginRequest {
     email: string
@@ -16,8 +16,9 @@ export interface AuthenticateResponse {
     token: string
 }
 
-export const LoginForm = () => {
-    const router = useRouter()
+export const LoginForm = (props: { router: Router }) => {
+    const { router } = props
+
     const { authenticate } = useAuth()
     const form = useForm<LoginRequest>({
         mode: 'uncontrolled',
@@ -51,6 +52,7 @@ export const LoginForm = () => {
                     throw new Error('Login call succeeded but no token was returned.')
                 }}
                 redirectPath="/home"
+                router={router}
             >
                 <TextInput label="Email" placeholder="you@email.com" key={form.key('email')} {...form.getInputProps('email')} />
                 <PasswordInput className="" label="Password" placeholder="super-secret-password" key={form.key('password')} mt="md" {...form.getInputProps('password')} />

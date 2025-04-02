@@ -3,6 +3,7 @@
 import { AppContext } from '../../common/AppContextV3'
 import { IEntityMinimal } from '../../common/app_v3'
 import { EntityListTable } from './EntityList'
+import { WithRouter } from '../../common/types'
 import React, { useContext } from 'react'
 
 export interface Props {
@@ -12,8 +13,10 @@ export interface Props {
     }
 }
 
-export const PageEntityList = <E extends IEntityMinimal = any>(props: Props) => {
+export const PageEntityList = <E extends IEntityMinimal = any>(props: Props & WithRouter) => {
+    const { router } = props
     const { service: serviceName, entity: entityName } = props.params
+
     const { appInfo } = useContext(AppContext)
     if (!appInfo) {
         throw new Error('AppInfo not loaded')
@@ -26,7 +29,7 @@ export const PageEntityList = <E extends IEntityMinimal = any>(props: Props) => 
 
     return (
         <div>
-            <EntityListTable entityInfo={entityInfo} />
+            <EntityListTable entityInfo={entityInfo} router={router} />
         </div>
     )
 }

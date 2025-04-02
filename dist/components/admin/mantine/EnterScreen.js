@@ -12,7 +12,6 @@ var __assign = (this && this.__assign) || function () {
 };
 import { Button, Container, Image, Title } from '@mantine/core';
 import { useAuth } from '../../../common/AuthContext';
-import { useRouter } from 'next/navigation';
 import React, { useState } from 'react';
 export var EnterScreen = function (props) {
     return (React.createElement(Container, { className: "flex flex-col items-center justify-center h-screen" },
@@ -26,7 +25,7 @@ export var EnterScreen = function (props) {
                     React.createElement(EnterButton, __assign({}, props)))))));
 };
 var EnterButton = function (props) {
-    var router = useRouter();
+    var router = props.router;
     var _a = useState(false), loading = _a[0], setLoading = _a[1];
     var _b = useAuth(), session = _b.session, loadingSession = _b.loading;
     var redirectPath = loadingSession || !session ? props.unauthenticatedUserRedirectPath : props.authenticatedUserRedirectPath;

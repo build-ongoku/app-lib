@@ -12,3 +12,9 @@ export type WithMetaFields<T = ITypeMinimal> = T & MetaFields;
 export type TypeInputFromFull<T> = Omit<T, MetaFieldKeys>;
 export declare const convertFullTypeToInput: <T extends ITypeMinimal>(fullType: WithMetaFields<T>) => T;
 export declare const convertTypeToWithMeta: <T extends ITypeMinimal>(fullType: T) => WithMetaFields<T>;
+export interface Router {
+    push(path: string): void;
+}
+export interface WithRouter {
+    router: Router;
+}

@@ -1,12 +1,10 @@
 'use client';
 import { Container, Image, Title } from '@mantine/core';
 import { useAuth } from '../../../common/AuthContext';
-import { useRouter } from 'next/navigation';
 import React, { useEffect } from 'react';
-export var LayoutRootPublic = function (_a) {
-    var children = _a.children;
-    var _b = useAuth(), session = _b.session, loadingSession = _b.loading;
-    var router = useRouter();
+export var LayoutRootPublic = function (props) {
+    var router = props.router, children = props.children;
+    var _a = useAuth(), session = _a.session, loadingSession = _a.loading;
     // Do not allow authenticated users to access this part of the app.
     useEffect(function () {
         if (!loadingSession && session) {

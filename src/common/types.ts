@@ -41,3 +41,11 @@ export const convertTypeToWithMeta = <T extends ITypeMinimal>(fullType: T): With
     }
     return { ...fullType, ...metaFields }
 }
+
+export interface Router {
+    push(path: string): void
+}
+
+export interface WithRouter {
+    router: Router
+}
