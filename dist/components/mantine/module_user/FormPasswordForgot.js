@@ -24,19 +24,19 @@ export var FormPasswordForgot = function (props) {
     React.useEffect(function () {
         setOrigin(window.location.origin);
     }, []);
-    if (!origin) {
-        return React.createElement(ScreenLoader, null);
-    }
     var form = useForm({
         mode: 'uncontrolled',
         initialValues: {
             email: '',
-            hostURL: joinURLNoPrefixSlash(origin, "password", "reset"),
+            hostURL: origin ? joinURLNoPrefixSlash(origin, "password", "reset") : '',
         },
         validate: {
             email: function (value) { return (isEmail(value) ? null : 'Invalid email'); },
         },
     });
+    if (!origin) {
+        return React.createElement(ScreenLoader, null);
+    }
     return (React.createElement(Container, { className: "w-96" },
         React.createElement(Form, { title: "Forgot password?", form: form, submitButtonText: "Reset Password", bottomExtra: React.createElement("div", { className: "flex justify-between w-full" },
                 React.createElement(Anchor, { className: "text-sm font-light", onClick: function () {
