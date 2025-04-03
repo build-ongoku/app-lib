@@ -87,3 +87,11 @@ export var joinURL = function () {
     parts = parts.map(function (p) { return p.replace(/^\/|\/$/g, ''); });
     return '/' + parts.join('/');
 };
+export var joinURLNoPrefixSlash = function () {
+    var parts = [];
+    for (var _i = 0; _i < arguments.length; _i++) {
+        parts[_i] = arguments[_i];
+    }
+    // Remove any leading or trailing slashes from each part
+    return parts.map(function (p) { return p.replace(/^\/|\/$/g, ''); }).join('/');
+};

@@ -62,9 +62,13 @@ export var LoginForm = function (props) {
         },
     });
     return (React.createElement(Container, { className: "w-96" },
-        React.createElement(Form, { form: form, submitButtonText: "Continue", bottomExtra: React.createElement(Anchor, { className: "text-sm font-light", onClick: function () {
-                    router.push('/register');
-                } }, "Create an account."), postEndpoint: "/v1/auth/login", onSuccess: function (data) { return __awaiter(void 0, void 0, void 0, function () {
+        React.createElement(Form, { title: "Login", form: form, submitButtonText: "Continue", bottomExtra: React.createElement("div", { className: "flex justify-between w-full" },
+                React.createElement(Anchor, { className: "text-sm font-light", onClick: function () {
+                        router.push('/register');
+                    } }, "Create an account"),
+                React.createElement(Anchor, { className: "text-sm font-light", onClick: function () {
+                        router.push('/password/forgot');
+                    } }, "Forgot password")), postEndpoint: "/v1/auth/login", onSuccess: function (data) { return __awaiter(void 0, void 0, void 0, function () {
                 return __generator(this, function (_a) {
                     switch (_a.label) {
                         case 0:
