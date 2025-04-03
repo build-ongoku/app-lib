@@ -15,13 +15,23 @@ import { isEmail, useForm } from '@mantine/form';
 import React from 'react';
 import { Form } from '../Form';
 import { joinURLNoPrefixSlash } from '../../../providers/provider';
+import { ScreenLoader } from '../../admin/mantine/Loader';
 export var FormPasswordForgot = function (props) {
     var router = props.router;
+    // We are getting the origin from the window location inside a useEffect to avoid a hydration mismatch
+    // Next build fails otherwise saying "window is undefined" (since next tries to build the component on the server first, even though we are using 'use client')
+    var _a = React.useState(undefined), origin = _a[0], setOrigin = _a[1];
+    React.useEffect(function () {
+        setOrigin(window.location.origin);
+    }, []);
+    if (!origin) {
+        return React.createElement(ScreenLoader, null);
+    }
     var form = useForm({
         mode: 'uncontrolled',
         initialValues: {
             email: '',
-            hostURL: joinURLNoPrefixSlash(window.location.origin, "password", "reset"),
+            hostURL: joinURLNoPrefixSlash(origin, "password", "reset"),
         },
         validate: {
             email: function (value) { return (isEmail(value) ? null : 'Invalid email'); },
