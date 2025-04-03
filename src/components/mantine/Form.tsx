@@ -1,16 +1,17 @@
 'use client'
 
-import { Alert, Box, Button, Paper, Stack } from '@mantine/core'
+import { Alert, Box, Button, Paper, Stack, Title } from '@mantine/core'
 import { UseFormReturnType } from '@mantine/form'
 import React, { useEffect, useState } from 'react'
-import { FiAlertCircle } from 'react-icons/fi'
+import { FiAlertCircle, FiCheckCircle } from 'react-icons/fi'
 import { useMakeRequest } from '../../providers/httpV2'
 import { Router } from '../../common/types'
 
 export const discardableInputKey = '__og_discardable'
 
-export const Form = <FormT extends Record<string, any>, RequestT = FormT, ResponseT = any>(props: {
+export const Form = <FormT extends Record<string, any>, ResponseT = any, RequestT = FormT>(props: {
     form: UseFormReturnType<FormT>
+    title?: string | React.ReactNode
     children: React.ReactNode
     submitButtonText?: string
     bottomExtra?: React.ReactNode
@@ -20,12 +21,14 @@ export const Form = <FormT extends Record<string, any>, RequestT = FormT, Respon
     redirectPath?: string
     onSuccess?: (data: ResponseT) => void
     onError?: (error: string) => void
+    onSuccessMessage?: (data: ResponseT) => string
     router: Router
 }) => {
     const { router } = props
 
     const [processing, setProcessing] = useState(false)
     const [errMessage, setErrMessage] = useState<string>()
+    const [successMessage, setSuccessMessage] = useState<string>()
 
     const makeResp = useMakeRequest<ResponseT, RequestT>({
         method: props.method ?? 'POST',
@@ -88,6 +91,10 @@ export const Form = <FormT extends Record<string, any>, RequestT = FormT, Respon
             if (props.onSuccess) {
                 props.onSuccess(makeResp.resp.data)
             }
+            if (props.onSuccessMessage) {
+                const msg = props.onSuccessMessage(makeResp.resp.data)
+                setSuccessMessage(msg)
+            }
             if (props.redirectPath) {
                 console.log('[Form] [useEffect] props.redirectPath detected: Redirecting to', props.redirectPath)
                 router.push(props.redirectPath)
@@ -100,10 +107,13 @@ export const Form = <FormT extends Record<string, any>, RequestT = FormT, Respon
     return (
         <Box>
             <Paper p={30} radius="md">
+                {props.title && <Title order={3} className='pb-2'>{props.title}</Title>}
                 <form onSubmit={props.form.onSubmit(handleSubmit)}>
                     <Stack gap="lg">
                         {/* Error Message */}
-                        {errMessage && <Alert icon={<FiAlertCircle />}>{errMessage ?? `Our apologies. We could not complete the request. We're looking into it.`}</Alert>}
+                        {errMessage && <Alert variant="error" icon={<FiAlertCircle />}>{errMessage ?? `Our apologies. We could not complete the request. We're looking into it.`}</Alert>}
+                        {/* Success Message */}
+                        {successMessage && <Alert variant="success" icon={<FiCheckCircle />}>{successMessage}</Alert>}
                         {/* Actual Form Fields: Passed on as children */}
                         {props.children}
                         <Button type="submit" loading={makeResp.loading || processing}>

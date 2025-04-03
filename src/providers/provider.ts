@@ -91,6 +91,12 @@ export const joinURL = (...parts: string[]): string => {
     return '/' + parts.join('/')
 }
 
+export const joinURLNoPrefixSlash = (...parts: string[]): string => {
+    // Remove any leading or trailing slashes from each part
+    return parts.map((p) => p.replace(/^\/|\/$/g, '')).join('/')
+}
+
+
 export interface GokuHTTPResponse<T = any> {
     data?: T
     error?: string

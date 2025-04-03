@@ -49,3 +49,12 @@ export interface Router {
 export interface WithRouter {
     router: Router
 }
+
+export interface SearchParamsProvider {
+    get(key: string): string | null
+    getAll(key: string): string[]
+}
+
+export interface WithSearchParamsProvider {
+    searchParams: SearchParamsProvider
+}

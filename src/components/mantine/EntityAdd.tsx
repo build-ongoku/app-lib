@@ -47,7 +47,7 @@ export const EntityAddForm = <E extends IEntityMinimal = any>(props: EntityAddFo
     const { relPath } = getAddEntityMethodAndPath(entityInfo.namespace.toRaw())
 
     return (
-        <Form<FormT, AddEntityRequestData<E>, E>
+        <Form<FormT, E, AddEntityRequestData<E>>
             form={form}
             submitButtonText={`Add ${entityInfo.getNameFriendly()}`}
             onSubmitTransformValues={(values: FormT): AddEntityRequestData<E> => {

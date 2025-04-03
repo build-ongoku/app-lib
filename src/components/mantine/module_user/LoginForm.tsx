@@ -31,17 +31,28 @@ export const LoginForm = (props: { router: Router }) => {
     return (
         <Container className="w-96">
             <Form<LoginRequest, AuthenticateResponse>
+                title="Login"
                 form={form}
                 submitButtonText="Continue"
                 bottomExtra={
-                    <Anchor
-                        className="text-sm font-light"
-                        onClick={() => {
-                            router.push('/register')
-                        }}
-                    >
-                        Create an account.
-                    </Anchor>
+                    <div className="flex justify-between w-full">
+                        <Anchor
+                            className="text-sm font-light"
+                            onClick={() => {
+                                router.push('/register')
+                            }}
+                        >
+                            Create an account
+                        </Anchor>
+                        <Anchor
+                            className="text-sm font-light"
+                            onClick={() => {
+                                router.push('/password/forgot')
+                            }}
+                        >
+                            Forgot password
+                        </Anchor>
+                    </div>
                 }
                 postEndpoint="/v1/auth/login"
                 onSuccess={async (data) => {

@@ -13,7 +13,7 @@ build:
 git:
 	@echo "Commiting changes..."
 	git add -A
-	git commit -m "make npm-publish"
+	git commit -m "make npm-publish" || true
 	@echo "Pushing to git..."
 	git push
 

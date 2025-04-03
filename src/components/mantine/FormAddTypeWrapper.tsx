@@ -43,7 +43,7 @@ export const DtypeFormWrapper = <T = any, RespT = any>(props: {
     console.log('[DtypeFormWrapper] Rendering...', 'dtype', dtype)
 
     return (
-        <Form<FormT, T, RespT>
+        <Form<FormT, RespT, T>
             form={form}
             postEndpoint={props.postEndpoint}
             method={props.method}
@@ -93,7 +93,7 @@ export const TypeAddFormWrapper = <T extends ITypeMinimal = any, RespT = any>(pr
     console.log('[TypeAddFormWrapper] Rendering...', 'typeInfo', typeInfo)
 
     return (
-        <Form<FormT, T, RespT>
+        <Form<FormT, RespT, T>
             form={form}
             submitButtonText={props.submitText}
             postEndpoint={props.postEndpoint}
