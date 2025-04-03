@@ -1,10 +1,11 @@
 'use client'
 
-import { Alert, Title } from '@mantine/core'
+import { Alert } from '@mantine/core'
 import { WithRouter, WithSearchParamsProvider } from '../../../common/types'
-import React, { useEffect } from 'react'
+import React from 'react'
 import { FormPasswordReset } from './FormPasswordReset'
-import { makeRequest } from '../../../providers/httpV2'
+import { useMakeRequest } from '../../../providers/httpV2'
+import { ScreenLoader } from '../../../components/admin/mantine/Loader'
 
 export interface Props {}
 
@@ -14,32 +15,31 @@ export const PagePasswordReset = (props: Props & WithRouter & WithSearchParamsPr
     const token = searchParams.get('token')
     const email = searchParams.get('email')
 
-    const [tokenValid, setTokenValid] = React.useState<boolean | undefined>(undefined)
+    const reqResp = useMakeRequest<{ message: string }>({
+        method: 'GET',
+        relativePath: '/v1/auth/validate_password_reset_token',
+        data: { email, token },
+        skipFetchAtInit: !token || !email,
+    })
 
-    useEffect(() => {
-        if (!token || !email) {
-            setTokenValid(false)
-            return
-        }
-        // TODO: Make an API call to validate the token (and email)
-        makeRequest({
-            method: 'GET',
-            relativePath: '/api/v1/auth/validate_password_reset_token',
-            data: {email, token}
-        }).then(() => {
-            setTokenValid(true)
-        }).catch(() => {
-            setTokenValid(false)
-        })
-    }, [token, email])
+    if (!token || !email) {
+        return <Alert variant="error">The link is either invalid or has expired.</Alert>
+    }
 
-    if (!email || !token || !tokenValid) {
+    if (reqResp.loading || !reqResp.fetchDone) {
+        return <ScreenLoader />
+    }
+
+    if (reqResp.error) {
+        return <Alert variant="error">The link is either invalid or has expired.</Alert>
+    }
+
+    if (reqResp.resp?.error) {
         return <Alert variant="error">The link is either invalid or has expired.</Alert>
     }
 
     return (
         <div>
-            <Title order={1}>Reset Password</Title>
             <FormPasswordReset email={email} token={token} router={router} />
         </div>
     )

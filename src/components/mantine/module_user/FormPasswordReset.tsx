@@ -5,7 +5,6 @@ import { useForm } from '@mantine/form'
 import React from 'react'
 import { Form } from '../Form'
 import { WithRouter } from '../../../common/types'
-import { EmailInput } from '../FormAdd'
 
 interface PasswordResetForm {
     email: string
