@@ -1,33 +1,32 @@
 'use client';
-import { Alert, Title } from '@mantine/core';
-import React, { useEffect } from 'react';
+import { Alert } from '@mantine/core';
+import React from 'react';
 import { FormPasswordReset } from './FormPasswordReset';
-import { makeRequest } from '../../../providers/httpV2';
+import { useMakeRequest } from '../../../providers/httpV2';
+import { ScreenLoader } from '../../../components/admin/mantine/Loader';
 export var PagePasswordReset = function (props) {
+    var _a;
     var router = props.router, searchParams = props.searchParams;
     var token = searchParams.get('token');
     var email = searchParams.get('email');
-    var _a = React.useState(undefined), tokenValid = _a[0], setTokenValid = _a[1];
-    useEffect(function () {
-        if (!token || !email) {
-            setTokenValid(false);
-            return;
-        }
-        // TODO: Make an API call to validate the token (and email)
-        makeRequest({
-            method: 'GET',
-            relativePath: '/api/v1/auth/validate_password_reset_token',
-            data: { email: email, token: token }
-        }).then(function () {
-            setTokenValid(true);
-        }).catch(function () {
-            setTokenValid(false);
-        });
-    }, [token, email]);
-    if (!email || !token || !tokenValid) {
+    var reqResp = useMakeRequest({
+        method: 'GET',
+        relativePath: '/v1/auth/validate_password_reset_token',
+        data: { email: email, token: token },
+        skipFetchAtInit: !token || !email,
+    });
+    if (!token || !email) {
+        return React.createElement(Alert, { variant: "error" }, "The link is either invalid or has expired.");
+    }
+    if (reqResp.loading || !reqResp.fetchDone) {
+        return React.createElement(ScreenLoader, null);
+    }
+    if (reqResp.error) {
+        return React.createElement(Alert, { variant: "error" }, "The link is either invalid or has expired.");
+    }
+    if ((_a = reqResp.resp) === null || _a === void 0 ? void 0 : _a.error) {
         return React.createElement(Alert, { variant: "error" }, "The link is either invalid or has expired.");
     }
     return (React.createElement("div", null,
-        React.createElement(Title, { order: 1 }, "Reset Password"),
         React.createElement(FormPasswordReset, { email: email, token: token, router: router })));
 };

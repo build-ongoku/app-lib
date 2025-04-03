@@ -12,28 +12,33 @@ var __assign = (this && this.__assign) || function () {
 };
 import { Anchor, Container, TextInput } from '@mantine/core';
 import { isEmail, useForm } from '@mantine/form';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Form } from '../Form';
 import { joinURLNoPrefixSlash } from '../../../providers/provider';
 import { ScreenLoader } from '../../admin/mantine/Loader';
 export var FormPasswordForgot = function (props) {
     var router = props.router;
-    // We are getting the origin from the window location inside a useEffect to avoid a hydration mismatch
-    // Next build fails otherwise saying "window is undefined" (since next tries to build the component on the server first, even though we are using 'use client')
-    var _a = React.useState(undefined), origin = _a[0], setOrigin = _a[1];
-    React.useEffect(function () {
-        setOrigin(window.location.origin);
-    }, []);
     var form = useForm({
         mode: 'uncontrolled',
         initialValues: {
             email: '',
-            hostURL: origin ? joinURLNoPrefixSlash(origin, "password", "reset") : '',
+            hostURL: '',
         },
         validate: {
             email: function (value) { return (isEmail(value) ? null : 'Invalid email'); },
         },
     });
+    // We are getting the origin from the window location inside a useEffect to avoid a hydration mismatch
+    // Next build fails otherwise saying "window is undefined" (since next tries to build the component on the server first, even though we are using 'use client')
+    var _a = useState(undefined), origin = _a[0], setOrigin = _a[1];
+    useEffect(function () {
+        setOrigin(window.location.origin);
+    }, []);
+    useEffect(function () {
+        if (origin) {
+            form.setFieldValue('hostURL', joinURLNoPrefixSlash(origin, "password", "reset"));
+        }
+    }, [origin]);
     if (!origin) {
         return React.createElement(ScreenLoader, null);
     }
