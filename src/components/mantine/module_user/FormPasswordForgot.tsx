@@ -27,20 +27,20 @@ export const FormPasswordForgot = (props: WithRouter) => {
         setOrigin(window.location.origin)
     }, [])
 
-    if (!origin) {
-        return <ScreenLoader />;
-    }
-
     const form = useForm<PasswordForgotForm>({
         mode: 'uncontrolled',
         initialValues: {
             email: '',
-            hostURL: joinURLNoPrefixSlash(origin, "password", "reset"),
+            hostURL: origin ? joinURLNoPrefixSlash(origin, "password", "reset") : '',
         },
         validate: {
             email: (value: string) => (isEmail(value) ? null : ('Invalid email' as React.ReactNode)),
         },
     })
+
+    if (!origin) {
+        return <ScreenLoader />;
+    }
 
     return (
         <Container className="w-96">
