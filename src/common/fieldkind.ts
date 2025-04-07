@@ -17,6 +17,11 @@ export const NumberKind: IFieldKind = {
     name: 'number',
 }
 
+export const FloatKind: IFieldKind = {
+    ...DefaultFieldKind,
+    name: 'float',
+}
+
 export const BoolKind: IFieldKind = {
     ...DefaultFieldKind,
     name: 'boolean',
