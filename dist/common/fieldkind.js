@@ -14,6 +14,7 @@ var DefaultFieldKind = {
 };
 export var StringKind = __assign(__assign({}, DefaultFieldKind), { name: 'string' });
 export var NumberKind = __assign(__assign({}, DefaultFieldKind), { name: 'number' });
+export var FloatKind = __assign(__assign({}, DefaultFieldKind), { name: 'float' });
 export var BoolKind = __assign(__assign({}, DefaultFieldKind), { name: 'boolean' });
 export var DateKind = __assign(__assign({}, DefaultFieldKind), { name: 'date' });
 export var TimestampKind = __assign(__assign({}, DefaultFieldKind), { name: 'timestamp' });

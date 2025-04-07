@@ -3,6 +3,7 @@ export interface IFieldKind {
 }
 export declare const StringKind: IFieldKind;
 export declare const NumberKind: IFieldKind;
+export declare const FloatKind: IFieldKind;
 export declare const BoolKind: IFieldKind;
 export declare const DateKind: IFieldKind;
 export declare const TimestampKind: IFieldKind;
