@@ -1,12 +1,24 @@
 import React from 'react';
-export interface AuthenticateResponse {
-    token: string;
-}
+import { ID } from './scalars';
+import { IEntityMinimal } from './app_v3';
 export interface AuthenticateTokenRequest {
     token: string;
 }
+export interface AuthenticateResponse {
+    token: string;
+    userID: ID;
+}
+export interface User extends IEntityMinimal {
+    name: {
+        firstName: string;
+        lastName: string;
+    };
+    email: string;
+    avatar: string | null;
+}
 export interface Session {
     token: string;
+    userID: ID;
 }
 interface DecodedToken {
     exp: number;

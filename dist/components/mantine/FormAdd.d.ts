@@ -12,7 +12,7 @@ export declare const TypeAddForm: <T extends ITypeMinimal = any>(props: {
     parentIdentifier?: string;
     initialData?: T | Omit<T, MetaFieldKeys>;
 }) => React.JSX.Element;
-export declare const GenericDtypeInput: <T extends unknown>(props: {
+export declare const GenericDtypeInput: <T extends any>(props: {
     dtype: Dtype;
     identifier: string;
     label: string;
@@ -29,7 +29,7 @@ interface InputProps<InternalPropsT = any, T = any> {
     description?: string;
     initialValue?: T;
 }
-export declare const DefaultInput: <T extends unknown = any>(props: InputProps<never, T>) => React.JSX.Element;
+export declare const DefaultInput: <T extends any = any>(props: InputProps<never, T>) => React.JSX.Element;
 export declare const StringInput: (props: InputProps<TextInputProps, string>) => React.JSX.Element;
 export declare const NumberInput: (props: InputProps<NumberInputProps, number>) => React.JSX.Element;
 export declare const BooleanInput: (props: InputProps<SwitchProps, boolean>) => React.JSX.Element;
@@ -38,7 +38,7 @@ export declare const TimestampInput: (props: InputProps<DateTimePickerProps, Dat
 export declare const EmailInput: (props: InputProps<TextInputProps, Email>) => React.JSX.Element;
 export declare const SelectOrMultiSelectInput: <T extends string>(props: InputProps<SelectProps | MultiSelectProps, T | T[]>) => React.JSX.Element;
 export declare const MoneyInput: (props: InputProps<never, Money>) => React.JSX.Element;
-export declare const GenericDataInput: <T extends unknown>(props: InputProps<never, T>) => React.JSX.Element;
-export declare const JSONInput: <T extends unknown = any>(props: InputProps<JsonInputProps, T>) => React.JSX.Element;
+export declare const GenericDataInput: <T extends any>(props: InputProps<never, T>) => React.JSX.Element;
+export declare const JSONInput: <T extends any = any>(props: InputProps<JsonInputProps, T>) => React.JSX.Element;
 export declare const FileInput: (props: InputProps<never, ID>) => React.JSX.Element;
 export {};
