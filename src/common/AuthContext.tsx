@@ -4,16 +4,27 @@ import { joinURL } from '../providers/provider'
 import { makeRequest } from '../providers/httpV2'
 import React, { useContext, useEffect, useState } from 'react'
 import { decodeToken } from 'react-jwt'
+import { ID } from './scalars'
+import { IEntityMinimal } from './app_v3'
 
-export interface AuthenticateResponse {
-    token: string
-}
 export interface AuthenticateTokenRequest {
     token: string
 }
 
+export interface AuthenticateResponse {
+    token: string
+    userID: ID
+}
+
+export interface User extends IEntityMinimal {
+    name: { firstName: string; lastName: string }
+    email: string
+    avatar: string | null
+}
+
 export interface Session {
     token: string
+    userID: ID
 }
 
 interface DecodedToken {
@@ -131,8 +142,12 @@ export const AuthProvider = (props: { children: React.ReactNode }) => {
         console.log('[AuthContext] [authenticate] Authenticating token...', token)
         const ok = await verifyToken({ token })
         if (ok) {
-            setSessionCookie({ token })
-            setSession({ token })
+            const decodedToken = decodeToken<DecodedToken>(token)
+            if (!decodedToken) {
+                throw new Error('Could not decode token. Invalid token.')
+            }
+            setSessionCookie({ token, userID: decodedToken.sub })
+            setSession({ token, userID: decodedToken.sub })
         }
     }
 
