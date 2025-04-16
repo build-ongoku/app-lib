@@ -10,13 +10,46 @@ import { getEntityAddPath, getEntityChatPath, getEntityEditPath, getEntityListPa
 import { EntityListTableInner } from './EntityList'
 import { ServerResponseWrapper } from './ServerResponseWrapper'
 import { FetchFunc, useGetEntity, useListEntity } from '../../providers/httpV2'
-import React, { useContext } from 'react'
+import React, { useContext, useState, useEffect } from 'react'
 import { FiEdit2 } from 'react-icons/fi'
 import { MdAdd, MdOutlineFormatListBulleted, MdChat } from 'react-icons/md'
 import { Router } from '../../common/types'
 
 export const EntityDetail = <E extends IEntityMinimal = IEntityMinimal>(props: { entityInfo: EntityInfo<E>; identifier: string; router: Router }) => {
     const { entityInfo, identifier, router } = props
+
+    // Check URL for entity data passed from creation page
+    const [initialData, setInitialData] = React.useState<E | null>(null)
+    const [shouldFetch, setShouldFetch] = React.useState(false)
+
+    React.useEffect(() => {
+        // Get and parse entity data from URL if it exists
+        if (typeof window !== 'undefined') {
+            const urlParams = new URLSearchParams(window.location.search)
+            const entityDataParam = urlParams.get('entityData')
+
+            if (entityDataParam) {
+                try {
+                    // Parse the entity data
+                    const parsedData = JSON.parse(decodeURIComponent(entityDataParam)) as E
+                    console.log('[EntityDetail] Found entity data in URL params', parsedData)
+                    setInitialData(parsedData)
+
+                    // Clean up URL by removing the parameter
+                    urlParams.delete('entityData')
+                    const newUrl = window.location.pathname + (urlParams.toString() ? `?${urlParams.toString()}` : '')
+                    window.history.replaceState({}, '', newUrl)
+                } catch (error) {
+                    console.error('[EntityDetail] Error parsing entity data from URL', error)
+                    setShouldFetch(true)
+                }
+            } else {
+                setShouldFetch(true)
+            }
+        } else {
+            setShouldFetch(true)
+        }
+    }, [])
 
     // Todo: Assume that the identifier is the id for now but this could include any other human readable identifier
 
@@ -25,14 +58,26 @@ export const EntityDetail = <E extends IEntityMinimal = IEntityMinimal>(props: {
         data: {
             id: identifier,
         },
+        skipFetchAtInit: true,
     })
+
+    // If we have initialData, use it immediately
+    // If not, trigger the fetch
+    React.useEffect(() => {
+        if (!initialData && shouldFetch) {
+            fetch()
+        }
+    }, [initialData, shouldFetch])
+
+    // Use initialData if available, otherwise use response data
+    const entityData = initialData || resp?.data
 
     return (
         <div>
             <div className="flex flex-col gap-4">
                 <div className="flex justify-between my-5">
                     <Title order={2}>
-                        {entityInfo.getNameFriendly()}: {resp?.data ? entityInfo.getEntityNameFriendly(resp.data) : 'Unknown'}
+                        {entityInfo.getNameFriendly()}: {entityData ? entityInfo.getEntityNameFriendly(entityData) : 'Unknown'}
                     </Title>
                     <div className="flex gap-3">
                         <Button
@@ -78,12 +123,12 @@ export const EntityDetail = <E extends IEntityMinimal = IEntityMinimal>(props: {
                         </Button>
                     </div>
                 </div>
-                <ServerResponseWrapper error={error || resp?.error} loading={loading}>
-                    {resp?.data && (
+                <ServerResponseWrapper error={error || resp?.error} loading={loading && !initialData}>
+                    {entityData && (
                         <>
                             <EntityActions entityInfo={entityInfo} id={identifier} refetchEntity={fetch} />
-                            <pre>{JSON.stringify(resp?.data, null, 2)}</pre>
-                            <EntityAssociations entityInfo={entityInfo} entityID={identifier} entityData={resp?.data} />
+                            <pre>{JSON.stringify(entityData, null, 2)}</pre>
+                            <EntityAssociations entityInfo={entityInfo} entityID={identifier} entityData={entityData} />
                         </>
                     )}
                 </ServerResponseWrapper>

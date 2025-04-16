@@ -106,7 +106,7 @@ const NavbarFooter = () => {
 
             <Group className="mb-2 flex justify-between">
                 <ServerResponseWrapper error={apiStatusCall.error || apiStatusCall.resp?.error} loading={apiStatusCall.loading}>
-                    <Text className="text-sm text-gray-500">
+                    <Text className="text-xs text-gray-500">
                         ongoku v{apiStatusCall.resp?.data?.ongokuInfo.semanticVersion} ({apiStatusCall.resp?.data?.ongokuInfo.gitCommitHash?.substring(0, 10)})
                     </Text>
                 </ServerResponseWrapper>
