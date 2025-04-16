@@ -34,7 +34,8 @@ export var EntityAddForm = function (props) {
             if (data.id) {
                 var redirectURL = joinURL(entityInfo.namespace.toURLPath(), data.id);
                 console.log('[EntityAddForm] [onSuccess] Redirecting to', redirectURL);
-                router.push(redirectURL);
+                var dataParam = encodeURIComponent(JSON.stringify(data));
+                router.push("".concat(redirectURL, "?entityData=").concat(dataParam));
                 return;
             }
         }, router: router },

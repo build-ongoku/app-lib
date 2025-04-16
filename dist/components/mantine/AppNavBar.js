@@ -56,7 +56,7 @@ var NavbarFooter = function () {
         React.createElement("hr", { className: "h-px my-2 bg-gray-200 border-0 dark:bg-gray-700" }),
         React.createElement(Group, { className: "mb-2 flex justify-between" },
             React.createElement(ServerResponseWrapper, { error: apiStatusCall.error || ((_h = apiStatusCall.resp) === null || _h === void 0 ? void 0 : _h.error), loading: apiStatusCall.loading },
-                React.createElement(Text, { className: "text-sm text-gray-500" },
+                React.createElement(Text, { className: "text-xs text-gray-500" },
                     "ongoku v", (_k = (_j = apiStatusCall.resp) === null || _j === void 0 ? void 0 : _j.data) === null || _k === void 0 ? void 0 :
                     _k.ongokuInfo.semanticVersion,
                     " (", (_o = (_m = (_l = apiStatusCall.resp) === null || _l === void 0 ? void 0 : _l.data) === null || _m === void 0 ? void 0 : _m.ongokuInfo.gitCommitHash) === null || _o === void 0 ? void 0 :

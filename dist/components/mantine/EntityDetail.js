@@ -12,20 +12,62 @@ import { FiEdit2 } from 'react-icons/fi';
 import { MdAdd, MdOutlineFormatListBulleted, MdChat } from 'react-icons/md';
 export var EntityDetail = function (props) {
     var entityInfo = props.entityInfo, identifier = props.identifier, router = props.router;
+    // Check URL for entity data passed from creation page
+    var _a = React.useState(null), initialData = _a[0], setInitialData = _a[1];
+    var _b = React.useState(false), shouldFetch = _b[0], setShouldFetch = _b[1];
+    React.useEffect(function () {
+        // Get and parse entity data from URL if it exists
+        if (typeof window !== 'undefined') {
+            var urlParams = new URLSearchParams(window.location.search);
+            var entityDataParam = urlParams.get('entityData');
+            if (entityDataParam) {
+                try {
+                    // Parse the entity data
+                    var parsedData = JSON.parse(decodeURIComponent(entityDataParam));
+                    console.log('[EntityDetail] Found entity data in URL params', parsedData);
+                    setInitialData(parsedData);
+                    // Clean up URL by removing the parameter
+                    urlParams.delete('entityData');
+                    var newUrl = window.location.pathname + (urlParams.toString() ? "?".concat(urlParams.toString()) : '');
+                    window.history.replaceState({}, '', newUrl);
+                }
+                catch (error) {
+                    console.error('[EntityDetail] Error parsing entity data from URL', error);
+                    setShouldFetch(true);
+                }
+            }
+            else {
+                setShouldFetch(true);
+            }
+        }
+        else {
+            setShouldFetch(true);
+        }
+    }, []);
     // Todo: Assume that the identifier is the id for now but this could include any other human readable identifier
-    var _a = useGetEntity({
+    var _c = useGetEntity({
         entityNamespace: entityInfo.namespace.toRaw(),
         data: {
             id: identifier,
         },
-    }), resp = _a.resp, loading = _a.loading, error = _a.error, fetchDone = _a.fetchDone, fetch = _a.fetch;
+        skipFetchAtInit: true,
+    }), resp = _c.resp, loading = _c.loading, error = _c.error, fetchDone = _c.fetchDone, fetch = _c.fetch;
+    // If we have initialData, use it immediately
+    // If not, trigger the fetch
+    React.useEffect(function () {
+        if (!initialData && shouldFetch) {
+            fetch();
+        }
+    }, [initialData, shouldFetch]);
+    // Use initialData if available, otherwise use response data
+    var entityData = initialData || (resp === null || resp === void 0 ? void 0 : resp.data);
     return (React.createElement("div", null,
         React.createElement("div", { className: "flex flex-col gap-4" },
             React.createElement("div", { className: "flex justify-between my-5" },
                 React.createElement(Title, { order: 2 },
                     entityInfo.getNameFriendly(),
                     ": ",
-                    (resp === null || resp === void 0 ? void 0 : resp.data) ? entityInfo.getEntityNameFriendly(resp.data) : 'Unknown'),
+                    entityData ? entityInfo.getEntityNameFriendly(entityData) : 'Unknown'),
                 React.createElement("div", { className: "flex gap-3" },
                     React.createElement(Button, { autoContrast: true, leftSection: React.createElement(FiEdit2, null), onClick: function () {
                             router.push(getEntityEditPath({
@@ -42,10 +84,10 @@ export var EntityDetail = function (props) {
                     React.createElement(Button, { leftSection: React.createElement(MdChat, null), onClick: function () {
                             router.push(getEntityChatPath(entityInfo));
                         }, disabled: true }, "Chat"))),
-            React.createElement(ServerResponseWrapper, { error: error || (resp === null || resp === void 0 ? void 0 : resp.error), loading: loading }, (resp === null || resp === void 0 ? void 0 : resp.data) && (React.createElement(React.Fragment, null,
+            React.createElement(ServerResponseWrapper, { error: error || (resp === null || resp === void 0 ? void 0 : resp.error), loading: loading && !initialData }, entityData && (React.createElement(React.Fragment, null,
                 React.createElement(EntityActions, { entityInfo: entityInfo, id: identifier, refetchEntity: fetch }),
-                React.createElement("pre", null, JSON.stringify(resp === null || resp === void 0 ? void 0 : resp.data, null, 2)),
-                React.createElement(EntityAssociations, { entityInfo: entityInfo, entityID: identifier, entityData: resp === null || resp === void 0 ? void 0 : resp.data })))))));
+                React.createElement("pre", null, JSON.stringify(entityData, null, 2)),
+                React.createElement(EntityAssociations, { entityInfo: entityInfo, entityID: identifier, entityData: entityData })))))));
 };
 var EntityAssociations = function (props) {
     var appInfo = useContext(AppContext).appInfo;
