@@ -54,6 +54,7 @@ import { AppContext } from '../../common/AppContextV3';
 import * as fieldkind from '../../common/fieldkind';
 import { listEntity, queryByTextEntity, uploadFile } from '../../providers/httpV2';
 import React, { useContext, useEffect, useState } from 'react';
+import { NewDateFromYYYYMMDD } from '../../common/scalars';
 import { IconTrash } from '@tabler/icons-react';
 import { randomId } from '@mantine/hooks';
 export var TypeAddForm = function (props) {
@@ -228,12 +229,12 @@ export var BooleanInput = function (props) {
     return (React.createElement(Switch, __assign({ key: props.identifier, label: props.label, description: props.description, placeholder: props.placeholder }, formInputProps, props.internalProps, { defaultChecked: props.initialValue, "data-onepassword-title": "disabled" })));
 };
 export var DateInput = function (props) {
-    var _a;
     var form = props.form;
     // Get the form input props so we can change the "null" default value to "undefined"
     var formInputProps = form.getInputProps(props.identifier);
-    formInputProps.defaultValue = (_a = formInputProps.defaultValue) !== null && _a !== void 0 ? _a : undefined;
-    return (React.createElement(MantineDateInput, __assign({ key: props.identifier, valueFormat: "DD/MM/YYYY", label: props.label, description: props.description, placeholder: props.placeholder, clearable: true }, formInputProps, props.internalProps)));
+    formInputProps.defaultValue = formInputProps.defaultValue ? NewDateFromYYYYMMDD(formInputProps.defaultValue) : undefined;
+    console.log('DateInput', props);
+    return (React.createElement(MantineDateInput, __assign({ key: props.identifier, valueFormat: "DD/MM/YYYY", label: props.label, description: props.description, placeholder: props.placeholder, clearable: true, defaultDate: props.initialValue ? NewDateFromYYYYMMDD(props.initialValue) : undefined }, formInputProps, props.internalProps)));
 };
 export var TimestampInput = function (props) {
     var _a;
