@@ -34,7 +34,7 @@ import { AppContext } from '../../common/AppContextV3'
 import * as fieldkind from '../../common/fieldkind'
 import { listEntity, queryByTextEntity, uploadFile } from '../../providers/httpV2'
 import React, { useContext, useEffect, useState } from 'react'
-import { Email, ID, Money } from '../../common/scalars'
+import { Email, ID, Money, NewDateFromYYYYMMDD } from '../../common/scalars'
 import { IconTrash } from '@tabler/icons-react'
 import { randomId } from '@mantine/hooks'
 import { MetaFieldKeys } from '../../common/types'
@@ -324,8 +324,9 @@ export const DateInput = (props: InputProps<DateInputProps, Date>) => {
 
     // Get the form input props so we can change the "null" default value to "undefined"
     const formInputProps = form.getInputProps(props.identifier)
-    formInputProps.defaultValue = formInputProps.defaultValue ?? undefined
+    formInputProps.defaultValue = formInputProps.defaultValue ? NewDateFromYYYYMMDD(formInputProps.defaultValue) : undefined
 
+    console.log('DateInput', props)
     return (
         <MantineDateInput
             key={props.identifier}
@@ -334,6 +335,7 @@ export const DateInput = (props: InputProps<DateInputProps, Date>) => {
             description={props.description}
             placeholder={props.placeholder}
             clearable
+            defaultDate={props.initialValue ? NewDateFromYYYYMMDD(props.initialValue as unknown as string) : undefined}
             {...formInputProps}
             {...props.internalProps}
         />
