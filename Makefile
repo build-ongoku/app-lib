@@ -1,6 +1,8 @@
-.PHONY: all build git npm-publish
+.PHONY: all build git npm-publish-patch npm-publish-minor
 
-all: build git npm-publish
+all: 
+	echo "Choose a specific target from the Makefile"
+	exit 1
 
 build:
 	@echo "Installing..."
@@ -17,14 +19,22 @@ git:
 	@echo "Pushing to git..."
 	git push
 
+npm-version-patch:
+	npm version patch
+
+npm-version-minor:
+	npm version minor
+
 npm-publish:
 	@echo "Publishing to npm..."
-	npm version patch
 	npm adduser
 	npm publish
 	@echo "Pushing to git..."
 	git push
 	@echo "Done."
 
+npm-publish-patch: build npm-version-patch npm-publish
+
+npm-publish-minor: build npm-version-minor npm-publish
 
 

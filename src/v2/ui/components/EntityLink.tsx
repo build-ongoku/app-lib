@@ -1,6 +1,6 @@
 'use client'
 
-import { EntityInfo, IEntityMinimal } from '../common/app_v3'
+import { EntityInfo, IEntityMinimal } from '../../core'
 import React, { JSX } from 'react'
 
 interface EntityLinkProps<E extends IEntityMinimal> {
