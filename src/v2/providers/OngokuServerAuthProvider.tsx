@@ -54,7 +54,7 @@ export interface OngokuServerAuthProviderProps {
  * Handles authentication with the Ongoku server using a Kinde token
  */
 export const OngokuServerAuthProvider: React.FC<OngokuServerAuthProviderProps> = ({
-  children
+  children,
 }) => {
   // Get server information
   const { apiEndpoint, isValid: isServerValid } = useOngokuServer();
